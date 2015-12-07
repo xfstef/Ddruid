@@ -22,10 +22,12 @@ public class CommunicationDaemon extends Thread{
 
         System.out.println("Service Thread Started !");
 
-        do try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        do{
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         } while(true);
     }
 }

@@ -3,7 +3,6 @@ package com.frostbytetree.ddruid;
 import android.app.Notification;
 import android.app.Service;
 import android.content.Intent;
-import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 

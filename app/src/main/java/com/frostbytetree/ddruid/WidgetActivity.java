@@ -1,10 +1,6 @@
 package com.frostbytetree.ddruid;
 
 import android.app.Activity;
-import android.content.Context;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.view.View;
 
 /**
  * Created by XfStef on 11/27/2015.

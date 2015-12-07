@@ -23,10 +23,12 @@ public class AppLogic extends Thread{
         System.out.println("Thread Started !");
         rawData.setPersistancy(true);
 
-        do try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } while(true);
+        do {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }while(true);
     }
 }
