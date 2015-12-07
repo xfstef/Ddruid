@@ -23,19 +23,10 @@ public class AppLogic extends Thread{
         System.out.println("Thread Started !");
         rawData.setPersistancy(true);
 
-        do {
-            this_time = System.currentTimeMillis();
-            if (this_time - last_time > 1000) {
-                System.out.println("The thread current time is: " + rawData.getTest());
-                rawData.setTest("Moj Kurac !");
-                System.out.println("The thread current time is: " + rawData.getTest());
-                last_time = this_time;
-            }
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }while(true);
+        do try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } while(true);
     }
 }

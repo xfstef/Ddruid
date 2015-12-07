@@ -1,6 +1,10 @@
 package com.frostbytetree.ddruid;
 
+import android.app.Activity;
+import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 
 /**
  * Created by XfStef on 11/27/2015.
@@ -13,5 +17,6 @@ import android.support.v7.app.AppCompatActivity;
     //TODO Check for free memory
     //TODO If no free memory then Talk to SQLite Controller
 
-public class TemporaryWidget extends AppCompatActivity {
+public class WidgetActivity extends Activity {
+
 }
