@@ -22,7 +22,6 @@ import android.support.annotation.Nullable;
 public class DataTransferController extends Service{
     private static DataTransferController ourInstance = new DataTransferController();
     RawData rawData;
-    DataModels dataModels;
     ConfigFile configFile;
     CommunicationDaemon commDaemon;
     Notification someNotification;
@@ -35,7 +34,6 @@ public class DataTransferController extends Service{
         rawData = RawData.getInstance();
         rawData.setTest("Moj Kurac");
 
-        dataModels = DataModels.getInstance();
         configFile = ConfigFile.getInstance();
 
     }

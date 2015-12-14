@@ -13,6 +13,10 @@ package com.frostbytetree.ddruid;
     //TODO Signal the UIBuilder
 
 public class DataModelInterpreter {
+
+    DataModels dataModels;
+    ConfigFile configFile;
+
     private static DataModelInterpreter ourInstance = new DataModelInterpreter();
 
     public static DataModelInterpreter getInstance() {
@@ -20,5 +24,9 @@ public class DataModelInterpreter {
     }
 
     private DataModelInterpreter() {
+
+        dataModels = DataModels.getInstance();
+        configFile = ConfigFile.getInstance();
+
     }
 }

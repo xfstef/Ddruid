@@ -7,6 +7,7 @@ public class AppLogic extends Thread{
     private static AppLogic ourInstance = new AppLogic();
     long this_time, last_time;
     RawData rawData = RawData.getInstance();
+    UIBuilder uiBuilder = UIBuilder.getInstance();
 
     public static AppLogic getInstance() {
         return ourInstance;
@@ -31,4 +32,5 @@ public class AppLogic extends Thread{
             }
         }while(true);
     }
+
 }

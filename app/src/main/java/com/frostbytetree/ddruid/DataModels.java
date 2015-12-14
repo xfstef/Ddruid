@@ -1,5 +1,7 @@
 package com.frostbytetree.ddruid;
 
+import java.util.ArrayList;
+
 /**
  * Created by XfStef on 11/27/2015.
  */
@@ -10,6 +12,7 @@ package com.frostbytetree.ddruid;
 
 public class DataModels {
     private static DataModels ourInstance = new DataModels();
+    ArrayList<Model> all_models;
 
     public static DataModels getInstance() {
         return ourInstance;
@@ -17,4 +20,8 @@ public class DataModels {
 
     private DataModels() {
     }
+}
+
+class Model {
+
 }
