@@ -1,6 +1,7 @@
 package com.frostbytetree.ddruid;
 
 import android.app.Activity;
+import android.os.Bundle;
 
 /**
  * Created by XfStef on 11/27/2015.
@@ -14,5 +15,10 @@ import android.app.Activity;
     //TODO If no free memory then Talk to SQLite Controller
 
 public class WidgetActivity extends Activity {
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
 
 }

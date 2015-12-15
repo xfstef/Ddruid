@@ -2,6 +2,7 @@ package com.frostbytetree.ddruid;
 
 import android.content.Context;
 import android.view.View;
+import android.widget.LinearLayout;
 
 import java.util.zip.Inflater;
 
@@ -36,14 +37,14 @@ public class UIBuilder {
         this.context = context;
     }
 
-    public View inflate_model(Model current_model){
+    public void inflate_model(Model current_model){
 
         //TODO build View from data model
         Widget test = new Widget(context);
+        System.out.println("Widget Test:" + test);
         test.addElement();
 
         //widgetViews.the_widgets.add(test);
 
-        return test;
     }
 }

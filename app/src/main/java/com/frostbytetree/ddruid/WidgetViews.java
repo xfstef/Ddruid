@@ -1,8 +1,12 @@
 package com.frostbytetree.ddruid;
 
+import android.app.Activity;
 import android.content.Context;
+import android.graphics.drawable.GradientDrawable;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -34,7 +38,7 @@ public class WidgetViews {
 
 }
 
-class Widget extends View{
+class Widget extends LinearLayout{
 
     Context context;
     LinearLayout L2;
@@ -45,12 +49,16 @@ class Widget extends View{
         L2 = new LinearLayout(context);
         L2.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
         L2.setGravity(Gravity.CENTER);
+        L2.setOrientation(LinearLayout.VERTICAL);
     }
 
     public void addElement(){
-        TextView a1 = new TextView(context);
-        a1.setText("Dynamic layouts ftw!");
+        Button a1 = new Button(context);
+        a1.setText("@string/app_name");
         a1.setVisibility(View.VISIBLE);
-        L2.addView(a1, (new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 0.8f)));
+        L2.addView(a1, (new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)));
+        System.out.println("Element Should be added!");
+        Activity MainActivity = (Activity)context;
+        MainActivity.setContentView(L2);
     }
 }

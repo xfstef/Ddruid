@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         System.out.println("Endlich gestartet!");
 
-        RelativeLayout lin_test = (RelativeLayout)findViewById(R.id.test_layout);
+        LinearLayout lin_test = (LinearLayout)findViewById(R.id.test_layout);
         lin_test.setOnClickListener(this);
 
         startService(new Intent(this, DataTransferController.class));
@@ -55,7 +55,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View view){
-        View new_view = uiBuilder.inflate_model(null);
-        setContentView(new_view);
+
+        uiBuilder.inflate_model(null);
+        System.out.println("The new view is: " + view);
     }
 }
