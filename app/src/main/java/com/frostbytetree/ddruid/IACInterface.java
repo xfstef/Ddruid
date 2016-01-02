@@ -28,6 +28,7 @@ class Messages {
     short caller_id;
     short target_id;
     Operation requested_operation;
+    short priority;
 }
 
 class Operation {
