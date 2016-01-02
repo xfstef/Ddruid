@@ -16,6 +16,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     ConfigFile configFile;
     UIBuilder uiBuilder;
     WidgetViews widgetViews;
+    IACInterface commInterface;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,7 +27,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         LinearLayout lin_test = (LinearLayout)findViewById(R.id.test_layout);
         lin_test.setOnClickListener(this);
 
-        startService(new Intent(this, DataTransferController.class));
+        commInterface = IACInterface.getInstance();
 
         rawData = RawData.getInstance();
         dataModels = DataModels.getInstance();
@@ -44,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         sqldaemon = SQLiteController.getInstance();
         sqldaemon.start();
 
+        startService(new Intent(this, DataTransferController.class));
 
 
     }

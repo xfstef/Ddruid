@@ -8,6 +8,8 @@ public class AppLogic extends Thread{
     long this_time, last_time;
     RawData rawData = RawData.getInstance();
     UIBuilder uiBuilder = UIBuilder.getInstance();
+    private static short my_id = 1;
+    IACInterface commInterface = IACInterface.getInstance();
 
     public static AppLogic getInstance() {
         return ourInstance;

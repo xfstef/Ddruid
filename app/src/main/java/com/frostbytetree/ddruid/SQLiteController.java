@@ -14,6 +14,8 @@ package com.frostbytetree.ddruid;
 
 public class SQLiteController extends Thread{
     private static SQLiteController ourInstance = new SQLiteController();
+    private static short my_id = 3;
+    IACInterface commInterface = IACInterface.getInstance();
 
     public static SQLiteController getInstance() {
         return ourInstance;

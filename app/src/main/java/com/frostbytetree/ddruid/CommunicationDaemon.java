@@ -7,6 +7,9 @@ public class CommunicationDaemon extends Thread{
     private static CommunicationDaemon ourInstance = new CommunicationDaemon();
     long this_time, last_time;
     RawData rawData = RawData.getInstance();
+    private static short my_id = 2;
+    IACInterface commInterface = IACInterface.getInstance();
+
 
     public static CommunicationDaemon getInstance() {
         return ourInstance;
@@ -15,6 +18,7 @@ public class CommunicationDaemon extends Thread{
     private CommunicationDaemon() {
         this_time = System.currentTimeMillis();
         last_time = this_time;
+
     }
 
     @Override
