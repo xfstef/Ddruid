@@ -5,7 +5,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -58,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View view){
 
-        uiBuilder.inflate_model(null);
-        System.out.println("The new view is: " + view);
+        // uiBuilder.inflate_model(null);
+        // System.out.println("The new view is: " + view);
     }
 }

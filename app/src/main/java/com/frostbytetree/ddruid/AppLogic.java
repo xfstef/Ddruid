@@ -3,6 +3,7 @@ package com.frostbytetree.ddruid;
 /**
  * Created by XfStef on 11/27/2015.
  */
+
 public class AppLogic extends Thread{
     private static AppLogic ourInstance = new AppLogic();
     long this_time, last_time;
