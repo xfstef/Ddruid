@@ -9,6 +9,10 @@ public class CommunicationDaemon extends Thread{
     RawData rawData = RawData.getInstance();
     private static short my_id = 2;
     IACInterface commInterface = IACInterface.getInstance();
+    short thread_throttling = 1000; // This option is used to determine how much the Thread sleeps.
+                                    // 5000 - Idle mode: the app is minimized with no bkg operation.
+                                    // 1000 - Passive mode: app is sending / getting data.
+                                    // 100 - Active mode: app is actively working with the UI.
 
 
     public static CommunicationDaemon getInstance() {
@@ -28,7 +32,11 @@ public class CommunicationDaemon extends Thread{
 
         do{
             try {
-                Thread.sleep(60000);
+                if(commInterface.message_buffer.size() != 0){
+                    System.out.println("The latest message is:" +
+                            commInterface.message_buffer.get(commInterface.message_buffer.size()-1).current_rowstamp);
+                }
+                Thread.sleep(thread_throttling);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

@@ -17,6 +17,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     WidgetViews widgetViews;
     IACInterface commInterface;
 
+    View login;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,6 +46,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         sqldaemon = SQLiteController.getInstance();
         sqldaemon.start();
 
+        login = (View)findViewById(R.id.bLogin);
+        login.setOnClickListener(this); // TODO: This is a temporary login protocol. Please fix me.
+
         startService(new Intent(this, DataTransferController.class));
 
 
@@ -57,6 +62,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View view){
 
+        switch(view.getId()){
+            case R.id.bLogin:
+                appLogic.initLoginProc();
+        }
         // uiBuilder.inflate_model(null);
         // System.out.println("The new view is: " + view);
     }
