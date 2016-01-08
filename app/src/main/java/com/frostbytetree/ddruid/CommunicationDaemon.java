@@ -3,6 +3,7 @@ package com.frostbytetree.ddruid;
 /**
  * Created by XfStef on 11/27/2015.
  */
+
 public class CommunicationDaemon extends Thread{
     private static CommunicationDaemon ourInstance = new CommunicationDaemon();
     long this_time, last_time;

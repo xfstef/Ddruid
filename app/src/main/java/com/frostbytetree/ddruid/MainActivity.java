@@ -43,8 +43,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         appLogic = AppLogic.getInstance();
         appLogic.start();
-        sqldaemon = SQLiteController.getInstance();
-        sqldaemon.start();
+        //sqldaemon = SQLiteController.getInstance();
+        //sqldaemon.start();
 
         login = (View)findViewById(R.id.bLogin);
         login.setOnClickListener(this); // TODO: This is a temporary login protocol. Please fix me.
