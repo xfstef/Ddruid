@@ -57,7 +57,9 @@ public class AppLogic extends Thread{
         login_procedure.requested_operation.status = 0;
         // -----------------------------------------------------------------------------------------
 
-        commInterface.message_buffer.add(login_procedure);
+        synchronized (commInterface.message_buffer_lock) {
+            commInterface.message_buffer.add(login_procedure);
+        }
         thread_throttling = 1000;
 
     }
