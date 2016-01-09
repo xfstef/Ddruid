@@ -1,9 +1,14 @@
 package com.frostbytetree.ddruid;
 
 import android.content.Intent;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -16,14 +21,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     UIBuilder uiBuilder;
     WidgetViews widgetViews;
     IACInterface commInterface;
+    DrawerLayout Drawer;
+    ActionBarDrawerToggle mDrawerToggle;
 
-    View login;
+    Toolbar toolbar;
+
+    EditText uri, username, password;
+    Button login;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        System.out.println("Endlich gestartet!");
+        initViewItems();
 
         LinearLayout lin_test = (LinearLayout)findViewById(R.id.test_layout);
         lin_test.setOnClickListener(this);
@@ -46,12 +56,48 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //sqldaemon = SQLiteController.getInstance();
         //sqldaemon.start();
 
-        login = (View)findViewById(R.id.bLogin);
-        login.setOnClickListener(this); // TODO: This is a temporary login protocol. Please fix me.
+        // TODO: This is a temporary login protocol. Please fix me.
 
         startService(new Intent(this, DataTransferController.class));
 
+        // loading and instanciating toolbar
 
+
+    }
+
+
+
+    private void initViewItems()
+    {
+        username = (EditText)findViewById(R.id.etUsername);
+        password = (EditText)findViewById(R.id.etPassword);
+        uri = (EditText)findViewById(R.id.etUri);
+        login = (Button)findViewById(R.id.bLogin);
+        login.setOnClickListener(this);
+        toolbar = (Toolbar)findViewById(R.id.login_toolbar);
+        setSupportActionBar(toolbar);
+
+        Drawer = (DrawerLayout) findViewById(R.id.DrawerLayout);        // Drawer object Assigned to the view
+        mDrawerToggle = new ActionBarDrawerToggle(this,Drawer,toolbar,R.string.openDrawer,R.string.closeDrawer){
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                // code here will execute once the drawer is opened( As I dont want anything happened whe drawer is
+                // open I am not going to put anything here)
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
+                // Code here will execute once drawer is closed
+            }
+
+
+
+        }; // Drawer Toggle Object Made
+        Drawer.setDrawerListener(mDrawerToggle); // Drawer Listener set to the Drawer toggle
+        mDrawerToggle.syncState();
     }
 
     @Override

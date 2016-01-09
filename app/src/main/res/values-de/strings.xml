@@ -2,5 +2,9 @@
     <string name="app_name">Ddruid</string>
     <string name="hint_username">Benutzername</string>
     <string name="hint_password">Passwort</string>
+    <string name="hint_uri">URI Adresse</string>
     <string name="bt_login">Login</string>
+    <string name="openDrawer">Einstellungen öffnen</string>
+    <string name="closeDrawer">Einstellungen schließen</string>
+    <string name="Einstellungen">Einstellungen</string>
 </resources>
