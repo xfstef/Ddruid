@@ -85,6 +85,11 @@ public class CommunicationDaemon extends Thread{
 
     private void getConfigurations(Message message) {
         System.out.println("Message Rowstamp: " + message.current_rowstamp);
+
+        // TODO: ----------------------- Check for user credentials / login ------------------------
+        //
+        // -----------------------------------------------------------------------------------------
+
         Request comm_request = new Request();
         Response comm_response = new Response(comm_request);
         Client comm_client;
