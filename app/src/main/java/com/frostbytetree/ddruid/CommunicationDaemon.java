@@ -1,5 +1,11 @@
 package com.frostbytetree.ddruid;
 
+import org.restlet.Client;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.data.Method;
+import org.restlet.data.Protocol;
+
 import java.util.ArrayList;
 
 /**
@@ -48,7 +54,7 @@ public class CommunicationDaemon extends Thread{
                 }
                 sortByPriority();
                 while(local_pile.size() > 0){
-                    handleMessage(local_pile.get(0));
+                    sortStatus(local_pile.get(0));
                     local_pile.remove(0);
                 }
                 Thread.sleep(thread_throttling);
@@ -58,11 +64,51 @@ public class CommunicationDaemon extends Thread{
         } while(true);
     }
 
-    private void handleMessage(Message message) {   // TODO: Handle each message accordingly.
+    private void sortStatus(Message message) {
+        switch(message.requested_operation.status){
+            case 1:
+                message.requested_operation.status = 2;
+                sortType(message);
+                break;
+            // TODO: Define behaviour for the other operation statuses.
+        }
+    }
+
+    private void sortType(Message message) {
+        switch(message.requested_operation.type){
+            case 110:
+                getConfigurations(message);
+                break;
+            // TODO: Define behaviour for the other operation types.
+        }
+    }
+
+    private void getConfigurations(Message message) {
         System.out.println("Message Rowstamp: " + message.current_rowstamp);
+        Request comm_request = new Request();
+        Response comm_response = new Response(comm_request);
+        Client comm_client;
+        // TODO: Add missing elements, such as Cookies, etc..
 
+        if(establishProtocol(message.requested_operation.REST_command))
+            comm_client = new Client(Protocol.HTTPS);
+        else
+            comm_client = new Client(Protocol.HTTP);
 
+        comm_request.setMethod(Method.GET);
+        comm_request.setResourceRef(message.requested_operation.REST_command);
+        comm_response = comm_client.handle(comm_request);
 
+        System.out.println("Server answer: " + comm_response.getEntityAsText());
+
+    }
+
+    private boolean establishProtocol(String rest_command) {
+        String command_protocol = rest_command.substring(0, 5);
+        if(command_protocol.equals("https"))
+            return true;
+        else
+            return false;
     }
 
     private void sortByPriority() { // TODO: Sort current messages according to priority.
