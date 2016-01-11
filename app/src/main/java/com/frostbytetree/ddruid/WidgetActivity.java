@@ -19,6 +19,7 @@ public class WidgetActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.widget_activity);
     }
 
 }

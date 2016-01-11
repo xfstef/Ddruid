@@ -1,5 +1,6 @@
 package com.frostbytetree.ddruid;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -32,12 +33,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
         initViewItems();
 
         LinearLayout lin_test = (LinearLayout)findViewById(R.id.test_layout);
         lin_test.setOnClickListener(this);
-
         commInterface = IACInterface.getInstance();
 
         rawData = RawData.getInstance();
@@ -52,7 +53,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         rawData.setTest("Moj Kurac !");
 
         appLogic = AppLogic.getInstance();
-        appLogic.start();
+        if(appLogic.isInterrupted())
+            appLogic.start();
         //sqldaemon = SQLiteController.getInstance();
         //sqldaemon.start();
 
@@ -62,10 +64,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         // loading and instanciating toolbar
 
-
     }
-
-
 
     private void initViewItems()
     {
@@ -107,10 +106,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View view){
-
+        System.out.println("OnClick Funktion called!");
         switch(view.getId()){
             case R.id.bLogin:
+               /* System.out.println("Login geklickt!");
+                Intent i = new Intent(getApplicationContext(), WidgetActivity.class);
+                ActivityOptions options;
+                options = new ActivityOptions.makeScaleUpAnimation(view,0,0,view.getWidth(),view.getHeight());
+                startActivity(i, options.toBundle());*/
                 appLogic.initLoginProc();
+                break;
+
         }
         // uiBuilder.inflate_model(null);
         // System.out.println("The new view is: " + view);
