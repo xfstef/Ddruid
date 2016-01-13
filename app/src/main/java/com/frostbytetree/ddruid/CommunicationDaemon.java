@@ -1,11 +1,18 @@
 package com.frostbytetree.ddruid;
 
+import android.util.Log;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.restlet.Client;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
+import org.restlet.representation.Representation;
+import org.restlet.resource.ClientResource;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -90,7 +97,7 @@ public class CommunicationDaemon extends Thread{
         //
         // -----------------------------------------------------------------------------------------
 
-        Request comm_request = new Request();
+        /*Request comm_request = new Request();
         Response comm_response = new Response(comm_request);
         Client comm_client;
         // TODO: Add missing elements, such as Cookies, etc..
@@ -104,7 +111,20 @@ public class CommunicationDaemon extends Thread{
         comm_request.setResourceRef(message.requested_operation.REST_command);
         comm_response = comm_client.handle(comm_request);
 
-        System.out.println("Server answer: " + comm_response.getEntityAsText());
+        System.out.println("Server answer: " + comm_response.getEntityAsText());*/
+
+        ClientResource online_resource = new ClientResource(message.requested_operation.REST_command);
+        Representation representation = online_resource.get();
+        JSONObject response = null;
+        try {
+            response = new JSONObject(representation.getText());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("Received: " + response.toString());
 
     }
 
