@@ -39,12 +39,12 @@ class Message {
 class Operation {
     short status;   // The Operation Status is used to display the current progress regarding the
                     // message. These can be:
-                    // 0 - Message sent but not acknowledged
-                    // 1 - Message acknowledged and queued for processing
-                    // 2 - Operation is running
-                    // 3 - Operation finished successfully
-                    // 4 - Operation finished unsuccessfully, retrying soon
-                    // 5 - Operation generated ERROR and will be deleted
+                    // 0 - Message sent but not acknowledged;
+                    // 1 - Message acknowledged and queued for processing;
+                    // 2 - Operation is running;
+                    // 3 - Operation finished successfully;
+                    // 4 - No server connection, retrying soon;
+                    // 5 - Operation generated ERROR and will be deleted;
     short type;     // Get or Post data from or to server, SQLite, RawData using a 3 digit number:
                     // 1xx - GET; 2xx - POST;
                     // x0x - SQLite DB; x1x - Server;
