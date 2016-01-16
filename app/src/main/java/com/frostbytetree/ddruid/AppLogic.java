@@ -12,6 +12,7 @@ public class AppLogic extends Thread{
     private static short my_id = 1;
     IACInterface commInterface = IACInterface.getInstance();
     WidgetActivity currentActivity = new WidgetActivity();
+    ConfigFileInterpreter configFileInterpreter = ConfigFileInterpreter.getInstance();
     short thread_throttling = 5000; // This option is used to determine how much the Thread sleeps.
                                     // 5000 - Idle mode: the app is minimized with no bkg operation.
                                     // 1000 - Passive mode: app is sending / getting data.
@@ -38,11 +39,43 @@ public class AppLogic extends Thread{
 
         do {
             try {
+                synchronized(commInterface.message_buffer_lock) {
+                    for (int x = 0; x < commInterface.message_buffer.size(); x++)
+                        if (commInterface.message_buffer.get(x).target_id == my_id &&
+                                commInterface.message_buffer.get(x).requested_operation.status == 0) {
+                            // TODO: run requested operations
+                        }else if(commInterface.message_buffer.get(x).caller_id == my_id)
+                            postExecutionForwarder(commInterface.message_buffer.get(x));
+                }
                 Thread.sleep(thread_throttling);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }while(true);
+    }
+
+    private void postExecutionForwarder(Message finished_operation){
+        switch(finished_operation.requested_operation.status){
+            case 3:
+                switch(finished_operation.requested_operation.successPostExecution){
+                    case 1: // Got Config File successfully. Trying to interpret it now.
+                        configFileInterpreter.buildDataModels();
+                        configFileInterpreter.buildWidgets();
+                        thread_throttling = 5000;
+                        break;
+                    // TODO: Implement the rest of possible post successful operation calls
+                }
+                break;
+            case 5:
+                switch (finished_operation.requested_operation.errorPostExecution){
+                    case 0:
+                        // TODO: Decide what to do in case the comm Daemon couldn't get the cfg file.
+                        break;
+                    // TODO: Implement the rest of possible post failed operation calls
+                }
+                break;
+        }
+        finished_operation.requested_operation.status = 6;
     }
 
     public void initLoginProc() {
@@ -61,14 +94,14 @@ public class AppLogic extends Thread{
                 //"https://demo23.sclable.me/mobile/sclable-mobile-service/config";
         login_procedure.requested_operation.data_model = null;
         login_procedure.requested_operation.status = 0;
+        login_procedure.requested_operation.successPostExecution = 1;
+        login_procedure.requested_operation.errorPostExecution = 0;
         // -----------------------------------------------------------------------------------------
 
         synchronized (commInterface.message_buffer_lock) {
             commInterface.message_buffer.add(login_procedure);
         }
-        thread_throttling = 1000;
-
-
+        thread_throttling = 100;
 
     }
 }

@@ -22,7 +22,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     SQLiteController sqldaemon;
     RawData rawData;
     DataModels dataModels;
+    DataModelInterpreter dataModelInterpreter;
     ConfigFile configFile;
+    ConfigFileInterpreter configFileInterpreter;
     UIBuilder uiBuilder;
     WidgetViews widgetViews;
     IACInterface commInterface;
@@ -57,10 +59,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         widgetViews = WidgetViews.getInstance();
 
-        rawData.setTest("Moj Kurac !");
+        dataModelInterpreter = DataModelInterpreter.getInstance();
+
+        configFileInterpreter = ConfigFileInterpreter.getInstance();
 
         appLogic = AppLogic.getInstance();
-        if(appLogic.isInterrupted())
+        //if(appLogic.isInterrupted())  TODO: Fix the new app start App logic bug.
             appLogic.start();
         //sqldaemon = SQLiteController.getInstance();
         //sqldaemon.start();
@@ -125,7 +129,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.bLogin:
                 System.out.println("Login geklickt!");
                 Intent i = new Intent(getApplicationContext(), WidgetActivity.class);
-
 
                 startActivity(i);
 

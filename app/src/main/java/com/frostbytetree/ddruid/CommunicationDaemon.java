@@ -55,7 +55,8 @@ public class CommunicationDaemon extends Thread{
                             local_pile.add(commInterface.message_buffer.get(x));
                         }else if(commInterface.message_buffer.get(x).caller_id == my_id &&
                                 commInterface.message_buffer.get(x).requested_operation.status == 3)
-                            commInterface.message_buffer.remove(x);
+                            commInterface.message_buffer.get(x).requested_operation.status = 6;
+                            // TODO: Check if there are other functions that need to be called afterwards.
                 }
 
                 // Processing found / still ongoing messages.
@@ -104,12 +105,9 @@ public class CommunicationDaemon extends Thread{
         ClientResource online_resource = new ClientResource(message.requested_operation.REST_command);
         Representation representation = online_resource.get();
         JSONObject response = null;
-        JSONArray model = null;
 
         try {
             response = new JSONObject(representation.getText());
-            model = new JSONArray(response.get("model_structure").toString());
-            System.out.println("Model:" + model.toString());
         } catch (JSONException e) {
             message.requested_operation.status = 5;
             e.printStackTrace();

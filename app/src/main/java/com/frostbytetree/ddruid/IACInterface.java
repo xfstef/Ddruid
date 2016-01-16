@@ -44,12 +44,21 @@ class Operation {
                     // 2 - Operation is running;
                     // 3 - Operation finished successfully;
                     // 4 - No server connection, retrying soon;
-                    // 5 - Operation generated ERROR and will be deleted;
+                    // 5 - Operation generated ERROR;
+                    // 6 - Operation finished and is now marked as archived.
     short type;     // Get or Post data from or to server, SQLite, RawData using a 3 digit number:
                     // 1xx - GET; 2xx - POST;
                     // x0x - SQLite DB; x1x - Server;
                     // xx0 - Config File; xx1 - DB Table; xx2 - ... TODO: finish definitions.
     String REST_command;    // If a REST command is needed, else this string is NULL.
     Model data_model;   // If a Data is needed then a data model will be given.
+
+    short successPostExecution; // This is used to define what happens in the caller thread after
+                                // the operation finshes successfully. The codes defined here should
+                                // be locally known keys for the functions that each thread has.
+
+    short errorPostExecution;   // This is used to define what happens in the caller thread after
+                                // the operation fails. The codes defined here should be locally
+                                // known keys for the functions that each thread has.
 
 }
