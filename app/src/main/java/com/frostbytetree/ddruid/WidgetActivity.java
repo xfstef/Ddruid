@@ -2,6 +2,7 @@ package com.frostbytetree.ddruid;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -31,7 +32,9 @@ public class WidgetActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.widget_activity);
-        setupWindowAnimations();
+        if (Build.VERSION.SDK_INT > 21){
+            setupWindowAnimations();
+        }
 
         toolbar = (Toolbar)findViewById(R.id.widget_toolbar);
         setSupportActionBar(toolbar);
