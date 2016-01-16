@@ -1,5 +1,6 @@
 package com.frostbytetree.ddruid;
 
+import android.annotation.TargetApi;
 import android.app.ActivityOptions;
 import android.content.Intent;
 import android.support.v4.widget.DrawerLayout;
@@ -7,6 +8,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.os.Bundle;
+import android.transition.Slide;
+import android.transition.TransitionInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -35,7 +38,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+        setupWindowAnimations();
         initViewItems();
+
 
         LinearLayout lin_test = (LinearLayout)findViewById(R.id.test_layout);
         lin_test.setOnClickListener(this);
@@ -64,6 +69,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         // loading and instanciating toolbar
 
+    }
+
+    @TargetApi(21)
+    private void setupWindowAnimations(){
+        Slide slide = new Slide();
+        slide.setDuration(1000);
+        getWindow().setExitTransition(slide);
     }
 
     private void initViewItems()
@@ -109,16 +121,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         System.out.println("OnClick Funktion called!");
         switch(view.getId()){
             case R.id.bLogin:
-               /* System.out.println("Login geklickt!");
+                System.out.println("Login geklickt!");
                 Intent i = new Intent(getApplicationContext(), WidgetActivity.class);
-                ActivityOptions options;
-                options = new ActivityOptions.makeScaleUpAnimation(view,0,0,view.getWidth(),view.getHeight());
-                startActivity(i, options.toBundle());*/
-                appLogic.initLoginProc();
+
+
+                startActivity(i);
+
+                // appLogic.initLoginProc();
                 break;
 
         }
         // uiBuilder.inflate_model(null);
         // System.out.println("The new view is: " + view);
     }
+
 }
