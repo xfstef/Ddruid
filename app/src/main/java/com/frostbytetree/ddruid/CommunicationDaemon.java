@@ -2,6 +2,7 @@ package com.frostbytetree.ddruid;
 
 import android.util.Log;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.restlet.representation.Representation;
@@ -103,9 +104,12 @@ public class CommunicationDaemon extends Thread{
         ClientResource online_resource = new ClientResource(message.requested_operation.REST_command);
         Representation representation = online_resource.get();
         JSONObject response = null;
+        JSONArray model = null;
 
         try {
             response = new JSONObject(representation.getText());
+            model = new JSONArray(response.get("model_structure").toString());
+            System.out.println("Model:" + model.toString());
         } catch (JSONException e) {
             message.requested_operation.status = 5;
             e.printStackTrace();

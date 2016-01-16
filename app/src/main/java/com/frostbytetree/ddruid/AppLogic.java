@@ -52,7 +52,8 @@ public class AppLogic extends Thread{
         login_procedure.requested_operation = new Operation();
         login_procedure.requested_operation.type = 110;   // TODO: use a variable.
         login_procedure.requested_operation.REST_command =
-                "https://demo23.sclable.me/mobile/sclable-mobile-service/config";
+                "http://82.223.15.251/config.json";
+                //"https://demo23.sclable.me/mobile/sclable-mobile-service/config";
         login_procedure.requested_operation.data_model = null;
         login_procedure.requested_operation.status = 0;
         // -----------------------------------------------------------------------------------------
