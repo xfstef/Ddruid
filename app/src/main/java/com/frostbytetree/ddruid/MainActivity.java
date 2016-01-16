@@ -129,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 startActivity(i);
 
-                // appLogic.initLoginProc();
+                appLogic.initLoginProc();
                 break;
 
         }

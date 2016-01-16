@@ -9,6 +9,7 @@ import android.support.v7.widget.Toolbar;
 import android.transition.Fade;
 import android.transition.Slide;
 import android.transition.TransitionInflater;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -27,6 +28,7 @@ import android.widget.Spinner;
 public class WidgetActivity extends AppCompatActivity {
 
     Toolbar toolbar;
+    AppLogic appLogic;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -41,8 +43,15 @@ public class WidgetActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
+        appLogic = AppLogic.getInstance();
+
     }
 
+    @Override
+    public void onResume(){
+        super.onResume();
+        appLogic.setCurrentWidget(this);
+    }
 
     @TargetApi(21)
     private void setupWindowAnimations()
