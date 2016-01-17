@@ -43,7 +43,7 @@ class Widget extends LinearLayout{
 
     Context context;
     LinearLayout L2;
-    int code;
+    int id;
     ArrayList<Table> myTables;
     ArrayList<Short> myActions;
     ArrayList<Widget> myChildren;
