@@ -12,9 +12,11 @@ import android.transition.Fade;
 import android.transition.Slide;
 import android.transition.TransitionInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 /**
  * Created by XfStef on 11/27/2015.
@@ -31,10 +33,14 @@ public class WidgetActivity extends AppCompatActivity {
 
     Toolbar toolbar;
     AppLogic appLogic;
+    WidgetViews widgetViews;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        widgetViews = WidgetViews.getInstance();
+
         setContentView(R.layout.widget_activity);
         if (Build.VERSION.SDK_INT > 21){
             setupWindowAnimations();
@@ -48,7 +54,6 @@ public class WidgetActivity extends AppCompatActivity {
         appLogic = AppLogic.getInstance();
 
         RecyclerView recList = (RecyclerView) findViewById(R.id.cardList);
-        recList.setHasFixedSize(true);
         LinearLayoutManager llm = new LinearLayoutManager(this);
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         recList.setLayoutManager(llm);
@@ -68,5 +73,42 @@ public class WidgetActivity extends AppCompatActivity {
         fade.setDuration(1000);
         getWindow().setEnterTransition(fade);
     }
+
+}
+
+
+class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.ViewHolder> {
+    private String[] dataSet;
+
+    static class ViewHolder extends RecyclerView.ViewHolder{
+        public TextView mTextView;
+
+        public ViewHolder(TextView v)
+        {
+            super(v);
+            mTextView = v;
+        }
+    }
+
+    public RecycleViewAdapter(String[] dataSet)
+    {
+        this.dataSet = dataSet;
+    }
+
+    @Override
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        return null;
+    }
+
+    @Override
+    public void onBindViewHolder(ViewHolder holder, int position) {
+
+    }
+
+    @Override
+    public int getItemCount() {
+        return dataSet.length;
+    }
+
 
 }
