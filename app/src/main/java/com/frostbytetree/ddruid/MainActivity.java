@@ -20,8 +20,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     AppLogic appLogic;
     SQLiteController sqldaemon;
-    RawData rawData;
-    DataModels dataModels;
+    Data data;
     DataModelInterpreter dataModelInterpreter;
     ConfigFile configFile;
     ConfigFileInterpreter configFileInterpreter;
@@ -50,8 +49,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         lin_test.setOnClickListener(this);
         commInterface = IACInterface.getInstance();
 
-        rawData = RawData.getInstance();
-        dataModels = DataModels.getInstance();
+        data = Data.getInstance();
         configFile = ConfigFile.getInstance();
 
         uiBuilder = UIBuilder.getInstance();
@@ -117,6 +115,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mDrawerToggle.syncState();
     }
 
+    public void switchWidget(Widget new_widget){
+        System.out.println("Login geklickt!");
+        Intent i = new Intent(getApplicationContext(), WidgetActivity.class);
+        i.putExtra("widget", new_widget.code);
+        startActivity(i);
+    }
+
     @Override
     protected void onDestroy(){
         super.onDestroy();
@@ -127,10 +132,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         System.out.println("OnClick Funktion called!");
         switch(view.getId()){
             case R.id.bLogin:
-                System.out.println("Login geklickt!");
-                Intent i = new Intent(getApplicationContext(), WidgetActivity.class);
-
-                startActivity(i);
+                Widget new_widget = new Widget(this);   // TODO: this is temporary, move to UIBuilder!
+                new_widget.code = 0;
+                new_widget.widgetType = 0;
+                widgetViews.the_widgets.add(new_widget);
+                switchWidget(new_widget);
 
                 appLogic.initLoginProc();
                 break;

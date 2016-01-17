@@ -18,7 +18,7 @@ import java.util.ArrayList;
 public class CommunicationDaemon extends Thread{
     private static CommunicationDaemon ourInstance = new CommunicationDaemon();
     long this_time, last_time;
-    RawData rawData = RawData.getInstance();
+    Data data = Data.getInstance();
     private static short my_id = 2;
     IACInterface commInterface = IACInterface.getInstance();
     ConfigFile cfgFile = ConfigFile.getInstance();

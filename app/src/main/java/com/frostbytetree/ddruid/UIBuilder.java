@@ -21,7 +21,7 @@ import java.util.zip.Inflater;
 public class UIBuilder {
     private static UIBuilder ourInstance = new UIBuilder();
 
-    DataModels data_models;
+    Data data;
     Context context;
     WidgetViews widgetViews;
 
@@ -30,14 +30,14 @@ public class UIBuilder {
     }
 
     private UIBuilder() {
-        this.data_models = DataModels.getInstance();
+        this.data = data.getInstance();
     }
 
     public void setContext(Context context){
         this.context = context;
     }
 
-    public void inflate_model(Model current_model){
+    public void inflate_model(Table current_model){
 
         //TODO build View from data model
         Widget test = new Widget(context);

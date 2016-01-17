@@ -21,7 +21,7 @@ import android.support.annotation.Nullable;
 
 public class DataTransferController extends Service{
     private static DataTransferController ourInstance = new DataTransferController();
-    RawData rawData;
+    Data data;
     ConfigFile configFile;
     CommunicationDaemon commDaemon;
     Notification someNotification;
@@ -31,8 +31,8 @@ public class DataTransferController extends Service{
     }
 
     public DataTransferController() {
-        rawData = RawData.getInstance();
-        rawData.setTest("Moj Kurac");
+        data = Data.getInstance();
+        data.setTest("Moj Kurac");
 
         configFile = ConfigFile.getInstance();
 
@@ -44,7 +44,7 @@ public class DataTransferController extends Service{
         startForeground(0, someNotification);
         commDaemon = CommunicationDaemon.getInstance();
         commDaemon.start();
-        System.out.println("The service has started ! Persistancy is: " + rawData.getPersistancy());
+        System.out.println("The service has started ! Persistancy is: " + data.getPersistancy());
     }
 
     @Nullable

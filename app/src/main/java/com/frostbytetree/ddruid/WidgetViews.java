@@ -24,7 +24,7 @@ public class WidgetViews {
     private static WidgetViews ourInstance = new WidgetViews();
 
     Context context;
-    DataModels data_models;
+    Data data_model;
     ArrayList<Widget> the_widgets;
 
     public static WidgetViews getInstance() {
@@ -32,7 +32,8 @@ public class WidgetViews {
     }
 
     public WidgetViews() {
-        this.data_models = DataModels.getInstance();
+        this.data_model = Data.getInstance();
+        the_widgets = new ArrayList<Widget>();
 
     }
 
@@ -42,6 +43,18 @@ class Widget extends LinearLayout{
 
     Context context;
     LinearLayout L2;
+    int code;
+    ArrayList<Table> myTables;
+    ArrayList<Short> myActions;
+    ArrayList<Widget> myChildren;
+    Widget myParent;
+    String titleBar;
+    short widgetType;   // This is the type of widget that needs to be set according to what it does
+                        // 0 - List;
+                        // 1 - Form;
+                        // 2 - Detail;
+                        // 3 - Code Scanner;
+                        // ...
 
     public Widget(Context context) {
         super(context);

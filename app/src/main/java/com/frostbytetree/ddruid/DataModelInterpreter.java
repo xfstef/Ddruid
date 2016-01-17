@@ -12,7 +12,7 @@ package com.frostbytetree.ddruid;
 
 public class DataModelInterpreter {
 
-    DataModels dataModels;
+    Data data;
 
     private static DataModelInterpreter ourInstance = new DataModelInterpreter();
 
@@ -22,7 +22,7 @@ public class DataModelInterpreter {
 
     private DataModelInterpreter() {
 
-        dataModels = DataModels.getInstance();
+        data = Data.getInstance();
 
     }
 }

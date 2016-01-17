@@ -2,6 +2,7 @@ package com.frostbytetree.ddruid;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -34,12 +35,20 @@ public class WidgetActivity extends AppCompatActivity {
     Toolbar toolbar;
     AppLogic appLogic;
     WidgetViews widgetViews;
+    Widget my_widget;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        my_widget = new Widget(this);
         widgetViews = WidgetViews.getInstance();
+        Intent intent = getIntent();
+        for(int x = 0; x < widgetViews.the_widgets.size(); x++)
+            if(widgetViews.the_widgets.get(x).code == intent.getIntExtra("widget", 0)) {
+                my_widget = widgetViews.the_widgets.get(x);
+                break;
+            }
+
 
         setContentView(R.layout.widget_activity);
         if (Build.VERSION.SDK_INT > 21){

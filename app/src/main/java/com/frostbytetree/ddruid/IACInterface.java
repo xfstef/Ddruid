@@ -51,7 +51,7 @@ class Operation {
                     // x0x - SQLite DB; x1x - Server;
                     // xx0 - Config File; xx1 - DB Table; xx2 - ... TODO: finish definitions.
     String REST_command;    // If a REST command is needed, else this string is NULL.
-    Model data_model;   // If a Data is needed then a data model will be given.
+    Table the_table;   // If a table is needed then a data model will be given.
 
     short successPostExecution; // This is used to define what happens in the caller thread after
                                 // the operation finshes successfully. The codes defined here should
