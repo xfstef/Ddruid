@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         dataModelInterpreter = DataModelInterpreter.getInstance();
 
         configFileInterpreter = ConfigFileInterpreter.getInstance();
+        configFileInterpreter.context = this;
 
         appLogic = AppLogic.getInstance();
         //if(appLogic.isInterrupted())  TODO: Fix the new app start App logic bug.
