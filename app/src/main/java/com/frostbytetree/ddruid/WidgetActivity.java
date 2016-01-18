@@ -56,6 +56,11 @@ public class WidgetActivity extends AppCompatActivity {
     AppLogic appLogic;
     WidgetViews widgetViews;
     Widget my_widget;
+    Table my_table;
+
+    RecycleViewWidgetAdapter widgetAdapter;
+    RecycleViewDataSetAdapter tableAdapter;
+
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -74,8 +79,10 @@ public class WidgetActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT > 21) {
             setupWindowAnimations();
         }
-        if (my_widget != null) {
-            initScreenItems();
+        initScreenItems();
+
+
+        if (my_widget != null || my_table != null) {
             checkWidgetType();
         }
 
@@ -103,7 +110,7 @@ public class WidgetActivity extends AppCompatActivity {
 
                 break;
             case 4:
-                initDataSetList();
+                initTableList();
                 break;
             default:
 
@@ -118,8 +125,8 @@ public class WidgetActivity extends AppCompatActivity {
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         recList.setLayoutManager(llm);
         //String[] list = {"First element", "Second element"};
-        RecycleViewWidgetAdapter adapter = new RecycleViewWidgetAdapter(my_widget.myChildren);
-        recList.setAdapter(adapter);
+        widgetAdapter = new RecycleViewWidgetAdapter(my_widget.myChildren);
+        recList.setAdapter(widgetAdapter);
         recList.addOnItemTouchListener(new RecyclerItemClickListener(this, new RecyclerItemClickListener.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
@@ -134,20 +141,19 @@ public class WidgetActivity extends AppCompatActivity {
 
     }
 
-    private void initDataSetList() {
+    private void initTableList() {
         RecyclerView recList = new RecyclerView(this);
         widgetScreen.addView(recList);
 
         LinearLayoutManager llm = new LinearLayoutManager(this);
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         recList.setLayoutManager(llm);
-        //String[] list = {"First element", "Second element"};
-        /*RecycleViewDataSetAdapter adapter = new RecycleViewDataSetAdapter(my_widget.myChildren);
-        recList.setAdapter(adapter);
+        tableAdapter = new RecycleViewDataSetAdapter(my_table.dataSets);
+        recList.setAdapter(tableAdapter);
         recList.addOnItemTouchListener(new RecyclerItemClickListener(this, new RecyclerItemClickListener.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                Widget selected_widget = my_widget.myChildren.get(position);
+                DataSet selectedDataSet = my_table.dataSets.get(position);
 
                 // Intent iResult new Intent();
                 // iResult.putExtra()
@@ -155,9 +161,17 @@ public class WidgetActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext() ,"Selected DataSet element: " + my_widget.myChildren.get(position).titleBar, Toast.LENGTH_LONG).show();
             }
         }));
-        */
+
     }
 
+    public void addRecycleViewItemList()
+    {
+        if(widgetAdapter != null)
+            widgetAdapter.notifyItemInserted(my_widget.myChildren.size()-1);
+
+        if(widgetAdapter != null)
+            widgetAdapter.notifyItemInserted(my_widget.myChildren.size()-1);
+    }
 
     Widget getCurrentWidget() {
         Widget found_widget;
@@ -298,7 +312,7 @@ class RecycleViewWidgetAdapter extends RecyclerView.Adapter<RecycleViewWidgetAda
 
 class RecycleViewDataSetAdapter extends RecyclerView.Adapter<RecycleViewDataSetAdapter.ViewHolder>
 {
-    private ArrayList<DataSet> dataset;
+    private ArrayList<DataSet> dataSets;
 
     static class ViewHolder extends RecyclerView.ViewHolder{
         public TextView mTextView;
@@ -312,7 +326,7 @@ class RecycleViewDataSetAdapter extends RecyclerView.Adapter<RecycleViewDataSetA
 
     public RecycleViewDataSetAdapter(ArrayList<DataSet> dataSet)
     {
-        this.dataset = dataSet;
+        this.dataSets = dataSet;
     }
 
     @Override
@@ -326,12 +340,12 @@ class RecycleViewDataSetAdapter extends RecyclerView.Adapter<RecycleViewDataSetA
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.mTextView.setText(dataset.get(position).toString());
+        holder.mTextView.setText(dataSets.get(position).toString());
     }
 
     @Override
     public int getItemCount() {
-        return dataset.size();
+        return dataSets.size();
     }
 
 

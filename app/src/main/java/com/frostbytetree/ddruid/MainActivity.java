@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_main);
+
         if (Build.VERSION.SDK_INT > 21){
             setupWindowAnimations();
         }
@@ -90,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void initViewItems()
     {
+        setContentView(R.layout.activity_main);
         username = (EditText)findViewById(R.id.etUsername);
         password = (EditText)findViewById(R.id.etPassword);
         uri = (EditText)findViewById(R.id.etUri);
@@ -125,17 +126,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         System.out.println("Login geklickt!");
         Intent i = new Intent(getApplicationContext(), WidgetActivity.class);
         i.putExtra("widget", new_widget.id);
-        startActivity(i);
+        startActivityForResult(i, 0);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Check which request we're responding to
 
-        if(resultCode == Activity.RESULT_OK)
-        {
+        initViewItems();
 
-        }
 
         /*
         if (requestCode == PICK_CONTACT_REQUEST) {
@@ -151,6 +150,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
+    protected void onResume(){
+        super.onResume();
+
+    }
+
+    @Override
     protected void onDestroy(){
         super.onDestroy();
     }
@@ -160,7 +165,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         System.out.println("OnClick Funktion called!");
         switch(view.getId()){
             case R.id.bLogin:
-
+                setContentView(R.layout.loading);
                 //Widget new_widget = buildTempWidget();
                 //widgetViews.the_widgets.add(new_widget);
                 //switchWidget(new_widget);
@@ -201,5 +206,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         return new_widget;
     }
+
+
+
 
 }
