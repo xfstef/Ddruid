@@ -45,9 +45,14 @@ class Widget extends LinearLayout{
     LinearLayout L2;
     int id;
     ArrayList<Table> myTables;
+    ArrayList<String> myTableNames;
+
     ArrayList<Short> myActions;
+    ArrayList<String> myActionNames;
+
     ArrayList<Widget> myChildren;
     Widget myParent;
+    String myParentName;
     String titleBar;
     short widgetType;   // This is the type of widget that needs to be set according to what it does
                         // 0 - Widget-List;

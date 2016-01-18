@@ -64,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         configFileInterpreter = ConfigFileInterpreter.getInstance();
         configFileInterpreter.context = this;
+        configFileInterpreter.my_main = this;
 
         appLogic = AppLogic.getInstance();
         if(!appLogic.isAlive())
@@ -160,9 +161,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch(view.getId()){
             case R.id.bLogin:
 
-                Widget new_widget = buildTempWidget();
-                widgetViews.the_widgets.add(new_widget);
-                switchWidget(new_widget);
+                //Widget new_widget = buildTempWidget();
+                //widgetViews.the_widgets.add(new_widget);
+                //switchWidget(new_widget);
 
                 appLogic.initLoginProc();
                 break;

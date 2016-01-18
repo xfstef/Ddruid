@@ -6,6 +6,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 /**
  * Created by XfStef on 1/16/2016.
  */
@@ -19,6 +22,7 @@ public class ConfigFileInterpreter {
     JSONArray widgets = new JSONArray();
     JSONObject temp_obj = new JSONObject();
     Context context;
+    MainActivity my_main;
 
     private static ConfigFileInterpreter ourInstance = new ConfigFileInterpreter();
 
@@ -37,44 +41,78 @@ public class ConfigFileInterpreter {
     public void buildWidgets(){
 
         synchronized (configFile.cfg_file_lock){
-            short type = 0;
-            String name = null;
-            String parent = null;
             widgetViews = WidgetViews.getInstance();
+
             try {
                 widgets = configFile.json_form.getJSONArray("widgets");
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            System.out.println("The object: " + widgets.toString());
+
             for(int x = 0; x < widgets.length(); x++) {
+
+                Widget new_widget = new Widget(context);
+                new_widget.id = x;
+                new_widget.myTableNames = new ArrayList<String>();
+                new_widget.myActionNames = new ArrayList<String>();
+                new_widget.myChildren = new ArrayList<Widget>();
+
                 try {
                     temp_obj = widgets.getJSONObject(x);
                     switch (temp_obj.getString("type")){
                         case "list":
-                            type = 4;
+                            new_widget.widgetType = 4;
                             break;
                         case "form":
-                            type = 1;
+                            new_widget.widgetType = 1;
                             break;
                         // TODO: Implement the rest widget types.
                     }
-                    name = temp_obj.getString("name");
+                    new_widget.titleBar = temp_obj.getString("name");
                     if(temp_obj.length() > 3)
-                        parent = temp_obj.getString("parent");
+                        new_widget.myParentName = temp_obj.getString("parent");
+                    else
+                        new_widget.myParentName = "Main Menu";
+                    JSONArray action_list = temp_obj.getJSONArray("action");
+                    for(int y = 0; y < action_list.length(); y++){
+                        JSONObject temp_action_obj = action_list.getJSONObject(y);
+                        Iterator<String> the_keys = temp_action_obj.keys();
+                        String temp_key = the_keys.next();
+                        new_widget.myTableNames.add(temp_key);
+                        new_widget.myActionNames.add(temp_action_obj.getString(temp_key));
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                     break;
                 }
 
-                Widget new_widget = new Widget(context);
-                new_widget.id = x;
-                new_widget.widgetType = type;
-                new_widget.titleBar = name;
-
-                new_widget.myTables = null;
-                new_widget.myActions = null;
+                widgetViews.the_widgets.add(new_widget);
             }
         }
+
+        buildMenuAndChildren();
     }
+
+    private void buildMenuAndChildren() {
+        Widget menu_widget = new Widget(context);
+        menu_widget.id = widgetViews.the_widgets.size();
+        menu_widget.widgetType = 0;
+        menu_widget.titleBar = "Main Menu";
+        menu_widget.myChildren = new ArrayList<Widget>();
+
+        widgetViews.the_widgets.add(menu_widget);
+
+        for(int x = 0; x < widgetViews.the_widgets.size(); x++){
+            Widget temp1 = widgetViews.the_widgets.get(x);
+            for(int y = 0; y < widgetViews.the_widgets.size()-1; y++){
+                Widget temp2 = widgetViews.the_widgets.get(y);
+                if(temp1.titleBar.matches(temp2.myParentName))
+                    temp1.myChildren.add(temp2);
+            }
+        }
+
+        my_main.switchWidget(widgetViews.the_widgets.get(widgetViews.the_widgets.size()-1));
+    }
+
+
 }
