@@ -1,5 +1,7 @@
 package com.frostbytetree.ddruid;
 
+import android.os.Looper;
+
 /**
  * Created by XfStef on 11/27/2015.
  */
@@ -37,7 +39,9 @@ public class AppLogic extends Thread{
         System.out.println("Thread Started !");
         data.setPersistancy(true);
 
+
         do {
+            System.out.println("Test running!");
             try {
                 synchronized(commInterface.message_buffer_lock) {
                     for (int x = 0; x < commInterface.message_buffer.size(); x++)

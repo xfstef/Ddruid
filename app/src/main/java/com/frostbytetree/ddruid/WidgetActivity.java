@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
@@ -28,6 +29,10 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.appindexing.*;
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.common.api.GoogleApiClient;
+
 import java.util.ArrayList;
 
 /**
@@ -36,10 +41,10 @@ import java.util.ArrayList;
 
 // This Activity will be created when a widget or sub-widget is opened.
 
-    //TODO Load the Widget Inflators ???
-    //TODO Load the Raw Data
-    //TODO Check for free memory
-    //TODO If no free memory then Talk to SQLite Controller
+//TODO Load the Widget Inflators ???
+//TODO Load the Raw Data
+//TODO Check for free memory
+//TODO If no free memory then Talk to SQLite Controller
 
 public class WidgetActivity extends AppCompatActivity {
 
@@ -51,6 +56,11 @@ public class WidgetActivity extends AppCompatActivity {
     AppLogic appLogic;
     WidgetViews widgetViews;
     Widget my_widget;
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -61,10 +71,10 @@ public class WidgetActivity extends AppCompatActivity {
         my_widget = getCurrentWidget();
 
         setContentView(R.layout.widget_activity);
-        if (Build.VERSION.SDK_INT > 21){
+        if (Build.VERSION.SDK_INT > 21) {
             setupWindowAnimations();
         }
-        if(my_widget != null) {
+        if (my_widget != null) {
             initScreenItems();
             checkWidgetType();
         }
@@ -74,17 +84,18 @@ public class WidgetActivity extends AppCompatActivity {
 
         appLogic = AppLogic.getInstance();
 
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
-    void checkWidgetType()
-    {
+    void checkWidgetType() {
         // 0 - List;
         // 1 - Form;
         // 2 - Detail;
         // 3 - Code Scanner;
 
-        switch(my_widget.widgetType)
-        {
+        switch (my_widget.widgetType) {
             case 0:
                 initWidgetList();
                 break;
@@ -92,15 +103,14 @@ public class WidgetActivity extends AppCompatActivity {
 
                 break;
             case 4:
-                //initDataSetList();
+                initDataSetList();
                 break;
             default:
 
         }
     }
 
-    private void initWidgetList()
-    {
+    private void initWidgetList() {
         RecyclerView recList = new RecyclerView(this);
         widgetScreen.addView(recList);
 
@@ -115,17 +125,16 @@ public class WidgetActivity extends AppCompatActivity {
             public void onItemClick(View view, int position) {
                 Widget selected_widget = my_widget.myChildren.get(position);
 
-                // Intent iResult new Intent();
-                // iResult.putExtra()
-                // setResult(Activity.RESULT_OK, iResult);
-                Toast.makeText(getApplicationContext() ,"Selected element: " + my_widget.myChildren.get(position).titleBar, Toast.LENGTH_LONG).show();
+                Intent iResult = new Intent();
+                setResult(Activity.RESULT_OK, iResult);
+                finish();
+                //Toast.makeText(getApplicationContext(), "Selected Widget element: " + my_widget.myChildren.get(position).titleBar, Toast.LENGTH_LONG).show();
             }
         }));
 
     }
-    /*
-    private void initWidgetList()
-    {
+
+    private void initDataSetList() {
         RecyclerView recList = new RecyclerView(this);
         widgetScreen.addView(recList);
 
@@ -133,7 +142,7 @@ public class WidgetActivity extends AppCompatActivity {
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         recList.setLayoutManager(llm);
         //String[] list = {"First element", "Second element"};
-        RecycleViewWidgetAdapter adapter = new RecycleViewWidgetAdapter(my_widget.myChildren);
+        /*RecycleViewDataSetAdapter adapter = new RecycleViewDataSetAdapter(my_widget.myChildren);
         recList.setAdapter(adapter);
         recList.addOnItemTouchListener(new RecyclerItemClickListener(this, new RecyclerItemClickListener.OnItemClickListener() {
             @Override
@@ -143,19 +152,17 @@ public class WidgetActivity extends AppCompatActivity {
                 // Intent iResult new Intent();
                 // iResult.putExtra()
                 // setResult(Activity.RESULT_OK, iResult);
-                Toast.makeText(getApplicationContext() ,"Selected element: " + my_widget.myChildren.get(position).titleBar, Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext() ,"Selected DataSet element: " + my_widget.myChildren.get(position).titleBar, Toast.LENGTH_LONG).show();
             }
         }));
+        */
+    }
 
-    }*/
 
-
-
-    Widget getCurrentWidget()
-    {
+    Widget getCurrentWidget() {
         Widget found_widget;
         Intent intent = getIntent();
-        for(int x = 0; x < widgetViews.the_widgets.size(); x++) {
+        for (int x = 0; x < widgetViews.the_widgets.size(); x++) {
             if (widgetViews.the_widgets.get(x).id == intent.getIntExtra("widget", 0)) {
                 found_widget = widgetViews.the_widgets.get(x);
                 System.out.println("Widget title: " + found_widget.titleBar);
@@ -165,15 +172,14 @@ public class WidgetActivity extends AppCompatActivity {
         return null;
     }
 
-    void initScreenItems()
-    {
-        widgetScreen = (LinearLayout)findViewById(R.id.mainContent);
-        toolbar = (Toolbar)findViewById(R.id.widget_toolbar);
+    void initScreenItems() {
+        widgetScreen = (LinearLayout) findViewById(R.id.mainContent);
+        toolbar = (Toolbar) findViewById(R.id.widget_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(my_widget.titleBar);
 
         Drawer = (DrawerLayout) findViewById(R.id.DrawerLayout);        // Drawer object Assigned to the view
-        mDrawerToggle = new ActionBarDrawerToggle(this,Drawer,toolbar,R.string.openDrawer,R.string.closeDrawer){
+        mDrawerToggle = new ActionBarDrawerToggle(this, Drawer, toolbar, R.string.openDrawer, R.string.closeDrawer) {
 
             @Override
             public void onDrawerOpened(View drawerView) {
@@ -189,32 +195,69 @@ public class WidgetActivity extends AppCompatActivity {
             }
 
 
-
         }; // Drawer Toggle Object Made
         Drawer.setDrawerListener(mDrawerToggle); // Drawer Listener set to the Drawer toggle
         mDrawerToggle.syncState();
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
         appLogic.setCurrentWidget(this);
     }
 
     @TargetApi(21)
-    private void setupWindowAnimations()
-    {
+    private void setupWindowAnimations() {
         Fade fade = new Fade();
         fade.setDuration(1000);
         getWindow().setEnterTransition(fade);
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.connect();
+        com.google.android.gms.appindexing.Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "Widget Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app deep link URI is correct.
+                Uri.parse("android-app://com.frostbytetree.ddruid/http/host/path")
+        );
+        AppIndex.AppIndexApi.start(client, viewAction);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "Widget Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app deep link URI is correct.
+                Uri.parse("android-app://com.frostbytetree.ddruid/http/host/path")
+        );
+        AppIndex.AppIndexApi.end(client, viewAction);
+        client.disconnect();
+    }
 }
 
 
 class RecycleViewWidgetAdapter extends RecyclerView.Adapter<RecycleViewWidgetAdapter.ViewHolder>
 {
-    private ArrayList<Widget> dataSet;
+    private ArrayList<Widget> child_widgets;
 
     static class ViewHolder extends RecyclerView.ViewHolder{
         public TextView mTextView;
@@ -228,7 +271,7 @@ class RecycleViewWidgetAdapter extends RecyclerView.Adapter<RecycleViewWidgetAda
 
     public RecycleViewWidgetAdapter(ArrayList<Widget> dataSet)
     {
-        this.dataSet = dataSet;
+        this.child_widgets = dataSet;
     }
 
     @Override
@@ -242,16 +285,60 @@ class RecycleViewWidgetAdapter extends RecyclerView.Adapter<RecycleViewWidgetAda
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.mTextView.setText(dataSet.get(position).titleBar);
+        holder.mTextView.setText(child_widgets.get(position).titleBar);
     }
 
     @Override
     public int getItemCount() {
-        return dataSet.size();
+        return child_widgets.size();
     }
 
 
 }
+
+class RecycleViewDataSetAdapter extends RecyclerView.Adapter<RecycleViewDataSetAdapter.ViewHolder>
+{
+    private ArrayList<DataSet> dataset;
+
+    static class ViewHolder extends RecyclerView.ViewHolder{
+        public TextView mTextView;
+
+        public ViewHolder(View v)
+        {
+            super(v);
+            mTextView = (TextView)v.findViewById(R.id.txtListAttr);
+        }
+    }
+
+    public RecycleViewDataSetAdapter(ArrayList<DataSet> dataSet)
+    {
+        this.dataset = dataSet;
+    }
+
+    @Override
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
+    {
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
+
+        ViewHolder vh = new ViewHolder(v);
+        return vh;
+    }
+
+    @Override
+    public void onBindViewHolder(ViewHolder holder, int position) {
+        holder.mTextView.setText(dataset.get(position).toString());
+    }
+
+    @Override
+    public int getItemCount() {
+        return dataset.size();
+    }
+
+
+}
+
+
+
 
 class RecyclerItemClickListener implements RecyclerView.OnItemTouchListener {
     private OnItemClickListener mListener;

@@ -1,6 +1,7 @@
 package com.frostbytetree.ddruid;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Build;
@@ -65,8 +66,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         configFileInterpreter.context = this;
 
         appLogic = AppLogic.getInstance();
-        //if(appLogic.isInterrupted())  TODO: Fix the new app start App logic bug.
+        if(!appLogic.isAlive())
             appLogic.start();
+
         //sqldaemon = SQLiteController.getInstance();
         //sqldaemon.start();
 
@@ -126,6 +128,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Check which request we're responding to
+
+        if(resultCode == Activity.RESULT_OK)
+        {
+
+        }
+
+        /*
+        if (requestCode == PICK_CONTACT_REQUEST) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+                // The user picked a contact.
+                // The Intent's data Uri identifies which contact was selected.
+
+                // Do something with the contact here (bigger example below)
+            }
+        }
+        */
+    }
+
+    @Override
     protected void onDestroy(){
         super.onDestroy();
     }
@@ -147,6 +171,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // uiBuilder.inflate_model(null);
         // System.out.println("The new view is: " + view);
     }
+
+
 
 
     Widget buildTempWidget()
