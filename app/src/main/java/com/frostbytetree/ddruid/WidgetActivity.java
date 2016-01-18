@@ -14,13 +14,17 @@ import android.support.v7.widget.Toolbar;
 import android.transition.Fade;
 import android.transition.Slide;
 import android.transition.TransitionInflater;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import java.util.ArrayList;
 
 /**
  * Created by XfStef on 11/27/2015.
@@ -35,6 +39,7 @@ import android.widget.TextView;
 
 public class WidgetActivity extends AppCompatActivity {
 
+    LinearLayout widgetScreen;
     Toolbar toolbar;
     DrawerLayout Drawer;
     ActionBarDrawerToggle mDrawerToggle;
@@ -51,8 +56,6 @@ public class WidgetActivity extends AppCompatActivity {
 
         my_widget = getCurrentWidget();
 
-
-
         setContentView(R.layout.widget_activity);
         if (Build.VERSION.SDK_INT > 21){
             setupWindowAnimations();
@@ -67,12 +70,6 @@ public class WidgetActivity extends AppCompatActivity {
 
         appLogic = AppLogic.getInstance();
 
-
-        RecyclerView recList = (RecyclerView) findViewById(R.id.cardList);
-        LinearLayoutManager llm = new LinearLayoutManager(this);
-        llm.setOrientation(LinearLayoutManager.VERTICAL);
-        recList.setLayoutManager(llm);
-
     }
 
     void checkWidgetType()
@@ -85,7 +82,7 @@ public class WidgetActivity extends AppCompatActivity {
         switch(my_widget.widgetType)
         {
             case 0:
-
+                initList();
                 break;
             case 1:
 
@@ -94,6 +91,21 @@ public class WidgetActivity extends AppCompatActivity {
 
         }
     }
+
+    void initList()
+    {
+        RecyclerView recList = new RecyclerView(this);//RecyclerView) findViewById(R.id.cardList);
+        widgetScreen.addView(recList);
+
+        LinearLayoutManager llm = new LinearLayoutManager(this);
+        llm.setOrientation(LinearLayoutManager.VERTICAL);
+        recList.setLayoutManager(llm);
+        //String[] list = {"First element", "Second element"};
+        RecycleViewAdapter adapter = new RecycleViewAdapter(my_widget.myChildren);
+        recList.setAdapter(adapter);
+    }
+
+
 
     Widget getCurrentWidget()
     {
@@ -111,6 +123,7 @@ public class WidgetActivity extends AppCompatActivity {
 
     void initScreenItems()
     {
+        widgetScreen = (LinearLayout)findViewById(R.id.mainContent);
         toolbar = (Toolbar)findViewById(R.id.widget_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(my_widget.titleBar);
@@ -155,37 +168,42 @@ public class WidgetActivity extends AppCompatActivity {
 }
 
 
-class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.ViewHolder> {
-    private String[] dataSet;
+class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.ViewHolder>
+{
+    private ArrayList<Widget> dataSet;
 
     static class ViewHolder extends RecyclerView.ViewHolder{
         public TextView mTextView;
 
-        public ViewHolder(TextView v)
+        public ViewHolder(View v)
         {
             super(v);
-            mTextView = v;
+            mTextView = (TextView)v.findViewById(R.id.txtListAttr);
         }
     }
 
-    public RecycleViewAdapter(String[] dataSet)
+    public RecycleViewAdapter(ArrayList<Widget> dataSet)
     {
         this.dataSet = dataSet;
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return null;
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
+    {
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
+
+        ViewHolder vh = new ViewHolder(v);
+        return vh;
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-
+        holder.mTextView.setText(dataSet.get(position).titleBar);
     }
 
     @Override
     public int getItemCount() {
-        return dataSet.length;
+        return dataSet.size();
     }
 
 
