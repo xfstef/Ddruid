@@ -50,10 +50,11 @@ class Widget extends LinearLayout{
     Widget myParent;
     String titleBar;
     short widgetType;   // This is the type of widget that needs to be set according to what it does
-                        // 0 - List;
+                        // 0 - Widget-List;
                         // 1 - Form;
                         // 2 - Detail;
                         // 3 - Code Scanner;
+                        // 4 - List with datasets
                         // ...
 
     public Widget(Context context) {

@@ -2,6 +2,7 @@ package com.frostbytetree.ddruid;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,8 +15,10 @@ import android.support.v7.widget.Toolbar;
 import android.transition.Fade;
 import android.transition.Slide;
 import android.transition.TransitionInflater;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -23,6 +26,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -82,28 +86,68 @@ public class WidgetActivity extends AppCompatActivity {
         switch(my_widget.widgetType)
         {
             case 0:
-                initList();
+                initWidgetList();
                 break;
             case 1:
 
+                break;
+            case 4:
+                //initDataSetList();
                 break;
             default:
 
         }
     }
 
-    void initList()
+    private void initWidgetList()
     {
-        RecyclerView recList = new RecyclerView(this);//RecyclerView) findViewById(R.id.cardList);
+        RecyclerView recList = new RecyclerView(this);
         widgetScreen.addView(recList);
 
         LinearLayoutManager llm = new LinearLayoutManager(this);
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         recList.setLayoutManager(llm);
         //String[] list = {"First element", "Second element"};
-        RecycleViewAdapter adapter = new RecycleViewAdapter(my_widget.myChildren);
+        RecycleViewWidgetAdapter adapter = new RecycleViewWidgetAdapter(my_widget.myChildren);
         recList.setAdapter(adapter);
+        recList.addOnItemTouchListener(new RecyclerItemClickListener(this, new RecyclerItemClickListener.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                Widget selected_widget = my_widget.myChildren.get(position);
+
+                // Intent iResult new Intent();
+                // iResult.putExtra()
+                // setResult(Activity.RESULT_OK, iResult);
+                Toast.makeText(getApplicationContext() ,"Selected element: " + my_widget.myChildren.get(position).titleBar, Toast.LENGTH_LONG).show();
+            }
+        }));
+
     }
+    /*
+    private void initWidgetList()
+    {
+        RecyclerView recList = new RecyclerView(this);
+        widgetScreen.addView(recList);
+
+        LinearLayoutManager llm = new LinearLayoutManager(this);
+        llm.setOrientation(LinearLayoutManager.VERTICAL);
+        recList.setLayoutManager(llm);
+        //String[] list = {"First element", "Second element"};
+        RecycleViewWidgetAdapter adapter = new RecycleViewWidgetAdapter(my_widget.myChildren);
+        recList.setAdapter(adapter);
+        recList.addOnItemTouchListener(new RecyclerItemClickListener(this, new RecyclerItemClickListener.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                Widget selected_widget = my_widget.myChildren.get(position);
+
+                // Intent iResult new Intent();
+                // iResult.putExtra()
+                // setResult(Activity.RESULT_OK, iResult);
+                Toast.makeText(getApplicationContext() ,"Selected element: " + my_widget.myChildren.get(position).titleBar, Toast.LENGTH_LONG).show();
+            }
+        }));
+
+    }*/
 
 
 
@@ -168,7 +212,7 @@ public class WidgetActivity extends AppCompatActivity {
 }
 
 
-class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.ViewHolder>
+class RecycleViewWidgetAdapter extends RecyclerView.Adapter<RecycleViewWidgetAdapter.ViewHolder>
 {
     private ArrayList<Widget> dataSet;
 
@@ -182,7 +226,7 @@ class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.ViewHol
         }
     }
 
-    public RecycleViewAdapter(ArrayList<Widget> dataSet)
+    public RecycleViewWidgetAdapter(ArrayList<Widget> dataSet)
     {
         this.dataSet = dataSet;
     }
@@ -207,4 +251,39 @@ class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.ViewHol
     }
 
 
+}
+
+class RecyclerItemClickListener implements RecyclerView.OnItemTouchListener {
+    private OnItemClickListener mListener;
+
+    public interface OnItemClickListener {
+        public void onItemClick(View view, int position);
+    }
+
+    GestureDetector mGestureDetector;
+
+    public RecyclerItemClickListener(Context context, OnItemClickListener listener) {
+        mListener = listener;
+        mGestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
+            @Override public boolean onSingleTapUp(MotionEvent e) {
+                return true;
+            }
+        });
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(RecyclerView view, MotionEvent e) {
+        View childView = view.findChildViewUnder(e.getX(), e.getY());
+        if (childView != null && mListener != null && mGestureDetector.onTouchEvent(e)) {
+            mListener.onItemClick(childView, view.getChildPosition(childView));
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void onTouchEvent(RecyclerView view, MotionEvent motionEvent) { }
+
+    @Override
+    public void onRequestDisallowInterceptTouchEvent (boolean disallowIntercept){}
 }
