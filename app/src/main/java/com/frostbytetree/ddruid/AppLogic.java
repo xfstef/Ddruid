@@ -63,8 +63,8 @@ public class AppLogic extends Thread{
             case 3:
                 switch(finished_operation.requested_operation.successPostExecution){
                     case 1: // Got Config File successfully. Trying to interpret it now.
-                        configFileInterpreter.buildDataModels();
                         configFileInterpreter.buildWidgets();
+                        configFileInterpreter.buildDataModels();
                         thread_throttling = 5000;
                         break;
                     // TODO: Implement the rest of possible post successful operation calls

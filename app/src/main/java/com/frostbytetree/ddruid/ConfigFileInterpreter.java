@@ -20,7 +20,11 @@ public class ConfigFileInterpreter {
     ConfigFile configFile;
     WidgetViews widgetViews;
     JSONArray widgets = new JSONArray();
-    JSONObject temp_obj = new JSONObject();
+
+    Data data;
+    JSONArray model_structure = new JSONArray();
+
+
     Context context;
     MainActivity my_main;
 
@@ -35,8 +39,122 @@ public class ConfigFileInterpreter {
     }
 
     public void buildDataModels(){
+        synchronized (configFile.cfg_file_lock){
+            data = Data.getInstance();
+
+            try{
+                model_structure = configFile.json_form.getJSONArray("model_structure");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            for(int x = 0; x < model_structure.length(); x++){
+                Table new_table = new Table();
+
+                try {
+                    JSONObject temp_table = model_structure.getJSONObject(x);
+                    new_table.table_name = temp_table.getString("name");
+                    new_table.cached_only = temp_table.getBoolean("is_locally_cached");
+                    JSONArray attributes = temp_table.getJSONArray("attributes");
+                    new_table.attribute_count = attributes.length();
+                    new_table.attributes = new ArrayList<Attribute>(new_table.attribute_count);
+                    addAttibutes(new_table, attributes);
+                    JSONObject references = new JSONObject();
+                    references = temp_table.getJSONObject("references");
+                    addReferenceAttributes(new_table, references);
+
+                    // TODO: Read and add the actions
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    break;
+                }
+
+                new_table.dataSets = new ArrayList<DataSet>();
+
+                synchronized (data.data_lock){
+                    data.tables.add(new_table);
+                }
+            }
+
+            linkTablesToWidgets();
+        }
+    }
+
+    private void addReferenceAttributes(Table new_table, JSONObject references) {
+        JSONArray reference_names = references.names();
+
+        for(int z = 0; z < references.length(); z++){
+            try {
+                JSONArray temp_ref = new JSONArray();
+                temp_ref = references.getJSONArray(reference_names.getString(z));
+
+                Spinner new_spinner = new Spinner();
+                new_spinner.items = new ArrayList<String>(temp_ref.length());
+                for(int q = 0; q < temp_ref.length(); q++)
+                    new_spinner.items.add(temp_ref.getString(q));
+                for(int w = 0; w < new_table.attributes.size(); w++)
+                    if(new_table.attributes.get(w).attribute_type == 2 &&
+                            reference_names.getString(z).matches(new_table.attributes.get(w).spinner_name))
+                        new_table.attributes.get(w).items = new_spinner;
+            } catch (JSONException e) {
+                e.printStackTrace();
+                break;
+            }
+        }
+    }
+
+    private void linkTablesToWidgets() {
+        synchronized (data.data_lock){
+            for(int x = 0; x < widgetViews.the_widgets.size()-1; x++)   // Only goes to n-1 because the last Widget is the Menu Widget
+            // that doesn't have any tables or actions.
+                for(int y = 0; y < widgetViews.the_widgets.get(x).myTableNames.size(); y++) {
+                    widgetViews.the_widgets.get(x).myTables = new ArrayList<Table>(widgetViews.the_widgets.get(x).myTableNames.size());
+                    for (int z = 0; z < data.tables.size(); z++)
+                        if (widgetViews.the_widgets.get(x).myTableNames.get(y).matches(data.tables.get(z).table_name))
+                            widgetViews.the_widgets.get(x).myTables.add(data.tables.get(z));
+                }
+        }
+    }
+
+    private void addAttibutes(Table new_table, JSONArray attributes) {
+        for(int y = 0; y < attributes.length(); y++){
+            Attribute new_attribute = new Attribute();
+            try {
+                JSONObject temp_attribute = attributes.getJSONObject(y);
+                new_attribute.name = temp_attribute.getString("name");
+                new_attribute.attribute_description = temp_attribute.getString("description");
+                String type = temp_attribute.getString("data_type");
+                switch (type){
+                    case "text":
+                        new_attribute.attribute_type = 0;
+                        break;
+                    case "integer":
+                        new_attribute.attribute_type =  0;
+                        break;
+                    case "date":
+                        new_attribute.attribute_type = 5;
+                        break;
+                    case "string":
+                        new_attribute.attribute_type = 0;
+                        break;
+                    case "timestamp_with_timezone":
+                        new_attribute.attribute_type = 6;
+                        break;
+                }
+                if(temp_attribute.length() > 3){
+                    new_attribute.attribute_type = 2;
+                    new_attribute.items = new Spinner();
+                    new_attribute.spinner_name = temp_attribute.getString("reference");
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            new_table.attributes.add(new_attribute);
+        }
 
     }
+
 
     public void buildWidgets(){
 
@@ -58,6 +176,7 @@ public class ConfigFileInterpreter {
                 new_widget.myChildren = new ArrayList<Widget>();
 
                 try {
+                    JSONObject temp_obj = new JSONObject();
                     temp_obj = widgets.getJSONObject(x);
                     switch (temp_obj.getString("type")){
                         case "list":
@@ -88,9 +207,10 @@ public class ConfigFileInterpreter {
 
                 widgetViews.the_widgets.add(new_widget);
             }
+
+            buildMenuAndChildren();
         }
 
-        buildMenuAndChildren();
     }
 
     private void buildMenuAndChildren() {

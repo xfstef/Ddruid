@@ -14,14 +14,15 @@ public class Data {
     private static Data ourInstance = new Data();
     private String test;
     private boolean persistancy = false;
-    ArrayList<Table> data;
+    ArrayList<Table> tables;
+    Object data_lock = new Object();
 
     public static Data getInstance() {
         return ourInstance;
     }
 
     private Data() {
-        data = new ArrayList<Table>();
+        tables = new ArrayList<Table>();
     }
 
     synchronized public void setTest(String test) {
@@ -43,8 +44,9 @@ public class Data {
 
 class Table{
     String table_name;
+    Boolean cached_only;
     int attribute_count;
-    ArrayList<Attribute> attributes = new ArrayList<Attribute>(attribute_count);
+    ArrayList<Attribute> attributes;
     ArrayList<DataSet> dataSets;
     ArrayList<Action> myActions;
     ArrayList<Widget> usedBy;
@@ -67,6 +69,7 @@ class Attribute{
     // 5 - Date;
     // 6 - Timestamp;
     // ...
+    String spinner_name = null;
     Spinner items = null;   // By default NULL. Only needed if this attribute is a spinner.
 }
 
