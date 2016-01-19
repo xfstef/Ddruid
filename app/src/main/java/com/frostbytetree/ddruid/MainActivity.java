@@ -67,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         configFileInterpreter.my_main = this;
 
         appLogic = AppLogic.getInstance();
+        appLogic.mainActivity = this;
         if(!appLogic.isAlive())
             appLogic.start();
 
@@ -177,37 +178,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // uiBuilder.inflate_model(null);
         // System.out.println("The new view is: " + view);
     }
-
-
-
-
-    Widget buildTempWidget()
-    {
-        Widget new_widget = new Widget(this);   // TODO: this is temporary, move to UIBuilder!
-        new_widget.id = 0;
-        new_widget.widgetType = 0;
-        new_widget.titleBar = "Main Menu";
-        new_widget.myTables = null;
-        new_widget.myActions = null;
-
-        Widget child1 = new Widget(this);
-        child1.widgetType = 1;
-        child1.titleBar = "Enter Ticket";
-        child1.myParent = new_widget;
-
-        Widget child2 = new Widget(this);
-        child2.widgetType = 1;
-        child2.titleBar = "Solve Ticket";
-        child2.myParent = new_widget;
-
-        new_widget.myChildren = new ArrayList<>();
-        new_widget.myChildren.add(child1);
-        new_widget.myChildren.add(child2);
-
-        return new_widget;
-    }
-
-
-
 
 }

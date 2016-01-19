@@ -14,7 +14,10 @@ public class AppLogic extends Thread{
     private static short my_id = 1;
     IACInterface commInterface = IACInterface.getInstance();
     WidgetActivity currentActivity = new WidgetActivity();
+    ConfigFile configFile = ConfigFile.getInstance();
     ConfigFileInterpreter configFileInterpreter = ConfigFileInterpreter.getInstance();
+    MainActivity mainActivity;
+    WidgetViews widgetViews = WidgetViews.getInstance();
     short thread_throttling = 5000; // This option is used to determine how much the Thread sleeps.
                                     // 5000 - Idle mode: the app is minimized with no bkg operation.
                                     // 1000 - Passive mode: app is sending / getting data.
@@ -102,10 +105,13 @@ public class AppLogic extends Thread{
         login_procedure.requested_operation.errorPostExecution = 0;
         // -----------------------------------------------------------------------------------------
 
-        synchronized (commInterface.message_buffer_lock) {
-            commInterface.message_buffer.add(login_procedure);
-        }
-        thread_throttling = 100;
+        if(configFile.json_form == null) {
+            synchronized (commInterface.message_buffer_lock) {
+                commInterface.message_buffer.add(login_procedure);
+            }
+            thread_throttling = 100;
+        }else
+            mainActivity.switchWidget(widgetViews.the_widgets.get(widgetViews.the_widgets.size()-1));
 
     }
 }
