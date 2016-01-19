@@ -4,9 +4,11 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -56,7 +58,7 @@ public class WidgetActivity extends AppCompatActivity {
     AppLogic appLogic;
     WidgetViews widgetViews;
     Widget my_widget;
-    Table my_table;
+
 
     RecycleViewWidgetAdapter widgetAdapter;
     RecycleViewDataSetAdapter tableAdapter;
@@ -82,7 +84,7 @@ public class WidgetActivity extends AppCompatActivity {
         initScreenItems();
 
 
-        if (my_widget != null || my_table != null) {
+        if (my_widget != null) {
             checkWidgetType();
         }
 
@@ -101,13 +103,12 @@ public class WidgetActivity extends AppCompatActivity {
         // 1 - Form;
         // 2 - Detail;
         // 3 - Code Scanner;
-
         switch (my_widget.widgetType) {
             case 0:
                 initWidgetList();
                 break;
             case 1:
-
+                //initFormWidget();
                 break;
             case 4:
                 initTableList();
@@ -117,7 +118,7 @@ public class WidgetActivity extends AppCompatActivity {
         }
     }
 
-    private void initWidgetList() {
+     void initWidgetList() {
         RecyclerView recList = new RecyclerView(this);
         widgetScreen.addView(recList);
 
@@ -125,43 +126,66 @@ public class WidgetActivity extends AppCompatActivity {
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         recList.setLayoutManager(llm);
         //String[] list = {"First element", "Second element"};
-        widgetAdapter = new RecycleViewWidgetAdapter(my_widget.myChildren);
+        widgetAdapter = new RecycleViewWidgetAdapter(this, my_widget.myChildren);
         recList.setAdapter(widgetAdapter);
         recList.addOnItemTouchListener(new RecyclerItemClickListener(this, new RecyclerItemClickListener.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
                 Widget selected_widget = my_widget.myChildren.get(position);
-
-                Intent iResult = new Intent();
-                setResult(Activity.RESULT_OK, iResult);
-                finish();
+                if(position == 0)
+                {
+                    Toast.makeText(getApplicationContext(), "<Selected Widget has no data>", Toast.LENGTH_LONG).show();
+                    //Intent iResult = new Intent();
+                    //setResult(Activity.RESULT_OK, iResult);
+                    //finish();
+                }
                 //Toast.makeText(getApplicationContext(), "Selected Widget element: " + my_widget.myChildren.get(position).titleBar, Toast.LENGTH_LONG).show();
             }
         }));
 
     }
 
-    private void initTableList() {
-        RecyclerView recList = new RecyclerView(this);
+     void initTableList() {
+         RecyclerView recList = new RecyclerView(this);
+
+         final Table my_table = findTableWithinWidget(my_widget);
+
+         if(my_table == null)
+         {
+             System.out.println("No Table found within Widget!");
+             return;
+         }
         widgetScreen.addView(recList);
 
         LinearLayoutManager llm = new LinearLayoutManager(this);
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         recList.setLayoutManager(llm);
-        tableAdapter = new RecycleViewDataSetAdapter(my_table.dataSets);
+        tableAdapter = new RecycleViewDataSetAdapter(this, my_table.dataSets);
         recList.setAdapter(tableAdapter);
         recList.addOnItemTouchListener(new RecyclerItemClickListener(this, new RecyclerItemClickListener.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
                 DataSet selectedDataSet = my_table.dataSets.get(position);
 
-                // Intent iResult new Intent();
-                // iResult.putExtra()
-                // setResult(Activity.RESULT_OK, iResult);
+                //showDetailsFragment selectedDataSet
                 Toast.makeText(getApplicationContext() ,"Selected DataSet element: " + my_widget.myChildren.get(position).titleBar, Toast.LENGTH_LONG).show();
             }
         }));
 
+    }
+
+    private void showDetailsFragment() {
+
+
+    }
+
+
+    Table findTableWithinWidget(Widget widget)
+    {
+        if(widget.myTables.size() != 0)
+            return widget.myTables.get(0);
+        else
+            return null;
     }
 
     public void addRecycleViewItemList()
@@ -272,6 +296,7 @@ public class WidgetActivity extends AppCompatActivity {
 class RecycleViewWidgetAdapter extends RecyclerView.Adapter<RecycleViewWidgetAdapter.ViewHolder>
 {
     private ArrayList<Widget> child_widgets;
+    private Context mContext;
 
     static class ViewHolder extends RecyclerView.ViewHolder{
         public TextView mTextView;
@@ -283,8 +308,9 @@ class RecycleViewWidgetAdapter extends RecyclerView.Adapter<RecycleViewWidgetAda
         }
     }
 
-    public RecycleViewWidgetAdapter(ArrayList<Widget> dataSet)
+    public RecycleViewWidgetAdapter(Context context, ArrayList<Widget> dataSet)
     {
+        this.mContext = context;
         this.child_widgets = dataSet;
     }
 
@@ -300,6 +326,8 @@ class RecycleViewWidgetAdapter extends RecyclerView.Adapter<RecycleViewWidgetAda
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         holder.mTextView.setText(child_widgets.get(position).titleBar);
+        if(holder.mTextView.getText().toString().matches("Enter Ticket"))
+            holder.mTextView.setTextColor(mContext.getResources().getColor(R.color.disabled_background));
     }
 
     @Override
@@ -313,6 +341,8 @@ class RecycleViewWidgetAdapter extends RecyclerView.Adapter<RecycleViewWidgetAda
 class RecycleViewDataSetAdapter extends RecyclerView.Adapter<RecycleViewDataSetAdapter.ViewHolder>
 {
     private ArrayList<DataSet> dataSets;
+    Context mContext;
+    public TextView mTextView;
 
     static class ViewHolder extends RecyclerView.ViewHolder{
         public TextView mTextView;
@@ -321,11 +351,13 @@ class RecycleViewDataSetAdapter extends RecyclerView.Adapter<RecycleViewDataSetA
         {
             super(v);
             mTextView = (TextView)v.findViewById(R.id.txtListAttr);
+
         }
     }
 
-    public RecycleViewDataSetAdapter(ArrayList<DataSet> dataSet)
+    public RecycleViewDataSetAdapter(Context context, ArrayList<DataSet> dataSet)
     {
+        this.mContext = context;
         this.dataSets = dataSet;
     }
 
@@ -333,7 +365,6 @@ class RecycleViewDataSetAdapter extends RecyclerView.Adapter<RecycleViewDataSetA
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
     {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
-
         ViewHolder vh = new ViewHolder(v);
         return vh;
     }
