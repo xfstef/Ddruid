@@ -42,16 +42,17 @@ public class AppLogic extends Thread{
         System.out.println("Thread Started !");
         data.setPersistancy(true);
 
-
         do {
             System.out.println("Test running!");
             try {
+                // Checks the messages for news that address the AppLogic.
                 synchronized(commInterface.message_buffer_lock) {
                     for (int x = 0; x < commInterface.message_buffer.size(); x++)
                         if (commInterface.message_buffer.get(x).target_id == my_id &&
                                 commInterface.message_buffer.get(x).requested_operation.status == 0) {
                             // TODO: run requested operations
-                        }else if(commInterface.message_buffer.get(x).caller_id == my_id)
+                        }else if(commInterface.message_buffer.get(x).caller_id == my_id &&
+                                commInterface.message_buffer.get(x).requested_operation.status != 6)
                             postExecutionForwarder(commInterface.message_buffer.get(x));
                 }
                 Thread.sleep(thread_throttling);
@@ -61,11 +62,12 @@ public class AppLogic extends Thread{
         }while(true);
     }
 
+    // This function looks at the messages that the AppLogic got and interprets them.
     private void postExecutionForwarder(Message finished_operation){
         switch(finished_operation.requested_operation.status){
             case 3:
-                switch(finished_operation.requested_operation.successPostExecution){
-                    case 1: // Got Config File successfully. Trying to interpret it now.
+                switch(finished_operation.requested_operation.type){
+                    case 110:   // Got Config File successfully. Trying to interpret it now.
                         configFileInterpreter.buildWidgets();
                         configFileInterpreter.buildDataModels();
                         thread_throttling = 5000;
@@ -74,8 +76,8 @@ public class AppLogic extends Thread{
                 }
                 break;
             case 5:
-                switch (finished_operation.requested_operation.errorPostExecution){
-                    case 0:
+                switch (finished_operation.requested_operation.type){
+                    case 110:   // Did not get the Config File successfully. Retrying soon.
                         // TODO: Decide what to do in case the comm Daemon couldn't get the cfg file.
                         break;
                     // TODO: Implement the rest of possible post failed operation calls
@@ -101,8 +103,6 @@ public class AppLogic extends Thread{
                 //"https://demo23.sclable.me/mobile/sclable-mobile-service/config";
         login_procedure.requested_operation.the_table = null;
         login_procedure.requested_operation.status = 0;
-        login_procedure.requested_operation.successPostExecution = 1;
-        login_procedure.requested_operation.errorPostExecution = 0;
         // -----------------------------------------------------------------------------------------
 
         if(configFile.json_form == null) {

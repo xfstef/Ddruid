@@ -1,13 +1,16 @@
 package com.frostbytetree.ddruid;
 
 import android.content.Context;
+import android.util.Pair;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Created by XfStef on 1/16/2016.
@@ -23,7 +26,6 @@ public class ConfigFileInterpreter {
 
     Data data;
     JSONArray model_structure = new JSONArray();
-
 
     Context context;
     MainActivity my_main;
@@ -108,13 +110,17 @@ public class ConfigFileInterpreter {
         synchronized (data.data_lock){
             for(int x = 0; x < widgetViews.the_widgets.size()-1; x++)   // Only goes to n-1 because the last Widget is the Menu Widget
             // that doesn't have any tables or actions.
-                for(int y = 0; y < widgetViews.the_widgets.get(x).myTableNames.size(); y++) {
-                    widgetViews.the_widgets.get(x).myTables = new ArrayList<Table>(widgetViews.the_widgets.get(x).myTableNames.size());
+                for(int y = 0; y < widgetViews.the_widgets.get(x).myTableActions.size(); y++) {
+                    widgetViews.the_widgets.get(x).myTables = new ArrayList<Table>(widgetViews.the_widgets.get(x).myTableActions.size());
                     for (int z = 0; z < data.tables.size(); z++)
-                        if (widgetViews.the_widgets.get(x).myTableNames.get(y).matches(data.tables.get(z).table_name))
+                        if (widgetViews.the_widgets.get(x).myTableActions.get(y).first.matches(data.tables.get(z).table_name))
                             widgetViews.the_widgets.get(x).myTables.add(data.tables.get(z));
                 }
         }
+
+        /*for(int u = 0; u < widgetViews.the_widgets.size()-1; u++)
+            System.out.println("Table: " + widgetViews.the_widgets.get(u).myTables.get(0).table_name +
+            ", action: " + widgetViews.the_widgets.get(u).myActionNames.get(0));*/
     }
 
     private void addAttibutes(Table new_table, JSONArray attributes) {
@@ -155,7 +161,7 @@ public class ConfigFileInterpreter {
 
     }
 
-
+    // Builds the Widget logical structure from the data given in the Config File.
     public void buildWidgets(){
 
         synchronized (configFile.cfg_file_lock){
@@ -171,8 +177,9 @@ public class ConfigFileInterpreter {
 
                 Widget new_widget = new Widget(context);
                 new_widget.id = x;
-                new_widget.myTableNames = new ArrayList<String>();
-                new_widget.myActionNames = new ArrayList<String>();
+                //new_widget.myTableNames = new ArrayList<String>();
+                //new_widget.myActionNames = new ArrayList<String>();
+                new_widget.myTableActions = new ArrayList<>();
                 new_widget.myChildren = new ArrayList<Widget>();
 
                 try {
@@ -188,17 +195,25 @@ public class ConfigFileInterpreter {
                         // TODO: Implement the rest widget types.
                     }
                     new_widget.titleBar = temp_obj.getString("name");
-                    if(temp_obj.length() > 3)
-                        new_widget.myParentName = temp_obj.getString("parent");
-                    else
-                        new_widget.myParentName = "Main Menu";
+                    if(temp_obj.length() > 3) {
+                        JSONArray temp_parents = temp_obj.getJSONArray("parents");
+                        new_widget.myParentNames = new ArrayList<String>();
+                        for(int y = 0; y < temp_parents.length(); y++)
+                            new_widget.myParentNames.add(temp_parents.getString(y));
+                    }
+                    else {
+                        new_widget.myParentNames = new ArrayList<String>(1);
+                        new_widget.myParentNames.add(0, "Main Menu");
+                    }
                     JSONArray action_list = temp_obj.getJSONArray("action");
                     for(int y = 0; y < action_list.length(); y++){
                         JSONObject temp_action_obj = action_list.getJSONObject(y);
                         Iterator<String> the_keys = temp_action_obj.keys();
                         String temp_key = the_keys.next();
-                        new_widget.myTableNames.add(temp_key);
-                        new_widget.myActionNames.add(temp_action_obj.getString(temp_key));
+                        //new_widget.myTableNames.add(temp_key);
+                        //new_widget.myActionNames.add(temp_action_obj.getString(temp_key));
+                        new_widget.myTableActions.add(new Pair<String, String>(temp_key, temp_action_obj.getString(temp_key)));
+
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -213,6 +228,8 @@ public class ConfigFileInterpreter {
 
     }
 
+    // Builds the Widget Menu and sets all parent to child relationships. Afterwards it calls the
+    // instancing of the Widget Menu.
     private void buildMenuAndChildren() {
         Widget menu_widget = new Widget(context);
         menu_widget.id = widgetViews.the_widgets.size();
@@ -222,17 +239,18 @@ public class ConfigFileInterpreter {
 
         widgetViews.the_widgets.add(menu_widget);
 
+        // This structure links widgets together according to their parental relationship.
         for(int x = 0; x < widgetViews.the_widgets.size(); x++){
             Widget temp1 = widgetViews.the_widgets.get(x);
             for(int y = 0; y < widgetViews.the_widgets.size()-1; y++){
                 Widget temp2 = widgetViews.the_widgets.get(y);
-                if(temp1.titleBar.matches(temp2.myParentName))
-                    temp1.myChildren.add(temp2);
+                for(int z = 0; z < temp2.myParentNames.size(); z++)
+                    if(temp1.titleBar.matches(temp2.myParentNames.get(z)))
+                        temp1.myChildren.add(temp2);
             }
         }
 
         my_main.switchWidget(widgetViews.the_widgets.get(widgetViews.the_widgets.size()-1));
     }
-
 
 }

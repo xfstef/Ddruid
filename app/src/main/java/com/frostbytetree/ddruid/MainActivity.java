@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     AppLogic appLogic;
     SQLiteController sqldaemon;
     Data data;
-    DataModelInterpreter dataModelInterpreter;
+    DataInterpreter dataInterpreter;
     ConfigFile configFile;
     ConfigFileInterpreter configFileInterpreter;
     UIBuilder uiBuilder;
@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         widgetViews = WidgetViews.getInstance();
 
-        dataModelInterpreter = DataModelInterpreter.getInstance();
+        dataInterpreter = DataInterpreter.getInstance();
 
         configFileInterpreter = ConfigFileInterpreter.getInstance();
         configFileInterpreter.context = this;

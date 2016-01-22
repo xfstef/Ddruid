@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
 import android.support.v7.widget.LinearLayoutCompat;
+import android.util.Pair;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -11,6 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.zip.Inflater;
 
 /**
@@ -45,21 +47,20 @@ class Widget extends LinearLayout{
     LinearLayout L2;
     int id;
     ArrayList<Table> myTables;
-    ArrayList<String> myTableNames;
 
-    ArrayList<Short> myActions;
-    ArrayList<String> myActionNames;
+    ArrayList<Pair<String, String>> myTableActions;   // {["ticket", "create"],["ticket", "forward"]}
 
     ArrayList<Widget> myChildren;
-    Widget myParent;
-    String myParentName;
+    ArrayList<Widget> myParents; // By default just one parent but there may exist cases with multiple parents.
+    ArrayList<String> myParentNames;
     String titleBar;
     short widgetType;   // This is the type of widget that needs to be set according to what it does
                         // 0 - Widget-List;
                         // 1 - Form;
-                        // 2 - Detail;
+                        // 2 - Detail - could be never used;
                         // 3 - Code Scanner;
                         // 4 - List with datasets
+                        // 31 - Code Scanner + GPS;
                         // ...
 
     public Widget(Context context) {

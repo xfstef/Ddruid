@@ -53,12 +53,4 @@ class Operation {
     String REST_command;    // If a REST command is needed, else this string is NULL.
     Table the_table;   // If a table is needed then a data model will be given.
 
-    short successPostExecution; // This is used to define what happens in the caller thread after
-                                // the operation finshes successfully. The codes defined here should
-                                // be locally known keys for the functions that each thread has.
-
-    short errorPostExecution;   // This is used to define what happens in the caller thread after
-                                // the operation fails. The codes defined here should be locally
-                                // known keys for the functions that each thread has.
-
 }

@@ -10,17 +10,17 @@ package com.frostbytetree.ddruid;
     //TODO Build the Data Models
     //TODO Signal the UIBuilder
 
-public class DataModelInterpreter {
+public class DataInterpreter {
 
     Data data;
 
-    private static DataModelInterpreter ourInstance = new DataModelInterpreter();
+    private static DataInterpreter ourInstance = new DataInterpreter();
 
-    public static DataModelInterpreter getInstance() {
+    public static DataInterpreter getInstance() {
         return ourInstance;
     }
 
-    private DataModelInterpreter() {
+    private DataInterpreter() {
 
         data = Data.getInstance();
 
