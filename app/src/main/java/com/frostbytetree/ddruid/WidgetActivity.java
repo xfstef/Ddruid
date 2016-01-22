@@ -132,15 +132,14 @@ public class WidgetActivity extends AppCompatActivity {
             @Override
             public void onItemClick(View view, int position) {
                 Widget selected_widget = my_widget.myChildren.get(position);
-                if(position == 0)
-                {
-                    Toast.makeText(getApplicationContext(), "<Selected Widget has no data>", Toast.LENGTH_LONG).show();
-                    //Intent iResult = new Intent();
-                    //setResult(Activity.RESULT_OK, iResult);
-                    //finish();
+
+                Toast.makeText(getApplicationContext(), "<Selected Widget has no data>", Toast.LENGTH_LONG).show();
+                //Intent iResult = new Intent();
+                //setResult(Activity.RESULT_OK, iResult);
+                //finish();
                 }
                 //Toast.makeText(getApplicationContext(), "Selected Widget element: " + my_widget.myChildren.get(position).titleBar, Toast.LENGTH_LONG).show();
-            }
+
         }));
 
     }
@@ -326,8 +325,6 @@ class RecycleViewWidgetAdapter extends RecyclerView.Adapter<RecycleViewWidgetAda
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         holder.mTextView.setText(child_widgets.get(position).titleBar);
-        if(holder.mTextView.getText().toString().matches("Enter Ticket"))
-            holder.mTextView.setTextColor(mContext.getResources().getColor(R.color.disabled_background));
     }
 
     @Override
