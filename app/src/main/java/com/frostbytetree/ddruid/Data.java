@@ -69,13 +69,14 @@ class Attribute{
     // 5 - Date;
     // 6 - Timestamp;
     // ...
+
+    // By default NULL. Only needed if this attribute is a spinner.
     String spinner_name = null;
-    Spinner items = null;   // By default NULL. Only needed if this attribute is a spinner.
+    Spinner items = null;
 }
 
 class Action{
     String name;
-    ArrayList<Attribute> action_attributes;
     ArrayList<Boolean> attribute_required;
     ArrayList<Boolean> attribute_readonly;
 }

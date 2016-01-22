@@ -101,7 +101,6 @@ public class WidgetActivity extends AppCompatActivity {
     void checkWidgetType() {
         // 0 - List;
         // 1 - Form;
-        // 2 - Detail;
         // 3 - Code Scanner;
         switch (my_widget.widgetType) {
             case 0:
@@ -128,6 +127,7 @@ public class WidgetActivity extends AppCompatActivity {
         //String[] list = {"First element", "Second element"};
         widgetAdapter = new RecycleViewWidgetAdapter(this, my_widget.myChildren);
         recList.setAdapter(widgetAdapter);
+
         recList.addOnItemTouchListener(new RecyclerItemClickListener(this, new RecyclerItemClickListener.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
@@ -292,127 +292,3 @@ public class WidgetActivity extends AppCompatActivity {
 }
 
 
-class RecycleViewWidgetAdapter extends RecyclerView.Adapter<RecycleViewWidgetAdapter.ViewHolder>
-{
-    private ArrayList<Widget> child_widgets;
-    private Context mContext;
-
-    static class ViewHolder extends RecyclerView.ViewHolder{
-        public TextView mTextView;
-
-        public ViewHolder(View v)
-        {
-            super(v);
-            mTextView = (TextView)v.findViewById(R.id.txtListAttr);
-        }
-    }
-
-    public RecycleViewWidgetAdapter(Context context, ArrayList<Widget> dataSet)
-    {
-        this.mContext = context;
-        this.child_widgets = dataSet;
-    }
-
-    @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
-    {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
-
-        ViewHolder vh = new ViewHolder(v);
-        return vh;
-    }
-
-    @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.mTextView.setText(child_widgets.get(position).titleBar);
-    }
-
-    @Override
-    public int getItemCount() {
-        return child_widgets.size();
-    }
-
-
-}
-
-class RecycleViewDataSetAdapter extends RecyclerView.Adapter<RecycleViewDataSetAdapter.ViewHolder>
-{
-    private ArrayList<DataSet> dataSets;
-    Context mContext;
-    public TextView mTextView;
-
-    static class ViewHolder extends RecyclerView.ViewHolder{
-        public TextView mTextView;
-
-        public ViewHolder(View v)
-        {
-            super(v);
-            mTextView = (TextView)v.findViewById(R.id.txtListAttr);
-
-        }
-    }
-
-    public RecycleViewDataSetAdapter(Context context, ArrayList<DataSet> dataSet)
-    {
-        this.mContext = context;
-        this.dataSets = dataSet;
-    }
-
-    @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
-    {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
-        ViewHolder vh = new ViewHolder(v);
-        return vh;
-    }
-
-    @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.mTextView.setText(dataSets.get(position).toString());
-    }
-
-    @Override
-    public int getItemCount() {
-        return dataSets.size();
-    }
-
-
-}
-
-
-
-
-class RecyclerItemClickListener implements RecyclerView.OnItemTouchListener {
-    private OnItemClickListener mListener;
-
-    public interface OnItemClickListener {
-        public void onItemClick(View view, int position);
-    }
-
-    GestureDetector mGestureDetector;
-
-    public RecyclerItemClickListener(Context context, OnItemClickListener listener) {
-        mListener = listener;
-        mGestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
-            @Override public boolean onSingleTapUp(MotionEvent e) {
-                return true;
-            }
-        });
-    }
-
-    @Override
-    public boolean onInterceptTouchEvent(RecyclerView view, MotionEvent e) {
-        View childView = view.findChildViewUnder(e.getX(), e.getY());
-        if (childView != null && mListener != null && mGestureDetector.onTouchEvent(e)) {
-            mListener.onItemClick(childView, view.getChildPosition(childView));
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public void onTouchEvent(RecyclerView view, MotionEvent motionEvent) { }
-
-    @Override
-    public void onRequestDisallowInterceptTouchEvent (boolean disallowIntercept){}
-}
