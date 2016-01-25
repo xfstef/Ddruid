@@ -83,5 +83,6 @@ class Action{
 
 class Spinner{
     String myName;
+    ArrayList<String> dataSetName;
     ArrayList<String> items;
 }

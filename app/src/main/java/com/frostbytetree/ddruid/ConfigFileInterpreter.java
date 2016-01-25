@@ -61,11 +61,9 @@ public class ConfigFileInterpreter {
                     new_table.attribute_count = attributes.length();
                     new_table.attributes = new ArrayList<Attribute>(new_table.attribute_count);
                     addAttibutes(new_table, attributes);
-                    JSONObject references = new JSONObject();
-                    references = temp_table.getJSONObject("references");
-                    addReferenceAttributes(new_table, references);
 
-                    // TODO: Read and add the actions
+                    JSONArray actions = temp_table.getJSONArray("actions");
+                    addActions(new_table, actions);
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -83,27 +81,8 @@ public class ConfigFileInterpreter {
         }
     }
 
-    private void addReferenceAttributes(Table new_table, JSONObject references) {
-        JSONArray reference_names = references.names();
+    private void addActions(Table new_table, JSONArray actions) {
 
-        for(int z = 0; z < references.length(); z++){
-            try {
-                JSONArray temp_ref = new JSONArray();
-                temp_ref = references.getJSONArray(reference_names.getString(z));
-
-                Spinner new_spinner = new Spinner();
-                new_spinner.items = new ArrayList<String>(temp_ref.length());
-                for(int q = 0; q < temp_ref.length(); q++)
-                    new_spinner.items.add(temp_ref.getString(q));
-                for(int w = 0; w < new_table.attributes.size(); w++)
-                    if(new_table.attributes.get(w).attribute_type == 2 &&
-                            reference_names.getString(z).matches(new_table.attributes.get(w).spinner_name))
-                        new_table.attributes.get(w).items = new_spinner;
-            } catch (JSONException e) {
-                e.printStackTrace();
-                break;
-            }
-        }
     }
 
     private void linkTablesToWidgets() {
@@ -152,6 +131,20 @@ public class ConfigFileInterpreter {
                     new_attribute.attribute_type = 2;
                     new_attribute.items = new Spinner();
                     new_attribute.spinner_name = temp_attribute.getString("reference");
+                    char searched;
+                    for(int k = new_attribute.spinner_name.length()-1; k >= 0; k--) {
+                        searched = new_attribute.spinner_name.charAt(k);
+                        if (searched == '.') {
+                            new_attribute.spinner_name = new_attribute.spinner_name.substring(k+1);
+                            break;
+                        }
+                    }
+                    new_attribute.items.myName = temp_attribute.getString("reference");
+                    JSONArray reference_names = new JSONArray();
+                    reference_names = temp_attribute.getJSONArray("reference_lookup");
+                    new_attribute.items.dataSetName = new ArrayList<String>(reference_names.length());
+                    for(int b = 0; b < reference_names.length(); b++)
+                        new_attribute.items.dataSetName.add(reference_names.getString(b));
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
