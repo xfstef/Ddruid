@@ -243,7 +243,6 @@ public class ConfigFileInterpreter {
             }
         }
 
-        my_main.switchWidget(widgetViews.the_widgets.get(widgetViews.the_widgets.size()-1));
     }
 
 }

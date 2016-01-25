@@ -44,7 +44,7 @@ public class WidgetViews {
 class Widget extends LinearLayout{
 
     Context context;
-    LinearLayout L2;
+    //LinearLayout widgetLinearLayout;
     int id;
     ArrayList<Table> myTables;
 
@@ -66,19 +66,22 @@ class Widget extends LinearLayout{
     public Widget(Context context) {
         super(context);
         this.context = context;
-        L2 = new LinearLayout(context);
-        L2.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-        L2.setGravity(Gravity.CENTER);
-        L2.setOrientation(LinearLayout.VERTICAL);
+        //widgetLinearLayout = new LinearLayout(context);
+        setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        setGravity(Gravity.CENTER);
+        setOrientation(LinearLayout.VERTICAL);
     }
+
+
 
     public void addElement(){
         Button a1 = new Button(context);
         a1.setText("@string/app_name");
         a1.setVisibility(View.VISIBLE);
-        L2.addView(a1, (new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)));
+        addView(a1, (new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)));
         System.out.println("Element Should be added!");
         Activity MainActivity = (Activity)context;
-        MainActivity.setContentView(L2);
+        //MainActivity.setContentView(widgetLinearLayout);
     }
+
 }

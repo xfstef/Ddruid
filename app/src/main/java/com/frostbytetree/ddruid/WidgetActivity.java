@@ -56,10 +56,11 @@ public class WidgetActivity extends AppCompatActivity {
     ActionBarDrawerToggle mDrawerToggle;
 
     AppLogic appLogic;
-    WidgetViews widgetViews;
+    //WidgetViews widgetViews;
     Widget my_widget;
 
 
+    UIBuilder the_ui;
     RecycleViewWidgetAdapter widgetAdapter;
     RecycleViewDataSetAdapter tableAdapter;
 
@@ -73,8 +74,8 @@ public class WidgetActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //my_widget = new Widget(this);
-        widgetViews = WidgetViews.getInstance();
-
+        //widgetViews = WidgetViews.getInstance();
+        appLogic = AppLogic.getInstance();
         my_widget = getCurrentWidget();
 
         setContentView(R.layout.widget_activity);
@@ -88,10 +89,12 @@ public class WidgetActivity extends AppCompatActivity {
             checkWidgetType();
         }
 
+        // init the UI Builder
+        the_ui = UIBuilder.getInstance();
+        the_ui.setContext(this);
+
         // getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         // getSupportActionBar().setDisplayShowHomeEnabled(true);
-
-        appLogic = AppLogic.getInstance();
 
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -107,7 +110,7 @@ public class WidgetActivity extends AppCompatActivity {
                 initWidgetList();
                 break;
             case 1:
-                //initFormWidget();
+                initFormWidget();
                 break;
             case 4:
                 initTableList();
@@ -115,6 +118,12 @@ public class WidgetActivity extends AppCompatActivity {
             default:
 
         }
+    }
+
+    void initFormWidget()
+    {
+        widgetScreen = the_ui.inflate_model(my_widget);
+        System.out.println("Enable Form widget!");
     }
 
      void initWidgetList() {
@@ -133,7 +142,7 @@ public class WidgetActivity extends AppCompatActivity {
             public void onItemClick(View view, int position) {
                 Widget selected_widget = my_widget.myChildren.get(position);
 
-                Toast.makeText(getApplicationContext(), "<Selected Widget has no data>", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Selected widget: " + selected_widget.titleBar, Toast.LENGTH_LONG).show();
                 //Intent iResult = new Intent();
                 //setResult(Activity.RESULT_OK, iResult);
                 //finish();
@@ -196,7 +205,9 @@ public class WidgetActivity extends AppCompatActivity {
             widgetAdapter.notifyItemInserted(my_widget.myChildren.size()-1);
     }
 
+
     Widget getCurrentWidget() {
+        /*
         Widget found_widget;
         Intent intent = getIntent();
         for (int x = 0; x < widgetViews.the_widgets.size(); x++) {
@@ -205,8 +216,11 @@ public class WidgetActivity extends AppCompatActivity {
                 System.out.println("Widget title: " + found_widget.titleBar);
                 return found_widget;
             }
-        }
-        return null;
+        }*/
+        if(appLogic.currentWidget != null)
+            return appLogic.currentWidget;
+        else
+            return null;
     }
 
     void initScreenItems() {
@@ -240,7 +254,7 @@ public class WidgetActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        appLogic.setCurrentWidget(this);
+        appLogic.setCurrentWidget(my_widget);
     }
 
     @TargetApi(21)

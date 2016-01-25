@@ -13,7 +13,7 @@ public class AppLogic extends Thread{
     UIBuilder uiBuilder = UIBuilder.getInstance();
     private static short my_id = 1;
     IACInterface commInterface = IACInterface.getInstance();
-    WidgetActivity currentActivity = new WidgetActivity();
+    Widget currentWidget;
     ConfigFile configFile = ConfigFile.getInstance();
     ConfigFileInterpreter configFileInterpreter = ConfigFileInterpreter.getInstance();
     MainActivity mainActivity;
@@ -32,8 +32,8 @@ public class AppLogic extends Thread{
         last_time = this_time;
     }
 
-    void setCurrentWidget(WidgetActivity the_widget){
-        currentActivity = the_widget;
+    void setCurrentWidget(Widget the_widget){
+        currentWidget = the_widget;
     }
 
     @Override
@@ -70,6 +70,8 @@ public class AppLogic extends Thread{
                     case 110:   // Got Config File successfully. Trying to interpret it now.
                         configFileInterpreter.buildWidgets();
                         configFileInterpreter.buildDataModels();
+                        setCurrentWidget(widgetViews.the_widgets.get(widgetViews.the_widgets.size()-1));
+                        mainActivity.startWidgetActivity();
                         thread_throttling = 5000;
                         break;
                     // TODO: Implement the rest of possible post successful operation calls
@@ -105,13 +107,22 @@ public class AppLogic extends Thread{
         login_procedure.requested_operation.status = 0;
         // -----------------------------------------------------------------------------------------
 
+
+        /*
+        If no config file download it and interpret it
+        if it is so then just switch to widget
+         */
         if(configFile.json_form == null) {
             synchronized (commInterface.message_buffer_lock) {
                 commInterface.message_buffer.add(login_procedure);
             }
             thread_throttling = 100;
-        }else
-            mainActivity.switchWidget(widgetViews.the_widgets.get(widgetViews.the_widgets.size()-1));
+        }else {
+            // The last widget is always the widget menu
+            // For now when the user goes back then widget menu is displayed fist when rejoining
+            setCurrentWidget(widgetViews.the_widgets.get(widgetViews.the_widgets.size()-1));
+            mainActivity.startWidgetActivity();
+        }
 
     }
 }

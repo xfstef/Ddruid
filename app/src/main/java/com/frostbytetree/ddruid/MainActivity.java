@@ -123,10 +123,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mDrawerToggle.syncState();
     }
 
-    public void switchWidget(Widget new_widget){
-        System.out.println("Login geklickt!");
+    public void startWidgetActivity(){
+
         Intent i = new Intent(getApplicationContext(), WidgetActivity.class);
-        i.putExtra("widget", new_widget.id);
+        //i.putExtra("widget", new_widget.id);
         startActivityForResult(i, 0);
     }
 

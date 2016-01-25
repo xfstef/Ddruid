@@ -1,12 +1,14 @@
 package com.frostbytetree.ddruid;
 
 import android.content.Context;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -30,7 +32,8 @@ public class UIBuilder {
 
     Data data;
     Context context;
-    WidgetViews widgetViews;
+
+    // WidgetViews widgetViews;
 
     public static UIBuilder getInstance() {
         return ourInstance;
@@ -44,15 +47,41 @@ public class UIBuilder {
         this.context = context;
     }
 
-    public void inflate_model(Table current_model){
+    // This function takes a widget and iterates through all the tables
+    // and returns the build custom model
+    public Widget inflate_model(Widget widget){
 
-        //TODO build View from data model
-        Widget test = new Widget(context);
-        System.out.println("Widget Test:" + test);
-        test.addElement();
+        addTestElement(widget);
+        return widget;
+        /*
+        for(int i = 0;  i < widget.myTables.size(); i++)
+        {
+            if(!buildWidgetsFromTable(widget.myTables.get(i)))
+                return null;
+        }
+        return true;*/
+        // test.addElement();
 
-        //widgetViews.the_widgets.add(test);
+        // widgetViews.the_widgets.add(test);
 
+    }
+
+    private boolean buildWidgetsFromTable(Table currentTable)
+    {
+        for(int i = 0; i < currentTable.attributes.size(); i++)
+            return true;
+        return false;
+    }
+
+    private void addTestElement(LinearLayout widgetLinearLayout){
+        Button a1 = new Button(context);
+        a1.setText("@string/app_name");
+        a1.setVisibility(View.VISIBLE);
+        widgetLinearLayout.addView(a1, (new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)));
+        System.out.println("Element Should be added!");
+
+        // AppCompatActivity widgetActivity = (AppCompatActivity)context;
+        // MainActivity.setContentView(L2);
     }
 }
 
