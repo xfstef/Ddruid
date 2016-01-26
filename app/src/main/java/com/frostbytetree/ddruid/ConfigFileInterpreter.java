@@ -23,12 +23,12 @@ public class ConfigFileInterpreter {
     ConfigFile configFile;
     WidgetViews widgetViews;
     JSONArray widgets = new JSONArray();
+    SclableInterpreter sclableInterpreter;
 
     Data data;
     JSONArray model_structure = new JSONArray();
 
     Context context;
-    MainActivity my_main;
 
     private static ConfigFileInterpreter ourInstance = new ConfigFileInterpreter();
 
@@ -38,57 +38,122 @@ public class ConfigFileInterpreter {
 
     private ConfigFileInterpreter() {
         configFile = ConfigFile.getInstance();
+        sclableInterpreter = SclableInterpreter.getInstance();
     }
 
-    public void buildDataModels(){
-        synchronized (configFile.cfg_file_lock){
-            data = Data.getInstance();
+    public void startStartupProcess(){
+        synchronized (configFile.cfg_file_lock) {
 
-            try{
-                model_structure = configFile.json_form.getJSONArray("model_structure");
+            try {
+                String backend = configFile.json_form.getString("backend");
+                switch (backend){
+                    case "sclable":
+                        sclableInterpreter.buildWidgets();
+                        sclableInterpreter.buildDataModels();
+                        break;
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
 
-            for(int x = 0; x < model_structure.length(); x++){
-                Table new_table = new Table();
-
-                try {
-                    JSONObject temp_table = model_structure.getJSONObject(x);
-                    new_table.table_name = temp_table.getString("name");
-                    new_table.cached_only = temp_table.getBoolean("is_locally_cached");
-                    JSONArray attributes = temp_table.getJSONArray("attributes");
-                    new_table.attribute_count = attributes.length();
-                    new_table.attributes = new ArrayList<Attribute>(new_table.attribute_count);
-                    addAttibutes(new_table, attributes);
-
-                    JSONArray actions = temp_table.getJSONArray("actions");
-                    addActions(new_table, actions);
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    break;
-                }
-
-                new_table.dataSets = new ArrayList<DataSet>();
-
-                synchronized (data.data_lock){
-                    data.tables.add(new_table);
-                }
-            }
-
-            linkTablesToWidgets();
         }
     }
 
-    private void addActions(Table new_table, JSONArray actions) {
+}
 
+class SclableInterpreter {
+    ConfigFile configFile;
+    WidgetViews widgetViews;
+    JSONArray widgets = new JSONArray();
+
+    Data data;
+    JSONArray model_structure = new JSONArray();
+
+    Context context;
+
+    private static SclableInterpreter ourInstance = new SclableInterpreter();
+
+    public static SclableInterpreter getInstance() {
+        return ourInstance;
+    }
+
+    private SclableInterpreter() {
+        configFile = ConfigFile.getInstance();
+        data = Data.getInstance();
+    }
+
+    public void buildDataModels(){
+
+        try{
+            model_structure = configFile.json_form.getJSONArray("model_structure");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        for(int x = 0; x < model_structure.length(); x++){
+            Table new_table = new Table();
+
+            try {
+                JSONObject temp_table = model_structure.getJSONObject(x);
+                new_table.table_name = temp_table.getString("name");
+                new_table.cached_only = temp_table.getBoolean("is_locally_cached");
+                JSONArray attributes = temp_table.getJSONArray("attributes");
+                new_table.attribute_count = attributes.length();
+                new_table.attributes = new ArrayList<Attribute>(new_table.attribute_count);
+                addAttibutes(new_table, attributes);
+
+                JSONArray actions = temp_table.getJSONArray("actions");
+                new_table.myActions = new ArrayList<Action>(actions.length());
+                addActions(new_table, actions);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+                break;
+            }
+
+            new_table.dataSets = new ArrayList<DataSet>();
+
+            synchronized (data.data_lock){
+                data.tables.add(new_table);
+            }
+        }
+
+        linkTablesToWidgets();
+
+    }
+
+    private void addActions(Table table, JSONArray actions) {
+
+        for(int o = 0; o < actions.length(); o++){
+            Action new_action = new Action();
+            try {
+                JSONObject the_action = actions.getJSONObject(o);
+                new_action.name = the_action.getString("name");
+                JSONArray act_attr = the_action.getJSONArray("action_attributes");
+                new_action.attributes = new ArrayList<Attribute>(act_attr.length());
+                new_action.attribute_readonly = new ArrayList<Boolean>(act_attr.length());
+                new_action.attribute_required = new ArrayList<Boolean>(act_attr.length());
+                for(int p = 0; p < act_attr.length(); p++){
+                    JSONObject first_act_attr = act_attr.getJSONObject(p);
+                    for(int l = 0; l < table.attributes.size(); l++)
+                        if(table.attributes.get(l).name.matches(first_act_attr.getString("name"))){
+                            new_action.attributes.add(table.attributes.get(l));
+                            new_action.attribute_readonly.add(first_act_attr.getBoolean("read_only"));
+                            new_action.attribute_required.add(first_act_attr.getBoolean("required"));
+                            break;
+                        }
+                }
+                table.myActions.add(new_action);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void linkTablesToWidgets() {
         synchronized (data.data_lock){
             for(int x = 0; x < widgetViews.the_widgets.size()-1; x++)   // Only goes to n-1 because the last Widget is the Menu Widget
-            // that doesn't have any tables or actions.
+                // that doesn't have any tables or actions.
                 for(int y = 0; y < widgetViews.the_widgets.get(x).myTableActions.size(); y++) {
                     widgetViews.the_widgets.get(x).myTables = new ArrayList<Table>(widgetViews.the_widgets.get(x).myTableActions.size());
                     for (int z = 0; z < data.tables.size(); z++)
@@ -157,67 +222,66 @@ public class ConfigFileInterpreter {
     // Builds the Widget logical structure from the data given in the Config File.
     public void buildWidgets(){
 
-        synchronized (configFile.cfg_file_lock){
-            widgetViews = WidgetViews.getInstance();
+        widgetViews = WidgetViews.getInstance();
+
+        try {
+            widgets = configFile.json_form.getJSONArray("widgets");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        for(int x = 0; x < widgets.length(); x++) {
+
+            Widget new_widget = new Widget(context);
+            new_widget.id = x;
+            //new_widget.myTableNames = new ArrayList<String>();
+            //new_widget.myActionNames = new ArrayList<String>();
+            new_widget.myTableActions = new ArrayList<>();
+            new_widget.myChildren = new ArrayList<Widget>();
 
             try {
-                widgets = configFile.json_form.getJSONArray("widgets");
+                JSONObject temp_obj = new JSONObject();
+                temp_obj = widgets.getJSONObject(x);
+                switch (temp_obj.getString("type")){
+                    case "list":
+                        new_widget.widgetType = 4;
+                        break;
+                    case "form":
+                        new_widget.widgetType = 1;
+                        break;
+                    // TODO: Implement the rest widget types.
+                }
+                new_widget.titleBar = temp_obj.getString("name");
+                if(temp_obj.length() > 3) {
+                    JSONArray temp_parents = temp_obj.getJSONArray("parents");
+                    new_widget.myParentNames = new ArrayList<String>();
+                    for(int y = 0; y < temp_parents.length(); y++)
+                        new_widget.myParentNames.add(temp_parents.getString(y));
+                }
+                else {
+                    new_widget.myParentNames = new ArrayList<String>(1);
+                    new_widget.myParentNames.add(0, "Main Menu");
+                }
+                JSONArray action_list = temp_obj.getJSONArray("action");
+                for(int y = 0; y < action_list.length(); y++){
+                    JSONObject temp_action_obj = action_list.getJSONObject(y);
+                    Iterator<String> the_keys = temp_action_obj.keys();
+                    String temp_key = the_keys.next();
+                    //new_widget.myTableNames.add(temp_key);
+                    //new_widget.myActionNames.add(temp_action_obj.getString(temp_key));
+                    new_widget.myTableActions.add(new Pair<String, String>(temp_key, temp_action_obj.getString(temp_key)));
+
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
+                break;
             }
 
-            for(int x = 0; x < widgets.length(); x++) {
-
-                Widget new_widget = new Widget(context);
-                new_widget.id = x;
-                //new_widget.myTableNames = new ArrayList<String>();
-                //new_widget.myActionNames = new ArrayList<String>();
-                new_widget.myTableActions = new ArrayList<>();
-                new_widget.myChildren = new ArrayList<Widget>();
-
-                try {
-                    JSONObject temp_obj = new JSONObject();
-                    temp_obj = widgets.getJSONObject(x);
-                    switch (temp_obj.getString("type")){
-                        case "list":
-                            new_widget.widgetType = 4;
-                            break;
-                        case "form":
-                            new_widget.widgetType = 1;
-                            break;
-                        // TODO: Implement the rest widget types.
-                    }
-                    new_widget.titleBar = temp_obj.getString("name");
-                    if(temp_obj.length() > 3) {
-                        JSONArray temp_parents = temp_obj.getJSONArray("parents");
-                        new_widget.myParentNames = new ArrayList<String>();
-                        for(int y = 0; y < temp_parents.length(); y++)
-                            new_widget.myParentNames.add(temp_parents.getString(y));
-                    }
-                    else {
-                        new_widget.myParentNames = new ArrayList<String>(1);
-                        new_widget.myParentNames.add(0, "Main Menu");
-                    }
-                    JSONArray action_list = temp_obj.getJSONArray("action");
-                    for(int y = 0; y < action_list.length(); y++){
-                        JSONObject temp_action_obj = action_list.getJSONObject(y);
-                        Iterator<String> the_keys = temp_action_obj.keys();
-                        String temp_key = the_keys.next();
-                        //new_widget.myTableNames.add(temp_key);
-                        //new_widget.myActionNames.add(temp_action_obj.getString(temp_key));
-                        new_widget.myTableActions.add(new Pair<String, String>(temp_key, temp_action_obj.getString(temp_key)));
-
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    break;
-                }
-
-                widgetViews.the_widgets.add(new_widget);
-            }
-
-            buildMenuAndChildren();
+            widgetViews.the_widgets.add(new_widget);
         }
+
+        buildMenuAndChildren();
+
 
     }
 

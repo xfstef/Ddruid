@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     IACInterface commInterface;
     DrawerLayout Drawer;
     ActionBarDrawerToggle mDrawerToggle;
+    SclableInterpreter sclableInterpreter;
 
     Toolbar toolbar;
 
@@ -64,7 +65,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         configFileInterpreter = ConfigFileInterpreter.getInstance();
         configFileInterpreter.context = this;
-        configFileInterpreter.my_main = this;
+
+        sclableInterpreter = SclableInterpreter.getInstance();
+        sclableInterpreter.context = this;
 
         appLogic = AppLogic.getInstance();
         appLogic.mainActivity = this;

@@ -68,8 +68,7 @@ public class AppLogic extends Thread{
             case 3:
                 switch(finished_operation.requested_operation.type){
                     case 110:   // Got Config File successfully. Trying to interpret it now.
-                        configFileInterpreter.buildWidgets();
-                        configFileInterpreter.buildDataModels();
+                        configFileInterpreter.startStartupProcess();
                         setCurrentWidget(widgetViews.the_widgets.get(widgetViews.the_widgets.size()-1));
                         mainActivity.startWidgetActivity();
                         thread_throttling = 5000;
@@ -101,8 +100,8 @@ public class AppLogic extends Thread{
         login_procedure.requested_operation = new Operation();
         login_procedure.requested_operation.type = 110;   // TODO: use a variable.
         login_procedure.requested_operation.REST_command =
-                "http://82.223.15.251/config.json";
-                //"https://demo23.sclable.me/mobile/sclable-mobile-service/config";
+                //"http://82.223.15.251/config.json";
+                "https://demo23.sclable.me/mobile/sclable-mobile-service/config";
         login_procedure.requested_operation.the_table = null;
         login_procedure.requested_operation.status = 0;
         // -----------------------------------------------------------------------------------------

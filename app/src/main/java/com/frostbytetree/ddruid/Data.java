@@ -49,6 +49,7 @@ class Table{
     ArrayList<Attribute> attributes;
     ArrayList<DataSet> dataSets;
     ArrayList<Widget> usedBy;
+    ArrayList<Action> myActions;
 }
 
 class DataSet{
@@ -58,7 +59,6 @@ class DataSet{
 class Attribute{
     String name;
     String attribute_description;   // Maybe irrelevant ?!?!
-    ArrayList<Action> myActions;
     short attribute_type;
     // Here we declare what the different attribute types are:
     // 0 - Text View;
@@ -77,6 +77,7 @@ class Attribute{
 
 class Action{
     String name;
+    ArrayList<Attribute> attributes;
     ArrayList<Boolean> attribute_required;
     ArrayList<Boolean> attribute_readonly;
 }
