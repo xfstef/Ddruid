@@ -134,7 +134,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Check which request we're responding to
 
-        initViewItems();
+        if(requestCode == 0 || resultCode == Activity.RESULT_OK)
+            startWidgetActivity();
+        //initViewItems();
+
 
 
         /*

@@ -141,11 +141,12 @@ public class WidgetActivity extends AppCompatActivity {
             @Override
             public void onItemClick(View view, int position) {
                 Widget selected_widget = my_widget.myChildren.get(position);
-
                 Toast.makeText(getApplicationContext(), "Selected widget: " + selected_widget.titleBar, Toast.LENGTH_LONG).show();
-                //Intent iResult = new Intent();
-                //setResult(Activity.RESULT_OK, iResult);
-                //finish();
+                appLogic.setCurrentWidget(selected_widget);
+
+                Intent iResult = new Intent();
+                setResult(Activity.RESULT_OK, iResult);
+                finish();
                 }
                 //Toast.makeText(getApplicationContext(), "Selected Widget element: " + my_widget.myChildren.get(position).titleBar, Toast.LENGTH_LONG).show();
 

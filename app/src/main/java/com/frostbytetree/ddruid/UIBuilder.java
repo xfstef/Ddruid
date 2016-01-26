@@ -51,7 +51,7 @@ public class UIBuilder {
     // and returns the build custom model
     public Widget inflate_model(Widget widget){
 
-        addTestElement(widget);
+        //addTestElement(widget);
         return widget;
         /*
         for(int i = 0;  i < widget.myTables.size(); i++)
