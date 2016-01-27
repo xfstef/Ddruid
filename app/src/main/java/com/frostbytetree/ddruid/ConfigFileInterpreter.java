@@ -24,6 +24,7 @@ public class ConfigFileInterpreter {
     WidgetViews widgetViews;
     JSONArray widgets = new JSONArray();
     SclableInterpreter sclableInterpreter;
+    AppLogic appLogic;
 
     Data data;
     JSONArray model_structure = new JSONArray();
@@ -47,7 +48,12 @@ public class ConfigFileInterpreter {
             try {
                 String backend = configFile.json_form.getString("backend");
                 switch (backend){
+                    case "proprietary":
+                        appLogic.backend = 0;
+                        // TODO: Implement interpreter for our own server backend.
+                        break;
                     case "sclable":
+                        appLogic.backend = 1;
                         sclableInterpreter.buildWidgets();
                         sclableInterpreter.buildDataModels();
                         break;

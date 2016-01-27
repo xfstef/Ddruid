@@ -62,7 +62,8 @@ public class CommunicationDaemon extends Thread{
                 // Processing found / still ongoing messages.
                 sortByPriority();
                 for(int x = 0; x < local_pile.size(); x++){
-                    statusMarshalling(local_pile.get(x));
+                    if(local_pile.get(x).requested_operation.status != 6)
+                        statusMarshalling(local_pile.get(x));
                 }
 
                 Thread.sleep(thread_throttling);
@@ -75,7 +76,6 @@ public class CommunicationDaemon extends Thread{
     private void statusMarshalling(Message message) {   // Calls the appropriate message processing
         // procedure according to its status type.
         // TODO: Enable background processing of bigger requests so that the app communicates async.
-
         switch(message.requested_operation.status){
             case 1:
                 message.requested_operation.status = 2;
@@ -91,13 +91,40 @@ public class CommunicationDaemon extends Thread{
             case 110:
                 getConfigurations(message);
                 break;
+            case 111:
+                getTableDataFromServer(message);
+                break;
             // TODO: Define behaviour for the other operation types.
         }
     }
 
-    private void getConfigurations(Message message) {
-        System.out.println("Message Rowstamp: " + message.current_rowstamp);
+    private void getTableDataFromServer(Message message) {
+        // TODO: ----------------------- Check for user credentials / login ------------------------
+        //
+        // -----------------------------------------------------------------------------------------
 
+        ClientResource online_resource = new ClientResource(message.requested_operation.REST_command);
+        Representation representation = online_resource.get();
+        JSONObject response = null;
+
+        try {
+            response = new JSONObject(representation.getText());
+        } catch (JSONException e) {
+            message.requested_operation.status = 5;
+            e.printStackTrace();
+        } catch (IOException e) {
+            message.requested_operation.status = 5;
+            e.printStackTrace();
+        }
+
+        synchronized (data.data_lock){
+            data.temp_object = response;
+        }
+
+        message.requested_operation.status = 3;
+    }
+
+    private void getConfigurations(Message message) {
         // TODO: ----------------------- Check for user credentials / login ------------------------
         //
         // -----------------------------------------------------------------------------------------

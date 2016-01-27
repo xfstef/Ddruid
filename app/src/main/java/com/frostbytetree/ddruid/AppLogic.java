@@ -10,18 +10,23 @@ public class AppLogic extends Thread{
     private static AppLogic ourInstance = new AppLogic();
     long this_time, last_time;
     Data data = Data.getInstance();
-    UIBuilder uiBuilder = UIBuilder.getInstance();
+    UIBuilder uiBuilder;
     private static short my_id = 1;
-    IACInterface commInterface = IACInterface.getInstance();
+    IACInterface commInterface;
     Widget currentWidget;
-    ConfigFile configFile = ConfigFile.getInstance();
-    ConfigFileInterpreter configFileInterpreter = ConfigFileInterpreter.getInstance();
+    ConfigFile configFile;
+    ConfigFileInterpreter configFileInterpreter;
     MainActivity mainActivity;
-    WidgetViews widgetViews = WidgetViews.getInstance();
+    WidgetViews widgetViews;
     short thread_throttling = 5000; // This option is used to determine how much the Thread sleeps.
                                     // 5000 - Idle mode: the app is minimized with no bkg operation.
                                     // 1000 - Passive mode: app is sending / getting data.
                                     // 100 - Active mode: app is actively working with the UI.
+    short backend = 0;  // This option is used to define which type of server the connection uses.
+                        // 0 - Custom Server (Default);
+                        // 1 - Sclable.
+    String uri  =   //"http://82.223.15.251";
+                    "https://demo23.sclable.me/mobile/sclable-mobile-service";
 
     public static AppLogic getInstance() {
         return ourInstance;
@@ -30,6 +35,12 @@ public class AppLogic extends Thread{
     private AppLogic() {
         this_time = System.currentTimeMillis();
         last_time = this_time;
+        uiBuilder = UIBuilder.getInstance();
+        commInterface = IACInterface.getInstance();
+        configFile = ConfigFile.getInstance();
+        configFileInterpreter = ConfigFileInterpreter.getInstance();
+        widgetViews = WidgetViews.getInstance();
+        configFileInterpreter.appLogic = this;
     }
 
     void setCurrentWidget(Widget the_widget){
@@ -69,9 +80,12 @@ public class AppLogic extends Thread{
                 switch(finished_operation.requested_operation.type){
                     case 110:   // Got Config File successfully. Trying to interpret it now.
                         configFileInterpreter.startStartupProcess();
-                        setCurrentWidget(widgetViews.the_widgets.get(widgetViews.the_widgets.size()-1));
+                        setCurrentWidget(widgetViews.the_widgets.get(widgetViews.the_widgets.size() - 1));
                         mainActivity.startWidgetActivity();
                         thread_throttling = 5000;
+                        break;
+                    case 111: // Got a table from the server succesfully. Trying to read it now.
+                        System.out.println("Got table data: " + data.temp_object.toString());
                         break;
                     // TODO: Implement the rest of possible post successful operation calls
                 }
@@ -81,6 +95,9 @@ public class AppLogic extends Thread{
                     case 110:   // Did not get the Config File successfully. Retrying soon.
                         // TODO: Decide what to do in case the comm Daemon couldn't get the cfg file.
                         break;
+                    case 111: // Did not get a server table succesfully. Retrying soon.
+                        System.out.println("Got table data: " + data.temp_object.toString());
+                        break;
                     // TODO: Implement the rest of possible post failed operation calls
                 }
                 break;
@@ -88,8 +105,32 @@ public class AppLogic extends Thread{
         finished_operation.requested_operation.status = 6;
     }
 
+    public void getTableData(Table the_table){
+        // TODO: Check if the data exists locally. If not then download it.
+
+        String table_address = the_table.table_name.replace(".","/");
+        // TODO: ------------------------- Automate this whole procedure !!! -----------------------
+        Message download_table_data_procedure = new Message();
+        download_table_data_procedure.caller_id = my_id;
+        download_table_data_procedure.target_id = 2;  // TODO: set the target ID with a variable.
+        download_table_data_procedure.current_rowstamp = commInterface.rowstamp;
+        commInterface.rowstamp++;
+        download_table_data_procedure.priority = 0;   // TODO: set priority with a variable.
+        download_table_data_procedure.requested_operation = new Operation();
+        download_table_data_procedure.requested_operation.type = 111;   // TODO: use a variable.
+        download_table_data_procedure.requested_operation.REST_command = uri + "/data/" + table_address;
+        download_table_data_procedure.requested_operation.the_table = the_table;
+        download_table_data_procedure.requested_operation.status = 0;
+        // -----------------------------------------------------------------------------------------
+
+        synchronized (commInterface.message_buffer_lock) {
+            commInterface.message_buffer.add(download_table_data_procedure);
+        }
+    }
+
     public void initLoginProc() {
         String user, pass;  // TODO: Get the real user name and pass and send them to the server.
+
         // TODO: ------------------------- Automate this whole procedure !!! -----------------------
         Message login_procedure = new Message();
         login_procedure.caller_id = my_id;
@@ -99,13 +140,10 @@ public class AppLogic extends Thread{
         login_procedure.priority = 0;   // TODO: set priority with a variable.
         login_procedure.requested_operation = new Operation();
         login_procedure.requested_operation.type = 110;   // TODO: use a variable.
-        login_procedure.requested_operation.REST_command =
-                //"http://82.223.15.251/config.json";
-                "https://demo23.sclable.me/mobile/sclable-mobile-service/config";
+        login_procedure.requested_operation.REST_command = uri + "/config";
         login_procedure.requested_operation.the_table = null;
         login_procedure.requested_operation.status = 0;
         // -----------------------------------------------------------------------------------------
-
 
         /*
         If no config file download it and interpret it

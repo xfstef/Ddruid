@@ -1,5 +1,7 @@
 package com.frostbytetree.ddruid;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 /**
@@ -15,6 +17,7 @@ public class Data {
     private String test;
     private boolean persistancy = false;
     ArrayList<Table> tables;
+    JSONObject temp_object = null;
     Object data_lock = new Object();
 
     public static Data getInstance() {
