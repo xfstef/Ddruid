@@ -47,7 +47,6 @@ class Widget extends LinearLayout{
     //LinearLayout widgetLinearLayout;
     int id;
     ArrayList<Table> myTables;
-
     ArrayList<Pair<String, String>> myTableActions;   // {["ticket", "create"],["ticket", "forward"]}
 
     ArrayList<Widget> myChildren;
@@ -74,6 +73,7 @@ class Widget extends LinearLayout{
 
 
 
+    /*
     public void addElement(){
         Button a1 = new Button(context);
         a1.setText("@string/app_name");
@@ -83,5 +83,6 @@ class Widget extends LinearLayout{
         Activity MainActivity = (Activity)context;
         //MainActivity.setContentView(widgetLinearLayout);
     }
+    */
 
 }

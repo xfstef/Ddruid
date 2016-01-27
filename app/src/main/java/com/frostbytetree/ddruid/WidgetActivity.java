@@ -89,10 +89,6 @@ public class WidgetActivity extends AppCompatActivity {
             checkWidgetType();
         }
 
-        // init the UI Builder
-        the_ui = UIBuilder.getInstance();
-        the_ui.setContext(this);
-
         // getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         // getSupportActionBar().setDisplayShowHomeEnabled(true);
 
@@ -122,8 +118,19 @@ public class WidgetActivity extends AppCompatActivity {
 
     void initFormWidget()
     {
-        widgetScreen = the_ui.inflate_model(my_widget);
-        System.out.println("Enable Form widget!");
+        // init the UI Builder
+        the_ui = UIBuilder.getInstance();
+
+        the_ui.setContext(this);
+
+        System.out.println("Widget Screen: " + my_widget.titleBar);
+        System.out.println("The UI Object within form: " + the_ui);
+        Widget new_ui_widget = the_ui.inflate_model(my_widget);
+
+        widgetScreen.addView(new_ui_widget);
+        // widgetScreen.addView(my_widget);
+        // widgetScreen = the_ui.inflate_model(my_widget);
+        // System.out.println("Enable Form widget!");
     }
 
      void initWidgetList() {
@@ -147,7 +154,7 @@ public class WidgetActivity extends AppCompatActivity {
                 Intent iResult = new Intent();
                 setResult(Activity.RESULT_OK, iResult);
                 finish();
-                }
+            }
                 //Toast.makeText(getApplicationContext(), "Selected Widget element: " + my_widget.myChildren.get(position).titleBar, Toast.LENGTH_LONG).show();
 
         }));
@@ -185,7 +192,6 @@ public class WidgetActivity extends AppCompatActivity {
 
     private void showDetailsFragment() {
 
-
     }
 
 
@@ -208,16 +214,6 @@ public class WidgetActivity extends AppCompatActivity {
 
 
     Widget getCurrentWidget() {
-        /*
-        Widget found_widget;
-        Intent intent = getIntent();
-        for (int x = 0; x < widgetViews.the_widgets.size(); x++) {
-            if (widgetViews.the_widgets.get(x).id == intent.getIntExtra("widget", 0)) {
-                found_widget = widgetViews.the_widgets.get(x);
-                System.out.println("Widget title: " + found_widget.titleBar);
-                return found_widget;
-            }
-        }*/
         if(appLogic.currentWidget != null)
             return appLogic.currentWidget;
         else
@@ -256,6 +252,14 @@ public class WidgetActivity extends AppCompatActivity {
     public void onResume() {
         super.onResume();
         appLogic.setCurrentWidget(my_widget);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        // when adding dynamically views then they should be destroyed when going back
+        my_widget.removeAllViews();
+        widgetScreen.removeAllViews();
     }
 
     @TargetApi(21)

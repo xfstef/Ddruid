@@ -62,7 +62,6 @@ class Attribute{
     short attribute_type;
     // Here we declare what the different attribute types are:
     // 0 - Text View;
-    // 1 - Edit Text;
     // 2 - Spinner;
     // 3 - Check Box;
     // 4 - Image;
