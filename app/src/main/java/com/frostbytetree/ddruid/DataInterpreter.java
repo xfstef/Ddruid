@@ -32,13 +32,13 @@ public class DataInterpreter {
 
     }
 
-    public void processTableData(Table table){
+    public void processTableData(Message the_message){
         // TODO: As of now every data type is converted to String. This should be changed in the future,
         // since a lot of the data are of other types.
         synchronized (data.temp_object_lock){
             try {
-                JSONArray data_list = data.temp_object.getJSONArray(table.table_name);
-                table.dataSets = new ArrayList<DataSet>(data_list.length());
+                JSONArray data_list = data.temp_object.getJSONArray(the_message.requested_operation.the_table.table_name);
+                the_message.requested_operation.the_table.dataSets = new ArrayList<DataSet>(data_list.length());
                 for(int x = 0; x < data_list.length(); x++){
                     DataSet new_set = new DataSet();
                     JSONObject set = data_list.getJSONObject(x);
@@ -47,12 +47,17 @@ public class DataInterpreter {
                     for(int y = 0; y < set.length(); y++){
                         new_set.set.add(set.getString(attribute_names.getString(y)));
                     }
-                    table.dataSets.add(new_set);
+                    the_message.requested_operation.the_table.dataSets.add(new_set);
                 }
 
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+        }
+        try {
+            the_message.caller_widget.signalDataArrived();
+        }catch(Exception e){
+            System.out.println("The Widget was closed in the meantime !");
         }
         data.temp_object = null;
     }

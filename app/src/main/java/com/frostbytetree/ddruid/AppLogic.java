@@ -87,7 +87,7 @@ public class AppLogic extends Thread{
                         thread_throttling = 5000;
                         break;
                     case 111: // Got a table from the server succesfully. Trying to read it now.
-                        dataInterpreter.processTableData(finished_operation.requested_operation.the_table);
+                        dataInterpreter.processTableData(finished_operation);
                         break;
                     // TODO: Implement the rest of possible post successful operation calls
                 }
@@ -107,7 +107,7 @@ public class AppLogic extends Thread{
         finished_operation.requested_operation.status = 6;
     }
 
-    public void getTableData(Table the_table){
+    public void getTableData(Table the_table, WidgetActivity caller){
         // TODO: Check if the data exists locally. If not then download it.
 
         String table_address = the_table.table_name.replace(".","/");
@@ -123,6 +123,7 @@ public class AppLogic extends Thread{
         download_table_data_procedure.requested_operation.REST_command = uri + "/data/" + table_address;
         download_table_data_procedure.requested_operation.the_table = the_table;
         download_table_data_procedure.requested_operation.status = 0;
+        download_table_data_procedure.caller_widget = caller;
         // -----------------------------------------------------------------------------------------
 
         synchronized (commInterface.message_buffer_lock) {

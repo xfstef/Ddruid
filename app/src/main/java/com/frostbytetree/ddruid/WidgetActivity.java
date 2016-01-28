@@ -308,6 +308,9 @@ public class WidgetActivity extends AppCompatActivity {
         AppIndex.AppIndexApi.end(client, viewAction);
         client.disconnect();
     }
+
+    public void signalDataArrived() {
+    }
 }
 
 
