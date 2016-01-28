@@ -59,6 +59,7 @@ public class WidgetActivity extends AppCompatActivity {
     //WidgetViews widgetViews;
     Widget my_widget;
 
+    RecyclerView recList;
 
     UIBuilder the_ui;
     RecycleViewWidgetAdapter widgetAdapter;
@@ -79,9 +80,11 @@ public class WidgetActivity extends AppCompatActivity {
         my_widget = getCurrentWidget();
 
         setContentView(R.layout.widget_activity);
+        /*
         if (Build.VERSION.SDK_INT > 21) {
             setupWindowAnimations();
         }
+        */
         initScreenItems();
 
 
@@ -167,11 +170,10 @@ public class WidgetActivity extends AppCompatActivity {
     void initTableList() {
         RecyclerView recList = new RecyclerView(this);
 
-        final Table my_table = findTableWithinWidget(my_widget);
+        Table my_table = findTableWithinWidget(my_widget);
 
-        System.out.println("MY TABLE: " + my_table.table_name);
         appLogic.getTableData(my_table, this);
-
+        System.out.println("DataSet0: " + my_table.dataSets.toString());
 
         if(my_table == null)
         {
@@ -181,7 +183,6 @@ public class WidgetActivity extends AppCompatActivity {
 
         widgetScreen.addView(recList);
 
-        System.out.println("dataSet: " + my_table.dataSets);
         LinearLayoutManager llm = new LinearLayoutManager(this);
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         recList.setLayoutManager(llm);
@@ -192,7 +193,7 @@ public class WidgetActivity extends AppCompatActivity {
         recList.addOnItemTouchListener(new RecyclerItemClickListener(this, new RecyclerItemClickListener.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                DataSet selectedDataSet = my_table.dataSets.get(position);
+                //DataSet selectedDataSet = my_table.dataSets.get(position);
 
                 //showDetailsFragment selectedDataSet
                 //Toast.makeText(getApplicationContext(), "Selected DataSet element: " + my_widget.myChildren.get(position).titleBar, Toast.LENGTH_LONG).show();
@@ -209,19 +210,14 @@ public class WidgetActivity extends AppCompatActivity {
     Table findTableWithinWidget(Widget widget)
     {
         if(widget.myTables.size() != 0)
+        {
             return widget.myTables.get(0);
+        }
         else
             return null;
     }
 
-    public void addRecycleViewItemList()
-    {
-        if(widgetAdapter != null)
-            widgetAdapter.notifyItemInserted(my_widget.myChildren.size()-1);
 
-        if(widgetAdapter != null)
-            widgetAdapter.notifyItemInserted(my_widget.myChildren.size()-1);
-    }
 
 
     Widget getCurrentWidget() {
@@ -336,7 +332,16 @@ public class WidgetActivity extends AppCompatActivity {
 
     public void signalDataArrived() {
         System.out.println("DATA HAS ARRIVED!");
-        widgetAdapter.notifyDataSetChanged();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Table my_table = findTableWithinWidget(my_widget);
+
+                System.out.println("Data Set2: " + my_table.dataSets.toString());
+                tableAdapter.setNewData(my_table.dataSets);
+            }
+        });
+
     }
 }
 

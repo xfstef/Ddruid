@@ -38,14 +38,14 @@ public class UIBuilder {
 
     ArrayList<View> all_view_elements = new ArrayList<>();
 
-    // WidgetViews widgetViews;
+    //WidgetViews widgetViews;
 
     public static UIBuilder getInstance() {
         return ourInstance;
     }
 
     private UIBuilder() {
-        this.data = data.getInstance();
+        this.data = Data.getInstance();
     }
 
     public void setContext(Context context){
@@ -132,6 +132,17 @@ public class UIBuilder {
         Spinner spinner_input = new Spinner(context);
         spinner_input.setVisibility(View.VISIBLE);
         // TODO get the data and initialize
+        String spinner_table = attribute.spinner_name;
+        System.out.println("Spinner table: " + spinner_table);
+        for(int i = 0; i < data.tables.size(); i++)
+        {
+            System.out.println("Table["+i+"]= " + data.tables.get(i).table_name);
+            if(data.tables.get(i).table_name.matches(spinner_table))
+            {
+                System.out.println("Spinner table found: " + data.tables.get(i).table_name);
+                break;
+            }
+        }
 
         return spinner_input;
 
@@ -215,6 +226,14 @@ class RecycleViewDataSetAdapter extends RecyclerView.Adapter<RecycleViewDataSetA
     {
         this.mContext = context;
         this.dataSets = dataSet;
+        System.out.println("DataSet1: " + dataSets.toString() + "\n");
+    }
+
+    public void setNewData(ArrayList<DataSet> data_sets)
+    {
+        System.out.println("DataSet3: " + dataSets.toString());
+        this.dataSets = data_sets;
+        this.notifyDataSetChanged();
     }
 
     @Override

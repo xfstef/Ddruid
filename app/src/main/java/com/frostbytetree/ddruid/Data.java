@@ -51,14 +51,14 @@ class Table{
     Boolean cached_only;
     int attribute_count;
     ArrayList<Attribute> attributes;
-    ArrayList<DataSet> dataSets;
+    ArrayList<DataSet> dataSets = new ArrayList<>(1);
     ArrayList<Widget> usedBy;
     ArrayList<Action> myActions;
 }
 
 class DataSet{
     // TODO: Enable more data types.
-    ArrayList<String> set;
+    ArrayList<String> set = new ArrayList<>(1);
 }
 
 class Attribute{
