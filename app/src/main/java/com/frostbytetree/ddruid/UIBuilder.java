@@ -196,7 +196,7 @@ class RecycleViewWidgetAdapter extends RecyclerView.Adapter<RecycleViewWidgetAda
 
 class RecycleViewDataSetAdapter extends RecyclerView.Adapter<RecycleViewDataSetAdapter.ViewHolder>
 {
-    private ArrayList<DataSet> dataSets.;
+    private ArrayList<DataSet> dataSets;
     Context mContext;
     public TextView mTextView;
 
@@ -227,7 +227,7 @@ class RecycleViewDataSetAdapter extends RecyclerView.Adapter<RecycleViewDataSetA
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.mTextView.setText(dataSets.get(position).toString());
+        holder.mTextView.setText(dataSets.get(position).set.toString());
     }
 
     @Override
