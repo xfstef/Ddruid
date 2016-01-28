@@ -42,10 +42,9 @@ public class DataInterpreter {
                 for(int x = 0; x < data_list.length(); x++){
                     DataSet new_set = new DataSet();
                     JSONObject set = data_list.getJSONObject(x);
-                    JSONArray attribute_names = set.names();
                     new_set.set = new ArrayList<String>(set.length());
-                    for(int y = 0; y < set.length(); y++){
-                        new_set.set.add(set.getString(attribute_names.getString(y)));
+                    for(int y = 0; y < the_message.requested_operation.the_table.attributes.size(); y++){
+                        new_set.set.add(set.getString(the_message.requested_operation.the_table.attributes.get(y).name));
                     }
                     the_message.requested_operation.the_table.dataSets.add(new_set);
                 }
