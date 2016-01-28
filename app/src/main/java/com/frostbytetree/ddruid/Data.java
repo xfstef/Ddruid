@@ -76,6 +76,7 @@ class Attribute{
 
     // By default NULL. Only needed if this attribute is a spinner.
     String spinner_name = null;
+    String reference_name = null;
     Spinner items = null;
 }
 

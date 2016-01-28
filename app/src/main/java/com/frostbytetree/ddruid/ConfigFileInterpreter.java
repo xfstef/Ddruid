@@ -202,6 +202,7 @@ class SclableInterpreter {
                     new_attribute.attribute_type = 2;
                     new_attribute.items = new Spinner();
                     new_attribute.spinner_name = temp_attribute.getString("reference");
+                    new_attribute.reference_name = temp_attribute.getString("reference");
                     char searched;
                     for(int k = new_attribute.spinner_name.length()-1; k >= 0; k--) {
                         searched = new_attribute.spinner_name.charAt(k);
