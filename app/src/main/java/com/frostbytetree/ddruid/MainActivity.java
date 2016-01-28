@@ -3,6 +3,7 @@ package com.frostbytetree.ddruid;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityOptions;
+import android.app.Service;
 import android.content.Intent;
 import android.os.Build;
 import android.support.v4.widget.DrawerLayout;
@@ -13,6 +14,7 @@ import android.os.Bundle;
 import android.transition.Slide;
 import android.transition.TransitionInflater;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -118,9 +120,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 super.onDrawerClosed(drawerView);
                 // Code here will execute once drawer is closed
             }
-
-
-
         }; // Drawer Toggle Object Made
         Drawer.setDrawerListener(mDrawerToggle); // Drawer Listener set to the Drawer toggle
         mDrawerToggle.syncState();
@@ -135,26 +134,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // Check which request we're responding to
 
-        if(requestCode == 0 && resultCode == Activity.RESULT_OK)
+        if(appLogic.currentWidget != null)
             startWidgetActivity();
-        else
-            initViewItems();
 
-
-
-        /*
-        if (requestCode == PICK_CONTACT_REQUEST) {
-            // Make sure the request was successful
-            if (resultCode == RESULT_OK) {
-                // The user picked a contact.
-                // The Intent's data Uri identifies which contact was selected.
-
-                // Do something with the contact here (bigger example below)
-            }
-        }
-        */
     }
 
     @Override
@@ -173,10 +156,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         System.out.println("OnClick Funktion called!");
         switch(view.getId()){
             case R.id.bLogin:
+                hideKeyboard();
                 setContentView(R.layout.loading);
-                //Widget new_widget = buildTempWidget();
-                //widgetViews.the_widgets.add(new_widget);
-                //switchWidget(new_widget);
 
                 appLogic.initLoginProc();
                 break;
@@ -184,6 +165,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         // uiBuilder.inflate_model(null);
         // System.out.println("The new view is: " + view);
+    }
+
+
+    private void hideKeyboard()
+    {
+        InputMethodManager imm = (InputMethodManager)getSystemService(Service.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(getWindow().getDecorView().getRootView().getWindowToken(), 0);
+
     }
 
 }

@@ -133,7 +133,7 @@ public class WidgetActivity extends AppCompatActivity {
         // System.out.println("Enable Form widget!");
     }
 
-     void initWidgetList() {
+    void initWidgetList() {
         RecyclerView recList = new RecyclerView(this);
         widgetScreen.addView(recList);
 
@@ -148,43 +148,54 @@ public class WidgetActivity extends AppCompatActivity {
             @Override
             public void onItemClick(View view, int position) {
                 Widget selected_widget = my_widget.myChildren.get(position);
-                Toast.makeText(getApplicationContext(), "Selected widget: " + selected_widget.titleBar, Toast.LENGTH_LONG).show();
+                // set parent widget
+                selected_widget.myParent = my_widget;
+
+
+                // set current widget
                 appLogic.setCurrentWidget(selected_widget);
 
-                Intent iResult = new Intent();
-                setResult(Activity.RESULT_OK, iResult);
+                // Intent iResult = new Intent();
+                // setResult(Activity.RESULT_OK, iResult);
                 finish();
             }
-                //Toast.makeText(getApplicationContext(), "Selected Widget element: " + my_widget.myChildren.get(position).titleBar, Toast.LENGTH_LONG).show();
+            //Toast.makeText(getApplicationContext(), "Selected Widget element: " + my_widget.myChildren.get(position).titleBar, Toast.LENGTH_LONG).show();
 
         }));
-
     }
 
-     void initTableList() {
-         RecyclerView recList = new RecyclerView(this);
+    void initTableList() {
+        RecyclerView recList = new RecyclerView(this);
 
-         final Table my_table = findTableWithinWidget(my_widget);
+        final Table my_table = findTableWithinWidget(my_widget);
 
-         if(my_table == null)
-         {
-             System.out.println("No Table found within Widget!");
-             return;
-         }
+        System.out.println("MY TABLE: " + my_table.table_name);
+        appLogic.getTableData(my_table, this);
+
+
+        if(my_table == null)
+        {
+            System.out.println("No Table found within Widget!");
+            return;
+        }
+
         widgetScreen.addView(recList);
 
+        System.out.println("dataSet: " + my_table.dataSets);
         LinearLayoutManager llm = new LinearLayoutManager(this);
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         recList.setLayoutManager(llm);
         tableAdapter = new RecycleViewDataSetAdapter(this, my_table.dataSets);
+        //tableAdapter.notifyDataSetChanged();
         recList.setAdapter(tableAdapter);
+
         recList.addOnItemTouchListener(new RecyclerItemClickListener(this, new RecyclerItemClickListener.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
                 DataSet selectedDataSet = my_table.dataSets.get(position);
 
                 //showDetailsFragment selectedDataSet
-                Toast.makeText(getApplicationContext() ,"Selected DataSet element: " + my_widget.myChildren.get(position).titleBar, Toast.LENGTH_LONG).show();
+                //Toast.makeText(getApplicationContext(), "Selected DataSet element: " + my_widget.myChildren.get(position).titleBar, Toast.LENGTH_LONG).show();
             }
         }));
 
@@ -257,9 +268,23 @@ public class WidgetActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+
         // when adding dynamically views then they should be destroyed when going back
         my_widget.removeAllViews();
         widgetScreen.removeAllViews();
+        Intent iResult = new Intent();
+        setResult(Activity.RESULT_CANCELED, iResult);
+
+        // check if this widget has parent widgets, if so then set the coresponding parent widget
+        if(my_widget.myParent != null) {
+            appLogic.setCurrentWidget(my_widget.myParent);
+        }
+        else
+        {
+            // this sends the android app to the background
+            this.moveTaskToBack(true);
+        }
+
     }
 
     @TargetApi(21)
@@ -310,6 +335,8 @@ public class WidgetActivity extends AppCompatActivity {
     }
 
     public void signalDataArrived() {
+        System.out.println("DATA HAS ARRIVED!");
+        widgetAdapter.notifyDataSetChanged();
     }
 }
 

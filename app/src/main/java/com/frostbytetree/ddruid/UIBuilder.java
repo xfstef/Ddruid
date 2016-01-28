@@ -120,7 +120,7 @@ public class UIBuilder {
                 all_view_elements.add(item);
                 break;
             case 6:
-
+                item = addSpinnerElement(attribute, required, read_only);
                 break;
         }
 
@@ -147,18 +147,6 @@ public class UIBuilder {
         input_item.addView(input_text, (new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)));
 
         return input_item;
-    }
-
-
-    private void addTestElement(LinearLayout widgetLinearLayout){
-        Button a1 = new Button(context);
-        a1.setText("@string/app_name");
-        a1.setVisibility(View.VISIBLE);
-        widgetLinearLayout.addView(a1, (new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)));
-        System.out.println("Element Should be added!");
-
-        // AppCompatActivity widgetActivity = (AppCompatActivity)context;
-        // MainActivity.setContentView(L2);
     }
 
 }
@@ -208,7 +196,7 @@ class RecycleViewWidgetAdapter extends RecyclerView.Adapter<RecycleViewWidgetAda
 
 class RecycleViewDataSetAdapter extends RecyclerView.Adapter<RecycleViewDataSetAdapter.ViewHolder>
 {
-    private ArrayList<DataSet> dataSets;
+    private ArrayList<DataSet> dataSets.;
     Context mContext;
     public TextView mTextView;
 

@@ -50,7 +50,7 @@ class Widget extends LinearLayout{
     ArrayList<Pair<String, String>> myTableActions;   // {["ticket", "create"],["ticket", "forward"]}
 
     ArrayList<Widget> myChildren;
-    ArrayList<Widget> myParents; // By default just one parent but there may exist cases with multiple parents.
+    Widget myParent; // By default just one parent but there may exist cases with multiple parents.
     ArrayList<String> myParentNames;
     String titleBar;
     short widgetType;   // This is the type of widget that needs to be set according to what it does
@@ -66,6 +66,8 @@ class Widget extends LinearLayout{
         super(context);
         this.context = context;
         //widgetLinearLayout = new LinearLayout(context);
+        ArrayList<Widget> myChildren = new ArrayList<Widget>();
+        myParent = null;
         setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
         setGravity(Gravity.CENTER);
         setOrientation(LinearLayout.VERTICAL);
