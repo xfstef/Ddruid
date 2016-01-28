@@ -54,10 +54,11 @@ public class DataInterpreter {
                 e.printStackTrace();
             }
         }
+
         try {
             the_message.caller_widget.signalDataArrived();
         }catch(Exception e){
-            System.out.println("The Widget was closed in the meantime !");
+            e.printStackTrace();
         }
         data.temp_object = null;
     }
