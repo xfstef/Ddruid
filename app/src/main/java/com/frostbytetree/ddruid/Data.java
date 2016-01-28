@@ -19,6 +19,7 @@ public class Data {
     ArrayList<Table> tables;
     JSONObject temp_object = null;
     Object data_lock = new Object();
+    Object temp_object_lock = new Object();
 
     public static Data getInstance() {
         return ourInstance;
@@ -56,6 +57,7 @@ class Table{
 }
 
 class DataSet{
+    // TODO: Enable more data types.
     ArrayList<String> set;
 }
 

@@ -16,6 +16,7 @@ public class AppLogic extends Thread{
     Widget currentWidget;
     ConfigFile configFile;
     ConfigFileInterpreter configFileInterpreter;
+    DataInterpreter dataInterpreter;
     MainActivity mainActivity;
     WidgetViews widgetViews;
     short thread_throttling = 5000; // This option is used to determine how much the Thread sleeps.
@@ -40,6 +41,7 @@ public class AppLogic extends Thread{
         configFile = ConfigFile.getInstance();
         configFileInterpreter = ConfigFileInterpreter.getInstance();
         widgetViews = WidgetViews.getInstance();
+        dataInterpreter = DataInterpreter.getInstance();
         configFileInterpreter.appLogic = this;
     }
 
@@ -85,7 +87,7 @@ public class AppLogic extends Thread{
                         thread_throttling = 5000;
                         break;
                     case 111: // Got a table from the server succesfully. Trying to read it now.
-                        System.out.println("Got table data: " + data.temp_object.toString());
+                        dataInterpreter.processTableData(finished_operation.requested_operation.the_table);
                         break;
                     // TODO: Implement the rest of possible post successful operation calls
                 }
