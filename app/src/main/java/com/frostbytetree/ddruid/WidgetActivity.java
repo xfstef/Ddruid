@@ -18,6 +18,7 @@ import android.support.v7.widget.Toolbar;
 import android.transition.Fade;
 import android.transition.Slide;
 import android.transition.TransitionInflater;
+import android.util.Pair;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -126,14 +127,32 @@ public class WidgetActivity extends AppCompatActivity {
 
         the_ui.setContext(this);
 
-        System.out.println("Widget Screen: " + my_widget.titleBar);
-        System.out.println("The UI Object within form: " + the_ui);
         Widget new_ui_widget = the_ui.inflate_model(my_widget);
 
         widgetScreen.addView(new_ui_widget);
+
+        checkForSpinnerDataLoading();
+
+        // Find the spinners which have the data to be loaded
+
         // widgetScreen.addView(my_widget);
         // widgetScreen = the_ui.inflate_model(my_widget);
         // System.out.println("Enable Form widget!");
+    }
+
+    // This function is usefull to check if some spinners still need data from the server
+    private void checkForSpinnerDataLoading()
+    {
+        ArrayList<Pair<View, Table>> spinners = the_ui.spinner_data_to_load;
+        if(spinners.size() != 0)
+        {
+            for(int i = 0; i < spinners.size(); i++)
+            {
+                System.out.println("spinners has to load data from table: " + spinners.get(i).second.table_name);
+                appLogic.getTableData(spinners.get(i).second,this);
+            }
+
+        }
     }
 
     void initWidgetList() {
@@ -171,7 +190,6 @@ public class WidgetActivity extends AppCompatActivity {
         RecyclerView recList = new RecyclerView(this);
 
         Table my_table = findTableWithinWidget(my_widget);
-
         appLogic.getTableData(my_table, this);
         System.out.println("DataSet0: " + my_table.dataSets.toString());
 
@@ -231,7 +249,15 @@ public class WidgetActivity extends AppCompatActivity {
         widgetScreen = (LinearLayout) findViewById(R.id.mainContent);
         toolbar = (Toolbar) findViewById(R.id.widget_toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(my_widget.titleBar);
+        try
+        {
+            getSupportActionBar().setTitle(my_widget.titleBar);
+        }
+        catch(Exception e)
+        {
+            System.out.println("Fehler beim zugreifen auf die support action bar!!!!");
+        }
+
 
         Drawer = (DrawerLayout) findViewById(R.id.DrawerLayout);        // Drawer object Assigned to the view
         mDrawerToggle = new ActionBarDrawerToggle(this, Drawer, toolbar, R.string.openDrawer, R.string.closeDrawer) {
@@ -330,17 +356,47 @@ public class WidgetActivity extends AppCompatActivity {
         client.disconnect();
     }
 
-    public void signalDataArrived() {
+    public void signalDataArrived(final Table my_table) {
         System.out.println("DATA HAS ARRIVED!");
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Table my_table = findTableWithinWidget(my_widget);
 
-                System.out.println("Data Set2: " + my_table.dataSets.toString());
-                tableAdapter.setNewData(my_table.dataSets);
-            }
-        });
+        // 0 - Widget-List;
+        // 1 - Form;
+        // 2 - Detail - could be never used;
+        // 3 - Code Scanner;
+        // 4 - List with datasets
+        // 31 - Code Scanner + GPS;
+
+        switch(my_widget.widgetType)
+        {
+            case 1:
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        System.out.println("my_table:        " + my_table.toString());
+                        System.out.println("my_table_spinner:" + the_ui.spinner_data_to_load.get(0).second);
+                        // If table data has recieved and spinners should be filled first check the size
+                        // then see if the requested table matches with the incomming
+                        for(int i = 0; i < the_ui.spinner_data_to_load.size(); i++)
+                            if(my_table == the_ui.spinner_data_to_load.get(i).second)
+                            {
+                                the_ui.initSpinnerAdapter((Spinner)the_ui.spinner_data_to_load.get(i).first, my_table.dataSets);
+                                the_ui.spinner_data_to_load.remove(the_ui.spinner_data_to_load.get(i));
+                            }
+                    }
+                });
+                break;
+            case 4:
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        System.out.println("Data Set2: " + my_table.dataSets.toString());
+                        tableAdapter.setNewData(my_table.dataSets);
+                    }
+                });
+                break;
+
+        }
+
 
     }
 }
