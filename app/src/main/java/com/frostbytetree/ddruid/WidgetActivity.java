@@ -10,6 +10,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -80,6 +81,11 @@ public class WidgetActivity extends AppCompatActivity {
         appLogic = AppLogic.getInstance();
         my_widget = getCurrentWidget();
 
+        // init the UI Builder
+        the_ui = UIBuilder.getInstance();
+
+        the_ui.setContext(this);
+
         setContentView(R.layout.widget_activity);
         /*
         if (Build.VERSION.SDK_INT > 21) {
@@ -122,10 +128,6 @@ public class WidgetActivity extends AppCompatActivity {
 
     void initFormWidget()
     {
-        // init the UI Builder
-        the_ui = UIBuilder.getInstance();
-
-        the_ui.setContext(this);
 
         Widget new_ui_widget = the_ui.inflate_model(my_widget);
 
@@ -156,13 +158,9 @@ public class WidgetActivity extends AppCompatActivity {
     }
 
     void initWidgetList() {
-        RecyclerView recList = new RecyclerView(this);
-        widgetScreen.addView(recList);
 
-        LinearLayoutManager llm = new LinearLayoutManager(this);
-        llm.setOrientation(LinearLayoutManager.VERTICAL);
-        recList.setLayoutManager(llm);
-        //String[] list = {"First element", "Second element"};
+        RecyclerView recList = the_ui.buildWidgetRecyclerViewer(widgetScreen);
+
         widgetAdapter = new RecycleViewWidgetAdapter(this, my_widget.myChildren);
         recList.setAdapter(widgetAdapter);
 
@@ -187,9 +185,9 @@ public class WidgetActivity extends AppCompatActivity {
     }
 
     void initTableList() {
-        RecyclerView recList = new RecyclerView(this);
 
         Table my_table = findTableWithinWidget(my_widget);
+
 
         if(my_table == null)
         {
@@ -197,15 +195,10 @@ public class WidgetActivity extends AppCompatActivity {
             return;
         }
 
-        //TODO implement: check for rowstamp of the table to know if it's necessary to synchronize -> SCLABLE MUST DELIVER ROWSTAMP
-        if(my_table.dataSets.size() == 0)
-            appLogic.getTableData(my_table, this);
+        RecyclerView recList = the_ui.buildTableRecyclerViewer(widgetScreen, my_table);
 
-        widgetScreen.addView(recList);
 
-        LinearLayoutManager llm = new LinearLayoutManager(this);
-        llm.setOrientation(LinearLayoutManager.VERTICAL);
-        recList.setLayoutManager(llm);
+
         tableAdapter = new RecycleViewDataSetAdapter(this, my_table.dataSets);
         //tableAdapter.notifyDataSetChanged();
         recList.setAdapter(tableAdapter);

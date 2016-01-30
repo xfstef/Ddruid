@@ -4,8 +4,11 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.util.Pair;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
@@ -147,6 +150,68 @@ public class UIBuilder {
         }
 
         return item;
+    }
+
+    public RecyclerView buildWidgetRecyclerViewer(LinearLayout mainLayout) {
+        View content = LayoutInflater.from(context).inflate(R.layout.recycler_view_menu, null);
+        LinearLayoutManager llm = new LinearLayoutManager(context);
+        llm.setOrientation(LinearLayoutManager.VERTICAL);
+
+        RecyclerView recList = (RecyclerView) content.findViewById(R.id.itemsRecyclerView);
+        final SwipeRefreshLayout swipe_content = (SwipeRefreshLayout) content.findViewById(R.id.swipeRefreshLayout);
+
+        recList.setLayoutManager(llm);
+        mainLayout.addView(swipe_content);
+
+        swipe_content.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // Refresh items
+                // Load items
+                // ...
+
+                // Load complete
+                // Update the adapter and notify data set changed
+                // ...
+
+                // Stop refresh animation
+                swipe_content.setRefreshing(false);
+            }
+        });
+
+        return recList;
+    }
+
+    public RecyclerView buildTableRecyclerViewer(LinearLayout mainLayout, Table table_to_reload) {
+        View content = LayoutInflater.from(context).inflate(R.layout.recycler_view_menu, null);
+        LinearLayoutManager llm = new LinearLayoutManager(context);
+        llm.setOrientation(LinearLayoutManager.VERTICAL);
+
+        RecyclerView recList = (RecyclerView) content.findViewById(R.id.itemsRecyclerView);
+        final SwipeRefreshLayout swipe_content = (SwipeRefreshLayout) content.findViewById(R.id.swipeRefreshLayout);
+        SwipeDataRefreshListener swipe_listener = new SwipeDataRefreshListener(context,swipe_content,table_to_reload);
+
+        recList.setLayoutManager(llm);
+        mainLayout.addView(swipe_content);
+
+
+        try {
+            WidgetActivity widgetActivity = (WidgetActivity) context;
+            if (table_to_reload.dataSets.size() == 0)
+                appLogic.getTableData(table_to_reload, widgetActivity);
+        }
+        catch (Exception e){
+            System.out.println("Sry casting activity from context not possible");
+        }
+
+
+        //TODO implement: check for rowstamp of the table to know if it's necessary to synchronize -> SCLABLE MUST DELIVER ROWSTAMP
+
+
+
+
+
+        return recList;
     }
 
     private View addTextElement(Attribute attribute, Boolean required, Boolean read_only)
@@ -309,6 +374,43 @@ class SpinnerAdapter extends ArrayAdapter<DataSet>
     }
 }
 
+class SwipeDataRefreshListener implements SwipeRefreshLayout.OnRefreshListener {
+
+    Context context;
+    Table table_to_reload;
+    SwipeRefreshLayout swipe_content;
+    AppLogic appLogic;
+
+    public SwipeDataRefreshListener(Context context, SwipeRefreshLayout swiper, Table table)
+    {
+        appLogic = AppLogic.getInstance();
+        this.swipe_content = swiper;
+        this.context = context;
+        this.table_to_reload = table;
+        this.swipe_content.setOnRefreshListener(this);
+    }
+
+    @Override
+    public void onRefresh() {
+        // Refresh items
+        // Load items
+        // ...
+        try {
+            WidgetActivity widgetActivity = (WidgetActivity) context;
+            appLogic.getTableData(table_to_reload, widgetActivity);
+        }
+        catch (Exception e){
+            System.out.println("Sry casting activity from context not possible");
+        }
+        // Load complete
+        // Update the adapter and notify data set changed
+        // ...
+
+        // Stop refresh animation
+        swipe_content.setRefreshing(false);
+    }
+}
+
 
 class RecycleViewWidgetAdapter extends RecyclerView.Adapter<RecycleViewWidgetAdapter.ViewHolder>
 {
@@ -369,6 +471,7 @@ class RecycleViewDataSetAdapter extends RecyclerView.Adapter<RecycleViewDataSetA
 
         }
     }
+
 
     public RecycleViewDataSetAdapter(Context context, ArrayList<DataSet> dataSet)
     {
