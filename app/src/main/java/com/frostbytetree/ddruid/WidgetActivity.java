@@ -190,14 +190,16 @@ public class WidgetActivity extends AppCompatActivity {
         RecyclerView recList = new RecyclerView(this);
 
         Table my_table = findTableWithinWidget(my_widget);
-        appLogic.getTableData(my_table, this);
-        System.out.println("DataSet0: " + my_table.dataSets.toString());
 
         if(my_table == null)
         {
             System.out.println("No Table found within Widget!");
             return;
         }
+
+        //TODO implement: check for rowstamp of the table to know if it's necessary to synchronize -> SCLABLE MUST DELIVER ROWSTAMP
+        if(my_table.dataSets.size() == 0)
+            appLogic.getTableData(my_table, this);
 
         widgetScreen.addView(recList);
 
