@@ -22,6 +22,7 @@ public class CommunicationDaemon extends Thread{
     private static short my_id = 2;
     IACInterface commInterface = IACInterface.getInstance();
     ConfigFile cfgFile = ConfigFile.getInstance();
+    AppLogic appLogic =AppLogic.getInstance();
     short thread_throttling = 1000; // This option is used to determine how much the Thread sleeps.
                                     // 5000 - Idle mode: the app is minimized with no bkg operation.
                                     // 1000 - Passive mode: app is sending / getting data.
@@ -42,9 +43,8 @@ public class CommunicationDaemon extends Thread{
     @Override
     synchronized public void run(){
 
-        System.out.println("Service Thread Started !");
-
         do{
+            //System.out.println("Service Thread Started ! " + persistency++);
             try {
                 // Searching the inbox for new messages and deleting the old finished jobs.
                 synchronized(commInterface.message_buffer_lock) {
@@ -65,8 +65,8 @@ public class CommunicationDaemon extends Thread{
                     if(local_pile.get(x).requested_operation.status != 6)
                         statusMarshalling(local_pile.get(x));
                 }
-
-                Thread.sleep(thread_throttling);
+                this.wait();
+                //Thread.sleep(thread_throttling);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -111,9 +111,15 @@ public class CommunicationDaemon extends Thread{
             response = new JSONObject(representation.getText());
         } catch (JSONException e) {
             message.requested_operation.status = 5;
+            synchronized (appLogic){
+                appLogic.notify();
+            }
             e.printStackTrace();
         } catch (IOException e) {
             message.requested_operation.status = 5;
+            synchronized (appLogic){
+                appLogic.notify();
+            }
             e.printStackTrace();
         }
 
@@ -122,6 +128,9 @@ public class CommunicationDaemon extends Thread{
         }
 
         message.requested_operation.status = 3;
+        synchronized (appLogic){
+            appLogic.notify();
+        }
     }
 
     private void getConfigurations(Message message) {
@@ -137,9 +146,15 @@ public class CommunicationDaemon extends Thread{
             response = new JSONObject(representation.getText());
         } catch (JSONException e) {
             message.requested_operation.status = 5;
+            synchronized (appLogic){
+                appLogic.notify();
+            }
             e.printStackTrace();
         } catch (IOException e) {
             message.requested_operation.status = 5;
+            synchronized (appLogic){
+                appLogic.notify();
+            }
             e.printStackTrace();
         }
 
@@ -148,6 +163,9 @@ public class CommunicationDaemon extends Thread{
         }
 
         message.requested_operation.status = 3;
+        synchronized (appLogic){
+            appLogic.notify();
+        }
 
     }
 

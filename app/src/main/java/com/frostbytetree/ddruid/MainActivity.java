@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     DrawerLayout Drawer;
     ActionBarDrawerToggle mDrawerToggle;
     SclableInterpreter sclableInterpreter;
+    CommunicationDaemon communicationDaemon;
 
     Toolbar toolbar;
 
@@ -82,6 +83,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // TODO: This is a temporary login protocol. Please fix me.
 
         startService(new Intent(this, DataTransferController.class));
+        communicationDaemon = CommunicationDaemon.getInstance();
+        appLogic.communicationDaemon = communicationDaemon;
 
         // loading and instanciating toolbar
 

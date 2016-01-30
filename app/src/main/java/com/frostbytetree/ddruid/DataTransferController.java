@@ -32,8 +32,6 @@ public class DataTransferController extends Service{
 
     public DataTransferController() {
         data = Data.getInstance();
-        data.setTest("Moj Kurac");
-
         configFile = ConfigFile.getInstance();
 
     }
@@ -44,7 +42,6 @@ public class DataTransferController extends Service{
         startForeground(0, someNotification);
         commDaemon = CommunicationDaemon.getInstance();
         commDaemon.start();
-        System.out.println("The service has started ! Persistancy is: " + data.getPersistancy());
     }
 
     @Nullable

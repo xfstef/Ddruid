@@ -19,6 +19,7 @@ public class AppLogic extends Thread{
     DataInterpreter dataInterpreter;
     MainActivity mainActivity;
     WidgetViews widgetViews;
+    CommunicationDaemon communicationDaemon;
     short thread_throttling = 5000; // This option is used to determine how much the Thread sleeps.
                                     // 5000 - Idle mode: the app is minimized with no bkg operation.
                                     // 1000 - Passive mode: app is sending / getting data.
@@ -53,7 +54,6 @@ public class AppLogic extends Thread{
     synchronized public void run(){
 
         System.out.println("Thread Started !");
-        data.setPersistancy(true);
 
         do {
             System.out.println("Test running!");
@@ -68,7 +68,8 @@ public class AppLogic extends Thread{
                                 commInterface.message_buffer.get(x).requested_operation.status != 6)
                             postExecutionForwarder(commInterface.message_buffer.get(x));
                 }
-                Thread.sleep(thread_throttling);
+                //Thread.sleep(thread_throttling);
+                this.wait();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -126,8 +127,11 @@ public class AppLogic extends Thread{
         download_table_data_procedure.caller_widget = caller;
         // -----------------------------------------------------------------------------------------
 
-        synchronized (commInterface.message_buffer_lock) {
+        synchronized (commInterface.message_buffer_lock) {  // Adding message.
             commInterface.message_buffer.add(download_table_data_procedure);
+        }
+        synchronized (communicationDaemon) {    // Waking up communicationDaemon
+            communicationDaemon.notify();
         }
     }
 
@@ -155,6 +159,9 @@ public class AppLogic extends Thread{
         if(configFile.json_form == null) {
             synchronized (commInterface.message_buffer_lock) {
                 commInterface.message_buffer.add(login_procedure);
+            }
+            synchronized (communicationDaemon) {    // Waking up communicationDaemon
+                communicationDaemon.notify();
             }
             thread_throttling = 100;
         }else {
