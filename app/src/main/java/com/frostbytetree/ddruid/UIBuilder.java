@@ -151,12 +151,18 @@ public class UIBuilder {
 
     private View addTextElement(Attribute attribute, Boolean required, Boolean read_only)
     {
-        TextInputLayout input_item = new TextInputLayout(context);
-        input_item.setVisibility(View.VISIBLE);
-        EditText input_text = new EditText(context);
-        input_text.setVisibility(View.VISIBLE);
-        input_text.setHint(attribute.name);
-        input_item.addView(input_text, (new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)));
+        View content = LayoutInflater.from(context).inflate(R.layout.input_text_form, null);
+        // TextInputLayout input_item = new TextInputLayout(context);
+        TextInputLayout input_item = (TextInputLayout)content.findViewById(R.id.input_layout);
+        // input_item.setVisibility(View.VISIBLE);
+
+        // EditText input_text = new EditText(context);
+        EditText input_text = (EditText)content.findViewById(R.id.input);
+        input_item.setHint(attribute.name);
+        //input_text.setHint(attribute.name);
+        //input_item.addView(input_text, (new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+        //        LinearLayout.LayoutParams.WRAP_CONTENT)));
+
 
         return input_item;
     }
