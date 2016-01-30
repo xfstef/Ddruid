@@ -295,6 +295,7 @@ public class WidgetActivity extends AppCompatActivity {
         // check if this widget has parent widgets, if so then set the coresponding parent widget
         if(my_widget.myParent != null) {
             appLogic.setCurrentWidget(my_widget.myParent);
+            finish();
         }
         else
         {
@@ -395,5 +396,3 @@ public class WidgetActivity extends AppCompatActivity {
 
     }
 }
-
-
