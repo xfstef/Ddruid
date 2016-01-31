@@ -4,10 +4,9 @@
     android:id="@+id/input_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
-    <EditText
+    <android.support.v7.widget.AppCompatEditText
         android:id="@+id/input"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Test"
         android:inputType="textPersonName" />
 </android.support.design.widget.TextInputLayout>

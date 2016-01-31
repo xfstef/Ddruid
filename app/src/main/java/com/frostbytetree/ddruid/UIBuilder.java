@@ -5,10 +5,8 @@ import android.content.Context;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.util.Pair;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
@@ -27,7 +25,8 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.zip.Inflater;
+
+import fr.ganfra.materialspinner.MaterialSpinner;
 
 /**
  * Created by XfStef on 11/27/2015.
@@ -216,7 +215,7 @@ public class UIBuilder {
 
     private View addTextElement(Attribute attribute, Boolean required, Boolean read_only)
     {
-        View content = LayoutInflater.from(context).inflate(R.layout.input_text_form, null);
+        View content = LayoutInflater.from(context).inflate(R.layout.text_input_form, null);
         // TextInputLayout input_item = new TextInputLayout(context);
         TextInputLayout input_item = (TextInputLayout)content.findViewById(R.id.input_layout);
         // input_item.setVisibility(View.VISIBLE);
@@ -235,22 +234,25 @@ public class UIBuilder {
     private View addDateElement(Attribute attribute, Boolean required, Boolean read_only)
     {
         final DatePickerDialog.OnDateSetListener onDateSetListener;
-        LinearLayout lin_1 = new LinearLayout(context);
-        lin_1.setOrientation(LinearLayout.HORIZONTAL);
-        final EditText editDate = new EditText(context);
+        View content = LayoutInflater.from(context).inflate(R.layout.date_input_form, null);
+        LinearLayout lin_1 = (LinearLayout)content.findViewById(R.id.lin_layout_date_input);
+        // TextInputLayout input_item = new TextInputLayout(context);
+        TextInputLayout input_item = (TextInputLayout)content.findViewById(R.id.input_layout);
+        input_item.setHint(attribute.name);
 
-        editDate.setEms(10);
-        editDate.setEnabled(false);
-        Button selectDate = new Button(context);
-        selectDate.setPadding(10, 10, 10, 10);
+        final EditText editDate = (EditText)content.findViewById(R.id.input);
 
-        selectDate.setText("Select Date");
-        selectDate.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimary));
-        selectDate.setTextColor(ContextCompat.getColor(context, R.color.textColorPrimary));
+        Button selectDate = (Button)content.findViewById(R.id.select_date);
+
+        selectDate.setText("SELECT");
+        //selectDate.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimary));
+        //selectDate.setTextColor(ContextCompat.getColor(context, R.color.textColorPrimary));
 
         selectDate.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+
+
                 final Calendar c = Calendar.getInstance();
                 int year = c.get(Calendar.YEAR);
                 int month = c.get(Calendar.MONTH);
@@ -268,22 +270,21 @@ public class UIBuilder {
 
                             }
                         }, year, month, day);
+
                 dpd.show();
             }
         });
-
-        lin_1.addView(editDate, (new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT)));
-        lin_1.addView(selectDate,(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT)));
 
         return lin_1;
     }
 
     private View addSpinnerElement(Attribute attribute, Boolean required, Boolean read_only)
     {
-        Spinner spinner_input = new Spinner(context);
-        spinner_input.setVisibility(View.VISIBLE);
+        View content = LayoutInflater.from(context).inflate(R.layout.spinner_input_form, null);
+        // TextInputLayout input_item = new TextInputLayout(context);
+        MaterialSpinner spinner_input = (MaterialSpinner)content.findViewById(R.id.input_spinner);
+        spinner_input.setHint(attribute.name);
+
         // TODO get the data and initialize
         String spinner_table = attribute.reference_name;
         Table table = null;
@@ -320,7 +321,7 @@ public class UIBuilder {
     public void initSpinnerAdapter(Spinner spinner, ArrayList<DataSet> spinnerData)
     {
         SpinnerAdapter adapter = new SpinnerAdapter(context,
-                android.R.layout.simple_spinner_item,spinnerData);
+                android.R.layout.simple_spinner_dropdown_item,spinnerData);
         spinner.setAdapter(adapter);
     }
 
