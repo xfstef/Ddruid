@@ -1,6 +1,13 @@
 package com.frostbytetree.ddruid;
 
 import android.os.Looper;
+import android.support.design.widget.TabLayout;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 /**
  * Created by XfStef on 11/27/2015.
@@ -124,8 +131,9 @@ public class AppLogic extends Thread{
         download_table_data_procedure.requested_operation.REST_command = uri + "/data/" + table_address;
         download_table_data_procedure.requested_operation.the_table = the_table;
         download_table_data_procedure.requested_operation.status = 0;
-        download_table_data_procedure.caller_widget = caller;
         // -----------------------------------------------------------------------------------------
+
+        download_table_data_procedure.caller_widget = caller;
 
         synchronized (commInterface.message_buffer_lock) {  // Adding message.
             commInterface.message_buffer.add(download_table_data_procedure);
@@ -171,5 +179,60 @@ public class AppLogic extends Thread{
             mainActivity.startWidgetActivity();
         }
 
+    }
+
+    // This Function is called when the App wants to send a POST / DELETE message to the server.
+    // It requires the new / to be modied DataSet, the action and the table that will be modified.
+    public void sendPost(DataSet dataSet, Action action, Table table){
+        JSONObject new_object = new JSONObject();
+        JSONArray table_action = new JSONArray();
+        String t_a_concat = table.table_name + "." + action.name;
+        JSONObject action_element = new JSONObject();
+
+        switch(action.type){
+            case 0: // Create.
+                // TODO: ------------------------- Automate this whole procedure !!! -----------------------
+                Message post_procedure = new Message();
+                post_procedure.caller_id = my_id;
+                post_procedure.target_id = 2;  // TODO: set the target ID with a variable.
+                post_procedure.current_rowstamp = commInterface.rowstamp;
+                commInterface.rowstamp++;
+                post_procedure.priority = 0;   // TODO: set priority with a variable.
+                post_procedure.requested_operation = new Operation();
+                post_procedure.requested_operation.type = 212;   // TODO: use a variable.
+                post_procedure.requested_operation.REST_command = uri;
+                post_procedure.requested_operation.the_table = table;
+                post_procedure.requested_operation.status = 0;
+                // -----------------------------------------------------------------------------------------
+
+                try {
+                    action_element.put("transaction", post_procedure.current_rowstamp);
+                    JSONObject data = new JSONObject();
+                    for(int x = 0; x < dataSet.set.size(); x++){
+                        data.put(action.attributes.get(x).name, dataSet.set.get(x));
+                    }
+                    action_element.put("data", data);
+                    table_action.put(action_element);
+                    new_object.put(t_a_concat, table_action);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                post_procedure.requested_operation.sclable_object = new_object;
+
+                synchronized (commInterface.message_buffer_lock) {  // Adding message.
+                    commInterface.message_buffer.add(post_procedure);
+                }
+                synchronized (communicationDaemon) {    // Waking up communicationDaemon
+                    communicationDaemon.notify();
+                }
+
+                break;
+            case 1: // Edit.
+                //TODO: Write actions necessary for Edit.
+                break;
+            case 2: // Delete.
+                //TODO: Write actions necessary for Delete.
+                break;
+        }
     }
 }

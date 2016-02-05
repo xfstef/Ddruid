@@ -82,6 +82,16 @@ class Attribute{
 
 class Action{
     String name;
+    short type; // 0 - For create new data set;
+                // 1 - For edit data set;
+                // 2 - For delete data set.
+    short sclablePreState = 0;
+    short sclablePostState = 0;
+    // The sclable States can be:
+    // 0 - null;
+    // 1 - incoming;
+    // 2 - second_level;
+    // 3 - done.
     ArrayList<Attribute> attributes;
     ArrayList<Boolean> attribute_required;
     ArrayList<Boolean> attribute_readonly;

@@ -16,8 +16,10 @@ import java.util.Map;
  * Created by XfStef on 1/16/2016.
  */
 
-    //TODO Load the Config File
-    //TODO Interpret the Config File
+    //Loads the Config File
+    //Interprets the Config File
+    //TODO: Build try catch for every JSON object interpretation in order to catch problems
+    // independently of each other.
 
 public class ConfigFileInterpreter {
     ConfigFile configFile;
@@ -135,6 +137,45 @@ class SclableInterpreter {
             try {
                 JSONObject the_action = actions.getJSONObject(o);
                 new_action.name = the_action.getString("name");
+
+                JSONObject sclable_transition = the_action.getJSONObject("transition");
+                String type = sclable_transition.getString("type");
+                switch (type) {
+                    case "create":
+                        new_action.type = 0;
+                        break;
+                    case "edit":
+                        new_action.type = 1;
+                        break;
+                    case "delete":
+                        new_action.type = 2;
+                        break;
+                }
+                type = sclable_transition.getString("pre_sate");
+                switch (type){
+                    case "incoming":
+                        new_action.sclablePreState = 1;
+                        break;
+                    case "second_level":
+                        new_action.sclablePreState = 2;
+                        break;
+                    case "done":
+                        new_action.sclablePreState = 3;
+                        break;
+                }
+                type = sclable_transition.getString("post_state");
+                switch (type){
+                    case "incoming":
+                        new_action.sclablePostState = 1;
+                        break;
+                    case "second_level":
+                        new_action.sclablePostState = 2;
+                        break;
+                    case "done":
+                        new_action.sclablePostState = 3;
+                        break;
+                }
+
                 JSONArray act_attr = the_action.getJSONArray("action_attributes");
                 new_action.attributes = new ArrayList<Attribute>(act_attr.length());
                 new_action.attribute_readonly = new ArrayList<Boolean>(act_attr.length());
