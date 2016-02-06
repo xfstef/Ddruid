@@ -23,6 +23,8 @@ import java.util.ArrayList;
  */
 public class WidgetListItemListActivity extends AppCompatActivity implements IDataInflateListener{
 
+    final String ACTIVITIY_NAME = "Widget List Activity";
+
     AppLogic appLogic;
     Widget myWidget;
     UIBuilder uiBuilder;
@@ -47,7 +49,9 @@ public class WidgetListItemListActivity extends AppCompatActivity implements IDa
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        toolbar.setTitle(getTitle());
+
+        assert myWidget != null;
+        getSupportActionBar().setTitle(myWidget.titleBar);
 
         initListItems();
         /*
@@ -111,7 +115,7 @@ public class WidgetListItemListActivity extends AppCompatActivity implements IDa
 
     @Override
     public void invokeLoadingTableData(Table table) {
-        Log.d("Widget List Activity", "Table invocation requested for: " + table.table_name);
+        Log.d(ACTIVITIY_NAME, "Table invocation requested for: " + table.table_name);
         appLogic.getTableData(table, this);
     }
 
