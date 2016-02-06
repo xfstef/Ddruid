@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.Pair;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.Spinner;
@@ -32,6 +33,9 @@ import java.util.ArrayList;
 
 public class WidgetActivity extends AppCompatActivity implements IDataInflateListener{
 
+    private static final String CLASS_NAME = "Widget Activity";
+    private static final int LIST_ACTIVITY_START = 2;
+
     FrameLayout widgetScreen;
     Toolbar toolbar;
     DrawerLayout Drawer;
@@ -51,12 +55,36 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
     private GoogleApiClient client;
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        int id = item.getItemId();
+        switch(id)
+        {
+            case android.R.id.home:
+                onBackPressed();
+                break;
+        }
+        return true;
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //my_widget = new Widget(this);
         //widgetViews = WidgetViews.getInstance();
 
         appLogic = AppLogic.getInstance();
+        my_widget = appLogic.currentWidget;
+
+        // init the UI Builder
+        uiBuilder = UIBuilder.getInstance();
+
+        uiBuilder.setContext(this);
+        uiBuilder.setCallback(this);
+        setContentView(R.layout.widget_activity);
+        initScreenItems();
+        //System.out.println("Current widget on Resume: " + my_widget.titleBar);
+
 
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -67,6 +95,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
         // 0 - List;
         // 1 - Form;
         // 3 - Code Scanner;
+        Log.d(CLASS_NAME, "Widget Type: " + my_widget.widgetType);
         switch (my_widget.widgetType) {
             case 0:
                 initWidgetList();
@@ -86,7 +115,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
     void initFormWidget()
     {
 
-        Widget new_ui_widget = uiBuilder.inflate_model(my_widget);
+        Widget new_ui_widget = uiBuilder.inflateModel(my_widget);
 
         widgetScreen.addView(new_ui_widget);
 
@@ -143,66 +172,58 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
     {
         Intent intent = getIntent();
         intent.setClass(getApplicationContext(), WidgetListItemListActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, LIST_ACTIVITY_START);
     }
 
     void initScreenItems() {
+
         widgetScreen = (FrameLayout) findViewById(R.id.mainContent);
         toolbar = (Toolbar) findViewById(R.id.widget_toolbar);
+        my_widget = appLogic.currentWidget;
         setSupportActionBar(toolbar);
         try
         {
             getSupportActionBar().setTitle(my_widget.titleBar);
         }
-        catch(Exception e)
+        catch(Exception exception)
         {
-            System.out.println("Fehler beim zugreifen auf die support action bar!!!!");
+            Log.e(CLASS_NAME, "Could not find action bar", exception);
         }
 
+        // if that is not the root widget then, the back arrow should be displayed
+        // else the main should show the hamburger menu
+        if(my_widget.myParent != null)
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        else {
+            Drawer = (DrawerLayout) findViewById(R.id.DrawerLayout);        // Drawer object Assigned to the view
+            mDrawerToggle = new ActionBarDrawerToggle(this, Drawer, toolbar, R.string.openDrawer, R.string.closeDrawer) {
 
-        Drawer = (DrawerLayout) findViewById(R.id.DrawerLayout);        // Drawer object Assigned to the view
-        mDrawerToggle = new ActionBarDrawerToggle(this, Drawer, toolbar, R.string.openDrawer, R.string.closeDrawer) {
+                @Override
+                public void onDrawerOpened(View drawerView) {
+                    super.onDrawerOpened(drawerView);
+                    // code here will execute once the drawer is opened( As I dont want anything happened whe drawer is
+                    // open I am not going to put anything here)
+                }
 
-            @Override
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-                // code here will execute once the drawer is opened( As I dont want anything happened whe drawer is
-                // open I am not going to put anything here)
-            }
-
-            @Override
-            public void onDrawerClosed(View drawerView) {
-                super.onDrawerClosed(drawerView);
-                // Code here will execute once drawer is closed
-            }
+                @Override
+                public void onDrawerClosed(View drawerView) {
+                    super.onDrawerClosed(drawerView);
+                    // Code here will execute once drawer is closed
+                }
 
 
-        }; // Drawer Toggle Object Made
-        Drawer.setDrawerListener(mDrawerToggle); // Drawer Listener set to the Drawer toggle
-        mDrawerToggle.syncState();
+            }; // Drawer Toggle Object Made
+            Drawer.setDrawerListener(mDrawerToggle); // Drawer Listener set to the Drawer toggle
+            mDrawerToggle.syncState();
+        }
+        widgetScreen.removeAllViews();
+        checkWidgetType();
     }
 
     @Override
     public void onResume() {
         super.onResume();
 
-        my_widget = appLogic.currentWidget;
-
-
-
-        // init the UI Builder
-        uiBuilder = UIBuilder.getInstance();
-
-        uiBuilder.setContext(this);
-        uiBuilder.setCallback(this);
-
-        setContentView(R.layout.widget_activity);
-
-        initScreenItems();
-
-        assert my_widget != null;
-            checkWidgetType();
-        //System.out.println("Current widget on Resume: " + my_widget.titleBar);
     }
 
     @Override
@@ -226,6 +247,19 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
             this.moveTaskToBack(true);
         }
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d(CLASS_NAME, "OnActivityResult called resultCode " + requestCode);
+        Log.d(CLASS_NAME, "Widget " + my_widget.titleBar);
+
+        if(requestCode == LIST_ACTIVITY_START)
+        {
+            Log.d(CLASS_NAME, "Init Screen Items invoked");
+            initScreenItems();
+
+        }
     }
 
     @Override
@@ -306,6 +340,6 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
 
     @Override
     public void invokeLoadingTableData(Table table) {
-        Log.d("Widget Activity", "Table invocation requested for: " + table.table_name);
+        //Log.d("Widget Activity", "Table invocation requested for: " + table.table_name);
     }
 }

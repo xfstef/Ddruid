@@ -8,7 +8,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import java.util.ArrayList;
 
 //import com.frostbytetree.ddruid.dummy.DummyContent;
 
@@ -24,47 +28,59 @@ public class WidgetListItemDetailFragment extends Fragment {
      * represents.
      */
     public static final String ARG_ITEM_ID = "item_id";
-    private static final String FRAGMENT_NAME = "ITEM DETAIL FRAGMENT";
+    private static final String CLASS_NAME = "ITEM DETAIL FRAGMENT";
 
-    /**
-     * The dummy content this fragment is presenting.
-     */
-    //private DummyContent.DummyItem mItem;
+    ArrayList<String> dataSet;
+    AppLogic appLogic;
+    Widget widget;
+    UIBuilder uiBuilder;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
     public WidgetListItemDetailFragment() {
+
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(FRAGMENT_NAME, "has been started!");
+        Log.d(CLASS_NAME, "has been started!");
+        appLogic = AppLogic.getInstance();
+        widget = appLogic.currentWidget;
+        uiBuilder = UIBuilder.getInstance();
+        uiBuilder.setContext(this.getActivity());
+
+
+
+
         if (getArguments().containsKey(ARG_ITEM_ID)) {
             // Load the dummy content specified by the fragment
             // arguments. In a real-world scenario, use a Loader
             // to load content from a content provider.
-            //mItem = DummyContent.ITEM_MAP.get(getArguments().getString(ARG_ITEM_ID));
+            dataSet = getArguments().getStringArrayList(ARG_ITEM_ID);
 
-            Activity activity = this.getActivity();
-            CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
+            //Activity activity = this.getActivity();
+            //CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
             //if (appBarLayout != null) {
-            //    appBarLayout.setTitle(mItem.content);
+            //   appBarLayout.setTitle(mItem.content);
             //}
         }
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.widgetlistitem_detail, container, false);
+        LinearLayout mainContent = (LinearLayout)rootView.findViewById(R.id.listItemContent);
+        Log.d(CLASS_NAME, dataSet.toString());
 
-        // Show the dummy content as text in a TextView.
-        //if (mItem != null) {
-        //    ((TextView) rootView.findViewById(R.id.widgetlistitem_detail)).setText(mItem.details);
-        //}
+        Widget new_ui_widget = uiBuilder.inflateTableDetailModel(mainContent, widget, dataSet);
+
+        //mainContent.addView(new_ui_widget);
+
 
         return rootView;
     }

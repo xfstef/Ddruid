@@ -8,6 +8,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.util.Pair;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
@@ -38,6 +39,8 @@ import fr.ganfra.materialspinner.MaterialSpinner;
 // needed for the various app Widgets.
 
 public class UIBuilder {
+    private static final String CLASS_NAME = "UIBuilder";
+
     private static UIBuilder ourInstance = new UIBuilder();
 
     Data data;
@@ -70,7 +73,8 @@ public class UIBuilder {
 
     // This function takes a widget and iterates through all the tables
     // and returns the build custom model
-    public Widget inflate_model(Widget widget){
+    public Widget inflateModel(Widget widget)
+    {
 
         // step I: find table within Widget.myTables.TableName which matches to the Widget.myTableActions.first (Table)
         for(int i = 0; i < widget.myTableActions.size(); i++)
@@ -83,13 +87,28 @@ public class UIBuilder {
             {
                 Action inflating_action = Utils.findTableAction(inflating_table.myActions, widget.myTableActions.get(i).second);
                 System.out.println("Inflating action: " + inflating_action.name);
-                widget = inflateAndAddUIElements(widget, inflating_action);
+                widget = inflateFormAndAddUIElements(widget, inflating_action);
             }
         }
         return widget;
     }
 
-    Widget inflateAndAddUIElements(Widget widget, Action action)
+    Widget inflateTableDetailModel(LinearLayout ui_content, Widget widget, ArrayList<String> data_to_be_displayed)
+    {
+
+        // Only check routine
+        if(BuildConfig.DEBUG && widget.myTables.get(0).attributes.size() != data_to_be_displayed.size())
+            throw new AssertionError(Log.d(CLASS_NAME,"attributes and data to displayed are not the same"));
+        addTextViewElements(ui_content, widget, data_to_be_displayed);
+
+        return widget;
+    }
+
+
+
+
+
+    Widget inflateFormAndAddUIElements(Widget widget, Action action)
     {
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -99,9 +118,8 @@ public class UIBuilder {
 
             View element = checkValueUIElement(action.attributes.get(i), action.attribute_required.get(i), action.attribute_readonly.get(i));
 
-            //TODO: delete this if statement because there shouldn't be any view unhandled
-            if(element != null)
-                widget.addView(element, layoutParams);
+            assert element != null;
+            widget.addView(element, layoutParams);
 
             // checkValueUIElement(widget, action.attributes.get(i).name);
 
@@ -134,7 +152,7 @@ public class UIBuilder {
         {
             // Normal Text Input
             case 0:
-                item = addTextElement(attribute,required,read_only);
+                item = addEditTextElement(attribute, required, read_only);
                 all_view_elements.add(item);
                 break;
             // Spinner
@@ -202,7 +220,21 @@ public class UIBuilder {
         return recList;
     }
 
-    private View addTextElement(Attribute attribute, Boolean required, Boolean read_only)
+    private void addTextViewElements(LinearLayout ui_content, Widget widget, ArrayList<String> data_to_be_displayed)
+    {
+        for(int i = 0; i < data_to_be_displayed.size(); i++)
+        {
+            View view = LayoutInflater.from(context).inflate(R.layout.text_view_form, null);
+            TextView textViewDescription = (TextView)view.findViewById(R.id.widget_item_text_description);
+            Log.d(CLASS_NAME,"Attribute: " + widget.myTables.get(0).attributes.get(i).name);
+            textViewDescription.setText(widget.myTables.get(0).attributes.get(i).name);
+            TextView textViewData = (TextView)view.findViewById(R.id.widget_item_text_detail);
+            textViewData.setText(data_to_be_displayed.get(i));
+            ui_content.addView(view);
+        }
+    }
+
+    private View addEditTextElement(Attribute attribute, Boolean required, Boolean read_only)
     {
         View content = LayoutInflater.from(context).inflate(R.layout.text_input_form, null);
         // TextInputLayout input_item = new TextInputLayout(context);

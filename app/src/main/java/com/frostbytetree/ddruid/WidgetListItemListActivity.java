@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
@@ -23,7 +24,7 @@ import java.util.ArrayList;
  */
 public class WidgetListItemListActivity extends AppCompatActivity implements IDataInflateListener{
 
-    private static final String ACTIVITY_NAME = "Item Detail Activity";
+    private static final String CLASS_NAME = "Item List Activity";
 
     AppLogic appLogic;
     Widget myWidget;
@@ -35,6 +36,20 @@ public class WidgetListItemListActivity extends AppCompatActivity implements IDa
      * device.
      */
     private boolean mTwoPane;
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        int id = item.getItemId();
+        switch(id)
+        {
+            case android.R.id.home:
+                onBackPressed();
+                break;
+        }
+        return true;
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +67,7 @@ public class WidgetListItemListActivity extends AppCompatActivity implements IDa
 
         assert myWidget != null;
         getSupportActionBar().setTitle(myWidget.titleBar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         initListItems();
 
@@ -75,7 +91,7 @@ public class WidgetListItemListActivity extends AppCompatActivity implements IDa
         //tableAdapter.notifyDataSetChanged();
         recyclerView.setAdapter(tableAdapter);
 
-         /*
+        /*
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -107,13 +123,13 @@ public class WidgetListItemListActivity extends AppCompatActivity implements IDa
      */
     @Override
     public void invokeLoadingTableData(Table table) {
-        Log.d(ACTIVITY_NAME, "Table invocation requested for: " + table.table_name);
+        Log.d(CLASS_NAME, "Table invocation requested for: " + table.table_name);
         appLogic.getTableData(table, this);
     }
 
     @Override
     public void signalDataArrived(final Table my_table) {
-        Log.d(ACTIVITY_NAME, "DATA HAS ARRIVED FOR: " + my_table.table_name);
+        Log.d(CLASS_NAME, "DATA HAS ARRIVED FOR: " + my_table.table_name);
 
         // 0 - Widget-List;
         // 1 - Form;
@@ -144,6 +160,7 @@ public class WidgetListItemListActivity extends AppCompatActivity implements IDa
         super.onBackPressed();
         if(myWidget != null)
             appLogic.currentWidget = myWidget.myParent;
+        Log.d(CLASS_NAME, appLogic.currentWidget.titleBar);
         finish();
     }
 

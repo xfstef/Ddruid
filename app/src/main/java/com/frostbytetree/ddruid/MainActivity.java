@@ -166,8 +166,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
         }
-        // uiBuilder.inflate_model(null);
-        // System.out.println("The new view is: " + view);
     }
 
 
