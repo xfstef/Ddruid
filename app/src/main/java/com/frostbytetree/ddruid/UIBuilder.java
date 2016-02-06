@@ -5,6 +5,7 @@ import android.content.Context;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Pair;
@@ -35,11 +36,6 @@ import fr.ganfra.materialspinner.MaterialSpinner;
 
 // The UI Builder is a background Thread that uses the Data Models in order to create the inflators
 // needed for the various app Widgets.
-
-    //TODO Load the Data Models
-    //TODO Interpret the Data Models
-    //TODO Build the Widget Inflators ???
-    //TODO Signal the AppLogic to start the TemporaryWidget Activity
 
 public class UIBuilder {
     private static UIBuilder ourInstance = new UIBuilder();
@@ -147,7 +143,7 @@ public class UIBuilder {
                 all_view_elements.add(item);
                 break;
             case 5:
-                //TODO: Add Calender
+                // Calender Object
                 item = addDateElement(attribute, required, read_only);
                 break;
         }
@@ -198,23 +194,10 @@ public class UIBuilder {
         mainLayout.addView(swipe_content);
 
         // Let's tell the caller activity that Table Data can be requested
-        mCallback.invokeLoadingTableData(table_to_reload);
-        /*
-        try {
-            WidgetActivity widgetActivity = (WidgetActivity) context;
-            if (table_to_reload.dataSets.size() == 0)
-                appLogic.getTableData(table_to_reload, widgetActivity);
-        }
-        catch (Exception e){
-            System.out.println("Sry casting activity from context not possible");
-        }
-        */
+        if(table_to_reload.dataSets.size() == 0)
+            mCallback.invokeLoadingTableData(table_to_reload);
 
         //TODO implement: check for rowstamp of the table to know if it's necessary to synchronize -> SCLABLE MUST DELIVER ROWSTAMP
-
-
-
-
 
         return recList;
     }
@@ -404,8 +387,7 @@ class SwipeDataRefreshListener implements SwipeRefreshLayout.OnRefreshListener {
         // Load items
         // ...
         try {
-            WidgetActivity widgetActivity = (WidgetActivity) context;
-            appLogic.getTableData(table_to_reload, widgetActivity);
+            appLogic.getTableData(table_to_reload, (AppCompatActivity)context);
         }
         catch (Exception e){
             System.out.println("Sry casting activity from context not possible");
@@ -458,52 +440,6 @@ class RecycleViewWidgetAdapter extends RecyclerView.Adapter<RecycleViewWidgetAda
     @Override
     public int getItemCount() {
         return child_widgets.size();
-    }
-
-
-}
-
-class RecycleViewDataSetAdapter extends RecyclerView.Adapter<RecycleViewDataSetAdapter.ViewHolder>
-{
-    private ArrayList<DataSet> dataSets;
-    Context mContext;
-    public TextView mTextView;
-
-    static class ViewHolder extends RecyclerView.ViewHolder{
-        public TextView mTextView;
-
-        public ViewHolder(View v)
-        {
-            super(v);
-            mTextView = (TextView)v.findViewById(R.id.txtListAttr);
-
-        }
-    }
-
-
-    public RecycleViewDataSetAdapter(Context context, ArrayList<DataSet> dataSet)
-    {
-        this.mContext = context;
-        this.dataSets = dataSet;
-        System.out.println("DataSet1: " + dataSets.toString() + "\n");
-    }
-
-    @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
-    {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
-        ViewHolder vh = new ViewHolder(v);
-        return vh;
-    }
-
-    @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.mTextView.setText(dataSets.get(position).set.toString());
-    }
-
-    @Override
-    public int getItemCount() {
-        return dataSets.size();
     }
 
 
@@ -571,3 +507,51 @@ class Utils
         return null;
     }
 }
+
+/*
+class RecycleViewDataSetAdapter extends RecyclerView.Adapter<RecycleViewDataSetAdapter.ViewHolder>
+{
+    private ArrayList<DataSet> dataSets;
+    Context mContext;
+    public TextView mTextView;
+
+    static class ViewHolder extends RecyclerView.ViewHolder{
+        public TextView mTextView;
+
+        public ViewHolder(View v)
+        {
+            super(v);
+            mTextView = (TextView)v.findViewById(R.id.txtListAttr);
+
+        }
+    }
+
+
+    public RecycleViewDataSetAdapter(Context context, ArrayList<DataSet> dataSet)
+    {
+        this.mContext = context;
+        this.dataSets = dataSet;
+        System.out.println("DataSet1: " + dataSets.toString() + "\n");
+    }
+
+    @Override
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
+    {
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
+        ViewHolder vh = new ViewHolder(v);
+        return vh;
+    }
+
+    @Override
+    public void onBindViewHolder(ViewHolder holder, int position) {
+        holder.mTextView.setText(dataSets.get(position).set.toString());
+    }
+
+    @Override
+    public int getItemCount() {
+        return dataSets.size();
+    }
+
+
+}
+*/

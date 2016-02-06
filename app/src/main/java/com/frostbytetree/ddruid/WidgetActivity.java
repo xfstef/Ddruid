@@ -38,10 +38,9 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
     ActionBarDrawerToggle mDrawerToggle;
 
     AppLogic appLogic;
-    //WidgetViews widgetViews;
     Widget my_widget;
-
     UIBuilder uiBuilder;
+
     RecycleViewWidgetAdapter widgetAdapter;
     // RecycleViewDataSetAdapter tableAdapter;
 
@@ -92,16 +91,9 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
         widgetScreen.addView(new_ui_widget);
 
         checkForSpinnerDataLoading();
-
-        // Find the spinners which have the data to be loaded
-
-        // widgetScreen.addView(my_widget);
-        // widgetScreen = uiBuilder.inflate_model(my_widget);
-        // System.out.println("Enable Form widget!");
     }
 
-    // This function serves for loading the table datasets for each Spinner on the screen
-
+    // This function loads the table datasets for each Spinner on the screen
     private void checkForSpinnerDataLoading()
     {
         ArrayList<Pair<View, Table>> spinners = uiBuilder.spinner_data_to_load;
@@ -153,55 +145,6 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
         intent.setClass(getApplicationContext(), WidgetListItemListActivity.class);
         startActivity(intent);
     }
-    /*
-    void initTableList() {
-
-        final Table my_table = findTableWithinWidget(my_widget);
-
-
-        if(my_table == null)
-        {
-            System.out.println("No Table found within Widget!");
-            return;
-        }
-
-        RecyclerView recList = uiBuilder.buildTableRecyclerViewer(widgetScreen, my_table);
-
-        tableAdapter = new RecycleViewDataSetAdapter(this, my_table.dataSets);
-        //tableAdapter.notifyDataSetChanged();
-        recList.setAdapter(tableAdapter);
-
-        recList.addOnItemTouchListener(new RecyclerItemClickListener(this, new RecyclerItemClickListener.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-
-
-                //showDetailsFragment(my_table);
-
-                // TODO: Init Fragment with selected DataSet and table Actions for the selected item
-
-                //showDetailsFragment selectedDataSet
-                //Toast.makeText(getApplicationContext(), "Selected DataSet element: " + my_table.dataSets.get(position).set.toString(), Toast.LENGTH_LONG).show();
-            }
-        }));
-
-    }
-
-    private void showDetailsFragment(Table current_table) {
-
-        FragmentManager fm = getFragmentManager();
-        // add
-        FragmentTransaction ft = fm.beginTransaction();
-        ft.add(R.id.detailsContent, new WidgetListDetail(current_table));
-        // alternatively add it with a tag
-        // trx.add(R.id.your_placehodler, new YourFragment(), "detail");
-        ft.commit();
-        widgetScreen.setVisibility(View.GONE);
-        FrameLayout details = (FrameLayout)findViewById(R.id.detailsContent);
-        details.setVisibility(View.VISIBLE);
-        System.out.println("New Fragment has been built!");
-    }
-    */
 
     void initScreenItems() {
         widgetScreen = (FrameLayout) findViewById(R.id.mainContent);
@@ -257,10 +200,8 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
 
         initScreenItems();
 
-
-        if (my_widget != null) {
+        assert my_widget != null;
             checkWidgetType();
-        }
         //System.out.println("Current widget on Resume: " + my_widget.titleBar);
     }
 

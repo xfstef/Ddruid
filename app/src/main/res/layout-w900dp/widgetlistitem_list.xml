@@ -27,7 +27,7 @@
         android:layout_marginRight="16dp"
         app:layoutManager="LinearLayoutManager"
         tools:context="com.frostbytetree.ddruid.WidgetListItemListActivity"
-        tools:listitem="@layout/widgetlistitem_list_content" />
+        tools:listitem="@layout/list_item" />
 
     <FrameLayout
         android:id="@+id/widgetlistitem_detail_container"

@@ -5,11 +5,14 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
+
+import java.util.ArrayList;
 
 /**
  * An activity representing a single WidgetListItem detail screen. This
@@ -19,12 +22,32 @@ import android.view.MenuItem;
  */
 public class WidgetListItemDetailActivity extends AppCompatActivity {
 
+    private static final String ACTIVITY_NAME = "ListDetailActivity";
+    AppLogic appLogic;
+    Widget widget;
+    UIBuilder uiBuilder;
+
+    ArrayList<String> set;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(ACTIVITY_NAME, " has been created!");
+        appLogic = AppLogic.getInstance();
+        widget = appLogic.currentWidget;
+        uiBuilder = UIBuilder.getInstance();
+        uiBuilder.setContext(this);
+
+        Intent intent = getIntent();
+        set = intent.getStringArrayListExtra(WidgetListItemDetailFragment.ARG_ITEM_ID);
+
         setContentView(R.layout.activity_widgetlistitem_detail);
         Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
         setSupportActionBar(toolbar);
+
+        //TODO: find out which attribute will be set as title
+        getSupportActionBar().setTitle(set.toString());
+
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -54,8 +77,8 @@ public class WidgetListItemDetailActivity extends AppCompatActivity {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putString(WidgetListItemDetailFragment.ARG_ITEM_ID,
-                    getIntent().getStringExtra(WidgetListItemDetailFragment.ARG_ITEM_ID));
+            arguments.putStringArrayList(WidgetListItemDetailFragment.ARG_ITEM_ID,
+                    getIntent().getStringArrayListExtra(WidgetListItemDetailFragment.ARG_ITEM_ID));
             WidgetListItemDetailFragment fragment = new WidgetListItemDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()

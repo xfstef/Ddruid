@@ -23,12 +23,12 @@ import java.util.ArrayList;
  */
 public class WidgetListItemListActivity extends AppCompatActivity implements IDataInflateListener{
 
-    final String ACTIVITIY_NAME = "Widget List Activity";
+    private static final String ACTIVITY_NAME = "Item Detail Activity";
 
     AppLogic appLogic;
     Widget myWidget;
     UIBuilder uiBuilder;
-    WidgetListItemRecyclerViewAdapter tableAdapter;
+    TableListItemRecyclerViewAdapter tableAdapter;
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
@@ -54,19 +54,7 @@ public class WidgetListItemListActivity extends AppCompatActivity implements IDa
         getSupportActionBar().setTitle(myWidget.titleBar);
 
         initListItems();
-        /*
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });*/
-        
-        //View recyclerView = findViewById(R.id.widgetlistitem_list);
-        //assert recyclerView != null;
-        //setupRecyclerView((RecyclerView) recyclerView);
+
 
         if (findViewById(R.id.widgetlistitem_detail_container) != null) {
             // The detail container view will be present only in the
@@ -83,25 +71,27 @@ public class WidgetListItemListActivity extends AppCompatActivity implements IDa
         final Table myTable = findTableWithinWidget(myWidget);
 
         RecyclerView recyclerView = uiBuilder.buildTableRecyclerViewer((FrameLayout)mainContent, myTable);
-        tableAdapter = new WidgetListItemRecyclerViewAdapter(myTable.dataSets);
+        tableAdapter = new TableListItemRecyclerViewAdapter(myTable.dataSets);
         //tableAdapter.notifyDataSetChanged();
         recyclerView.setAdapter(tableAdapter);
 
-        recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(this, new RecyclerItemClickListener.OnItemClickListener() {
+         /*
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemClick(View view, int position) {
-
-
-                //showDetailsFragment(my_table);
-
-                // TODO: Init Fragment with selected DataSet and table Actions for the selected item
-
-                //showDetailsFragment selectedDataSet
-                //Toast.makeText(getApplicationContext(), "Selected DataSet element: " + my_table.dataSets.get(position).set.toString(), Toast.LENGTH_LONG).show();
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
             }
-        }));
+        });*/
+
+        //View recyclerView = findViewById(R.id.widgetlistitem_list);
+        //assert recyclerView != null;
+        //setupRecyclerView((RecyclerView) recyclerView);
+        
     }
 
+    //TODO: not only first table, in the future maybe more tables within one widget
     Table findTableWithinWidget(Widget widget)
     {
         if(widget.myTables.size() != 0)
@@ -112,16 +102,18 @@ public class WidgetListItemListActivity extends AppCompatActivity implements IDa
             return null;
     }
 
-
+    /*
+    INTERFACE METHOD IMPLEMENTATIONS
+     */
     @Override
     public void invokeLoadingTableData(Table table) {
-        Log.d(ACTIVITIY_NAME, "Table invocation requested for: " + table.table_name);
+        Log.d(ACTIVITY_NAME, "Table invocation requested for: " + table.table_name);
         appLogic.getTableData(table, this);
     }
 
     @Override
     public void signalDataArrived(final Table my_table) {
-        System.out.println("DATA HAS ARRIVED!");
+        Log.d(ACTIVITY_NAME, "DATA HAS ARRIVED FOR: " + my_table.table_name);
 
         // 0 - Widget-List;
         // 1 - Form;
@@ -136,7 +128,6 @@ public class WidgetListItemListActivity extends AppCompatActivity implements IDa
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        System.out.println("Data Set2: " + my_table.dataSets.toString());
                         tableAdapter.updateDataSetList(my_table.dataSets);
                     }
                 });
@@ -146,11 +137,6 @@ public class WidgetListItemListActivity extends AppCompatActivity implements IDa
 
 
     }
-
-    //  private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-    //    recyclerView.setAdapter(new WidgetListItemRecyclerViewAdapter(DummyContent.ITEMS));
-    //  }
-
 
     @Override
     public void onBackPressed()
@@ -163,27 +149,25 @@ public class WidgetListItemListActivity extends AppCompatActivity implements IDa
 
 
 
-    public class WidgetListItemRecyclerViewAdapter
-            extends RecyclerView.Adapter<WidgetListItemRecyclerViewAdapter.ViewHolder> {
+    public class TableListItemRecyclerViewAdapter
+            extends RecyclerView.Adapter<TableListItemRecyclerViewAdapter.ViewHolder> {
 
         private ArrayList<DataSet> dataSets;
 
-        public WidgetListItemRecyclerViewAdapter(ArrayList<DataSet> dataSets) {
+        public TableListItemRecyclerViewAdapter(ArrayList<DataSet> dataSets) {
             this.dataSets = dataSets;
         }
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.widgetlistitem_list_content, parent, false);
+                    .inflate(R.layout.list_item, parent, false);
             return new ViewHolder(view);
         }
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
-            System.out.println("Current dataset: " + dataSets.get(position).set.toString());
             holder.mTextView.setText(dataSets.get(position).set.toString());
-
             holder.set = dataSets.get(position).set;
             //holder.mIdView.setText(mValues.get(position).id);
             //holder.mContentView.setText(mValues.get(position).content);
@@ -193,7 +177,7 @@ public class WidgetListItemListActivity extends AppCompatActivity implements IDa
                 public void onClick(View v) {
                     if (mTwoPane) {
                         Bundle arguments = new Bundle();
-                        arguments.putString(WidgetListItemDetailFragment.ARG_ITEM_ID, holder.set.toString());
+                        arguments.putStringArrayList(WidgetListItemDetailFragment.ARG_ITEM_ID, holder.set);
                         WidgetListItemDetailFragment fragment = new WidgetListItemDetailFragment();
                         fragment.setArguments(arguments);
                         getSupportFragmentManager().beginTransaction()
@@ -212,7 +196,6 @@ public class WidgetListItemListActivity extends AppCompatActivity implements IDa
 
         public void updateDataSetList(ArrayList<DataSet> data_sets)
         {
-            System.out.println("DataSet3: " + dataSets.toString());
             this.dataSets = data_sets;
             this.notifyDataSetChanged();
         }
@@ -232,27 +215,8 @@ public class WidgetListItemListActivity extends AppCompatActivity implements IDa
              {
                  super(view);
                  mView = view;
-                 mTextView = (TextView)view.findViewById(R.id.content);
+                 mTextView = (TextView)view.findViewById(R.id.txtListAttr);
              }
         }
-        /*
-        public class ViewHolder extends RecyclerView.ViewHolder {
-            public final View mView;
-            public final TextView mIdView;
-            public final TextView mContentView;
-            public DummyContent.DummyItem mItem;
-
-            public ViewHolder(View view) {
-                super(view);
-                mView = view;
-                mIdView = (TextView) view.findViewById(R.id.id);
-                mContentView = (TextView) view.findViewById(R.id.content);
-            }
-
-            @Override
-            public String toString() {
-                return super.toString() + " '" + mContentView.getText() + "'";
-            }
-        }*/
     }
 }
