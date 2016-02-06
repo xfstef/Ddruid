@@ -14,9 +14,7 @@
         android:theme="@style/AppTheme">
         <service
             android:name=".DataTransferController"
-            android:exported="false">
-
-        </service>
+            android:exported="false"></service>
 
         <activity
             android:name=".MainActivity"
@@ -24,7 +22,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
@@ -37,11 +35,27 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <!-- ATTENTION: This was auto-generated to add Google Play services to your project for
-             App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information. -->
+        <!--
+             ATTENTION: This was auto-generated to add Google Play services to your project for
+             App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information.
+        -->
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
+
+        <activity
+            android:name=".WidgetListItemListActivity"
+            android:label="@string/title_widgetlistitem_list"
+            android:theme="@style/AppTheme"></activity>
+        <activity
+            android:name=".WidgetListItemDetailActivity"
+            android:label="@string/title_widgetlistitem_detail"
+            android:parentActivityName=".WidgetListItemListActivity"
+            android:theme="@style/AppTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.frostbytetree.ddruid.WidgetListItemListActivity" />
+        </activity>
     </application>
 
 </manifest>

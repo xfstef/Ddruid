@@ -18,6 +18,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Spinner;
@@ -46,6 +47,7 @@ public class UIBuilder {
     Data data;
     Context context;
     AppLogic appLogic;
+    IDataInflateListener mCallback;
 
     ArrayList<View> all_view_elements = new ArrayList<>();
 
@@ -67,6 +69,8 @@ public class UIBuilder {
     public void setContext(Context context){
         this.context = context;
     }
+
+    public void setCallback(IDataInflateListener callback) { this.mCallback = callback; }
 
     // This function takes a widget and iterates through all the tables
     // and returns the build custom model
@@ -151,7 +155,7 @@ public class UIBuilder {
         return item;
     }
 
-    public RecyclerView buildWidgetRecyclerViewer(LinearLayout mainLayout) {
+    public RecyclerView buildWidgetRecyclerViewer(FrameLayout mainLayout) {
         View content = LayoutInflater.from(context).inflate(R.layout.recycler_view_menu, null);
         LinearLayoutManager llm = new LinearLayoutManager(context);
         llm.setOrientation(LinearLayoutManager.VERTICAL);
@@ -181,7 +185,7 @@ public class UIBuilder {
         return recList;
     }
 
-    public RecyclerView buildTableRecyclerViewer(LinearLayout mainLayout, Table table_to_reload) {
+    public RecyclerView buildTableRecyclerViewer(FrameLayout mainLayout, Table table_to_reload) {
         View content = LayoutInflater.from(context).inflate(R.layout.recycler_view_menu, null);
         LinearLayoutManager llm = new LinearLayoutManager(context);
         llm.setOrientation(LinearLayoutManager.VERTICAL);
@@ -193,7 +197,9 @@ public class UIBuilder {
         recList.setLayoutManager(llm);
         mainLayout.addView(swipe_content);
 
-
+        // Let's tell the caller activity that Table Data can be requested
+        mCallback.invokeLoadingTableData(table_to_reload);
+        /*
         try {
             WidgetActivity widgetActivity = (WidgetActivity) context;
             if (table_to_reload.dataSets.size() == 0)
@@ -202,7 +208,7 @@ public class UIBuilder {
         catch (Exception e){
             System.out.println("Sry casting activity from context not possible");
         }
-
+        */
 
         //TODO implement: check for rowstamp of the table to know if it's necessary to synchronize -> SCLABLE MUST DELIVER ROWSTAMP
 
@@ -283,12 +289,14 @@ public class UIBuilder {
         View content = LayoutInflater.from(context).inflate(R.layout.spinner_input_form, null);
         // TextInputLayout input_item = new TextInputLayout(context);
         MaterialSpinner spinner_input = (MaterialSpinner)content.findViewById(R.id.input_spinner);
+        System.out.println("Attribute name: " + attribute.name);
         spinner_input.setHint(attribute.name);
 
         // TODO get the data and initialize
         String spinner_table = attribute.reference_name;
         Table table = null;
         //System.out.println("Spinner table: " + spinner_table);
+        ArrayList<DataSet> spinnerData = new ArrayList<>();
         for(int i = 0; i < data.tables.size(); i++)
         {
             //Get the coresponding table for the spinner reference
@@ -296,23 +304,22 @@ public class UIBuilder {
             {
                 table = data.tables.get(i);
                 System.out.println("Spinner table found: " + data.tables.get(i).table_name);
+
+
+                if(table.dataSets != null)
+                    spinnerData = table.dataSets;
+
+                System.out.println("Spinner data: " + spinnerData.toString());
                 break;
             }
         }
 
-        ArrayList<DataSet> spinnerData = table.dataSets;
-        System.out.println("Spinner data: " + spinnerData.toString());
+        initSpinnerAdapter(spinner_input, spinnerData);
 
-        if(spinnerData != null)
-        {
-            if(spinnerData.size() > 0)
-                initSpinnerAdapter(spinner_input, spinnerData);
-            else {
+        // If no data could be loaded
+        if(spinnerData.size() == 0)
+            spinner_data_to_load.add(new Pair<View, Table>(spinner_input, table));
 
-                spinner_data_to_load.add(new Pair<View, Table>(spinner_input, table));
-                System.out.println("Sry data could not be loaded");
-            }
-        }
 
         return spinner_input;
 
@@ -479,13 +486,6 @@ class RecycleViewDataSetAdapter extends RecyclerView.Adapter<RecycleViewDataSetA
         this.mContext = context;
         this.dataSets = dataSet;
         System.out.println("DataSet1: " + dataSets.toString() + "\n");
-    }
-
-    public void setNewData(ArrayList<DataSet> data_sets)
-    {
-        System.out.println("DataSet3: " + dataSets.toString());
-        this.dataSets = data_sets;
-        this.notifyDataSetChanged();
     }
 
     @Override

@@ -1,37 +1,19 @@
 package com.frostbytetree.ddruid;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.transition.Fade;
-import android.transition.Slide;
-import android.transition.TransitionInflater;
+import android.util.Log;
 import android.util.Pair;
-import android.view.GestureDetector;
-import android.view.LayoutInflater;
-import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.LinearLayout;
+import android.widget.FrameLayout;
 import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.appindexing.*;
 import com.google.android.gms.appindexing.Action;
@@ -45,14 +27,12 @@ import java.util.ArrayList;
 
 // This Activity will be created when a widget or sub-widget is opened.
 
-//TODO Load the Widget Inflators ???
-//TODO Load the Raw Data
 //TODO Check for free memory
 //TODO If no free memory then Talk to SQLite Controller
 
-public class WidgetActivity extends AppCompatActivity {
+public class WidgetActivity extends AppCompatActivity implements IDataInflateListener{
 
-    LinearLayout widgetScreen;
+    FrameLayout widgetScreen;
     Toolbar toolbar;
     DrawerLayout Drawer;
     ActionBarDrawerToggle mDrawerToggle;
@@ -61,11 +41,9 @@ public class WidgetActivity extends AppCompatActivity {
     //WidgetViews widgetViews;
     Widget my_widget;
 
-    RecyclerView recList;
-
-    UIBuilder the_ui;
+    UIBuilder uiBuilder;
     RecycleViewWidgetAdapter widgetAdapter;
-    RecycleViewDataSetAdapter tableAdapter;
+    // RecycleViewDataSetAdapter tableAdapter;
 
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -78,29 +56,8 @@ public class WidgetActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         //my_widget = new Widget(this);
         //widgetViews = WidgetViews.getInstance();
+
         appLogic = AppLogic.getInstance();
-        my_widget = getCurrentWidget();
-
-        // init the UI Builder
-        the_ui = UIBuilder.getInstance();
-
-        the_ui.setContext(this);
-
-        setContentView(R.layout.widget_activity);
-        /*
-        if (Build.VERSION.SDK_INT > 21) {
-            setupWindowAnimations();
-        }
-        */
-        initScreenItems();
-
-
-        if (my_widget != null) {
-            checkWidgetType();
-        }
-
-        // getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        // getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -119,7 +76,8 @@ public class WidgetActivity extends AppCompatActivity {
                 initFormWidget();
                 break;
             case 4:
-                initTableList();
+                startWidgetListActivity();
+                //initTableList();
                 break;
             default:
 
@@ -129,7 +87,7 @@ public class WidgetActivity extends AppCompatActivity {
     void initFormWidget()
     {
 
-        Widget new_ui_widget = the_ui.inflate_model(my_widget);
+        Widget new_ui_widget = uiBuilder.inflate_model(my_widget);
 
         widgetScreen.addView(new_ui_widget);
 
@@ -138,20 +96,24 @@ public class WidgetActivity extends AppCompatActivity {
         // Find the spinners which have the data to be loaded
 
         // widgetScreen.addView(my_widget);
-        // widgetScreen = the_ui.inflate_model(my_widget);
+        // widgetScreen = uiBuilder.inflate_model(my_widget);
         // System.out.println("Enable Form widget!");
     }
 
-    // This function is usefull to check if some spinners still need data from the server
+    // This function serves for loading the table datasets for each Spinner on the screen
+
     private void checkForSpinnerDataLoading()
     {
-        ArrayList<Pair<View, Table>> spinners = the_ui.spinner_data_to_load;
+        ArrayList<Pair<View, Table>> spinners = uiBuilder.spinner_data_to_load;
         if(spinners.size() != 0)
         {
             for(int i = 0; i < spinners.size(); i++)
             {
-                System.out.println("spinners has to load data from table: " + spinners.get(i).second.table_name);
-                appLogic.getTableData(spinners.get(i).second,this);
+                if(spinners.get(i).second != null)
+                {
+                    System.out.println("spinners has to load data from table: " + spinners.get(i).second.table_name);
+                    appLogic.getTableData(spinners.get(i).second, this);
+                }
             }
 
         }
@@ -159,7 +121,7 @@ public class WidgetActivity extends AppCompatActivity {
 
     void initWidgetList() {
 
-        RecyclerView recList = the_ui.buildWidgetRecyclerViewer(widgetScreen);
+        RecyclerView recList = uiBuilder.buildWidgetRecyclerViewer(widgetScreen);
 
         widgetAdapter = new RecycleViewWidgetAdapter(this, my_widget.myChildren);
         recList.setAdapter(widgetAdapter);
@@ -184,9 +146,17 @@ public class WidgetActivity extends AppCompatActivity {
         }));
     }
 
+
+    void startWidgetListActivity()
+    {
+        Intent intent = getIntent();
+        intent.setClass(getApplicationContext(), WidgetListItemListActivity.class);
+        startActivity(intent);
+    }
+    /*
     void initTableList() {
 
-        Table my_table = findTableWithinWidget(my_widget);
+        final Table my_table = findTableWithinWidget(my_widget);
 
 
         if(my_table == null)
@@ -195,9 +165,7 @@ public class WidgetActivity extends AppCompatActivity {
             return;
         }
 
-        RecyclerView recList = the_ui.buildTableRecyclerViewer(widgetScreen, my_table);
-
-
+        RecyclerView recList = uiBuilder.buildTableRecyclerViewer(widgetScreen, my_table);
 
         tableAdapter = new RecycleViewDataSetAdapter(this, my_table.dataSets);
         //tableAdapter.notifyDataSetChanged();
@@ -206,42 +174,37 @@ public class WidgetActivity extends AppCompatActivity {
         recList.addOnItemTouchListener(new RecyclerItemClickListener(this, new RecyclerItemClickListener.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                //DataSet selectedDataSet = my_table.dataSets.get(position);
+
+
+                //showDetailsFragment(my_table);
+
+                // TODO: Init Fragment with selected DataSet and table Actions for the selected item
 
                 //showDetailsFragment selectedDataSet
-                //Toast.makeText(getApplicationContext(), "Selected DataSet element: " + my_widget.myChildren.get(position).titleBar, Toast.LENGTH_LONG).show();
+                //Toast.makeText(getApplicationContext(), "Selected DataSet element: " + my_table.dataSets.get(position).set.toString(), Toast.LENGTH_LONG).show();
             }
         }));
 
     }
 
-    private void showDetailsFragment() {
+    private void showDetailsFragment(Table current_table) {
 
+        FragmentManager fm = getFragmentManager();
+        // add
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.add(R.id.detailsContent, new WidgetListDetail(current_table));
+        // alternatively add it with a tag
+        // trx.add(R.id.your_placehodler, new YourFragment(), "detail");
+        ft.commit();
+        widgetScreen.setVisibility(View.GONE);
+        FrameLayout details = (FrameLayout)findViewById(R.id.detailsContent);
+        details.setVisibility(View.VISIBLE);
+        System.out.println("New Fragment has been built!");
     }
-
-
-    Table findTableWithinWidget(Widget widget)
-    {
-        if(widget.myTables.size() != 0)
-        {
-            return widget.myTables.get(0);
-        }
-        else
-            return null;
-    }
-
-
-
-
-    Widget getCurrentWidget() {
-        if(appLogic.currentWidget != null)
-            return appLogic.currentWidget;
-        else
-            return null;
-    }
+    */
 
     void initScreenItems() {
-        widgetScreen = (LinearLayout) findViewById(R.id.mainContent);
+        widgetScreen = (FrameLayout) findViewById(R.id.mainContent);
         toolbar = (Toolbar) findViewById(R.id.widget_toolbar);
         setSupportActionBar(toolbar);
         try
@@ -279,7 +242,26 @@ public class WidgetActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        appLogic.setCurrentWidget(my_widget);
+
+        my_widget = appLogic.currentWidget;
+
+
+
+        // init the UI Builder
+        uiBuilder = UIBuilder.getInstance();
+
+        uiBuilder.setContext(this);
+        uiBuilder.setCallback(this);
+
+        setContentView(R.layout.widget_activity);
+
+        initScreenItems();
+
+
+        if (my_widget != null) {
+            checkWidgetType();
+        }
+        //System.out.println("Current widget on Resume: " + my_widget.titleBar);
     }
 
     @Override
@@ -303,13 +285,6 @@ public class WidgetActivity extends AppCompatActivity {
             this.moveTaskToBack(true);
         }
 
-    }
-
-    @TargetApi(21)
-    private void setupWindowAnimations() {
-        Fade fade = new Fade();
-        fade.setDuration(1000);
-        getWindow().setEnterTransition(fade);
     }
 
     @Override
@@ -369,24 +344,15 @@ public class WidgetActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         System.out.println("my_table:        " + my_table.toString());
-                        System.out.println("my_table_spinner:" + the_ui.spinner_data_to_load.get(0).second);
+                        System.out.println("my_table_spinner:" + uiBuilder.spinner_data_to_load.get(0).second);
                         // If table data has recieved and spinners should be filled first check the size
                         // then see if the requested table matches with the incomming
-                        for(int i = 0; i < the_ui.spinner_data_to_load.size(); i++)
-                            if(my_table == the_ui.spinner_data_to_load.get(i).second)
+                        for(int i = 0; i < uiBuilder.spinner_data_to_load.size(); i++)
+                            if(my_table == uiBuilder.spinner_data_to_load.get(i).second)
                             {
-                                the_ui.initSpinnerAdapter((Spinner)the_ui.spinner_data_to_load.get(i).first, my_table.dataSets);
-                                the_ui.spinner_data_to_load.remove(the_ui.spinner_data_to_load.get(i));
+                                uiBuilder.initSpinnerAdapter((Spinner) uiBuilder.spinner_data_to_load.get(i).first, my_table.dataSets);
+                                uiBuilder.spinner_data_to_load.remove(uiBuilder.spinner_data_to_load.get(i));
                             }
-                    }
-                });
-                break;
-            case 4:
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        System.out.println("Data Set2: " + my_table.dataSets.toString());
-                        tableAdapter.setNewData(my_table.dataSets);
                     }
                 });
                 break;
@@ -394,5 +360,10 @@ public class WidgetActivity extends AppCompatActivity {
         }
 
 
+    }
+
+    @Override
+    public void invokeLoadingTableData(Table table) {
+        Log.d("Widget Activity","Table invocation requested for: " + table.table_name);
     }
 }
