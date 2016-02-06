@@ -108,6 +108,13 @@ public class WidgetListItemListActivity extends AppCompatActivity implements IDa
             return null;
     }
 
+
+    @Override
+    public void invokeLoadingTableData(Table table) {
+        Log.d("Widget List Activity", "Table invocation requested for: " + table.table_name);
+        appLogic.getTableData(table, this);
+    }
+
     @Override
     public void signalDataArrived(final Table my_table) {
         System.out.println("DATA HAS ARRIVED!");
@@ -150,11 +157,6 @@ public class WidgetListItemListActivity extends AppCompatActivity implements IDa
         finish();
     }
 
-    @Override
-    public void invokeLoadingTableData(Table table) {
-        Log.d("Widget List Activity", "Table invocation requested for: " + table.table_name);
-        //appLogic.getTableData(table, this);
-    }
 
 
     public class WidgetListItemRecyclerViewAdapter
