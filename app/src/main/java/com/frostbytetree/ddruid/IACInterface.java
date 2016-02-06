@@ -1,5 +1,7 @@
 package com.frostbytetree.ddruid;
 
+import android.support.v7.app.AppCompatActivity;
+
 import org.json.JSONObject;
 
 import java.util.ArrayList;

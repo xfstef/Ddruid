@@ -2,6 +2,7 @@ package com.frostbytetree.ddruid;
 
 import android.os.Looper;
 import android.support.design.widget.TabLayout;
+import android.support.v7.app.AppCompatActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -115,7 +116,7 @@ public class AppLogic extends Thread{
         finished_operation.requested_operation.status = 6;
     }
 
-    public void getTableData(Table the_table, WidgetActivity caller){
+    public void getTableData(Table the_table, AppCompatActivity caller){
         // TODO: Check if the data exists locally. If not then download it.
 
         String table_address = the_table.table_name.replace(".","/");
@@ -133,7 +134,7 @@ public class AppLogic extends Thread{
         download_table_data_procedure.requested_operation.status = 0;
         // -----------------------------------------------------------------------------------------
 
-        download_table_data_procedure.caller_widget = caller;
+        download_table_data_procedure.caller_widget = (WidgetActivity) caller;
 
         synchronized (commInterface.message_buffer_lock) {  // Adding message.
             commInterface.message_buffer.add(download_table_data_procedure);
