@@ -5,4 +5,5 @@ package com.frostbytetree.ddruid;
  */
 public interface IDataInflateListener {
     void invokeLoadingTableData(Table table);
+    void signalDataArrived(final Table my_table);
 }

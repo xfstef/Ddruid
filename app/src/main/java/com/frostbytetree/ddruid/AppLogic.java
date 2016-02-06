@@ -28,6 +28,7 @@ public class AppLogic extends Thread{
     MainActivity mainActivity;
     WidgetViews widgetViews;
     CommunicationDaemon communicationDaemon;
+    IDataInflateListener iDataInflateListener;
     short thread_throttling = 5000; // This option is used to determine how much the Thread sleeps.
                                     // 5000 - Idle mode: the app is minimized with no bkg operation.
                                     // 1000 - Passive mode: app is sending / getting data.
@@ -134,7 +135,8 @@ public class AppLogic extends Thread{
         download_table_data_procedure.requested_operation.status = 0;
         // -----------------------------------------------------------------------------------------
 
-        download_table_data_procedure.caller_widget = (WidgetActivity) caller;
+        download_table_data_procedure.iDataInflateListener = (IDataInflateListener) caller;
+        download_table_data_procedure.caller_widget = caller;
 
         synchronized (commInterface.message_buffer_lock) {  // Adding message.
             commInterface.message_buffer.add(download_table_data_procedure);

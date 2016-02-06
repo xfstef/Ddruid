@@ -38,7 +38,8 @@ class Message {
     short priority; // 0 - Critical
                     // 1 - Urgent
                     // 2 - Future To Do
-    WidgetActivity caller_widget;
+    AppCompatActivity caller_widget;
+    IDataInflateListener iDataInflateListener;
 }
 
 class Operation {

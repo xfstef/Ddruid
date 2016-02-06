@@ -108,7 +108,7 @@ public class WidgetListItemListActivity extends AppCompatActivity implements IDa
             return null;
     }
 
-
+    @Override
     public void signalDataArrived(final Table my_table) {
         System.out.println("DATA HAS ARRIVED!");
 

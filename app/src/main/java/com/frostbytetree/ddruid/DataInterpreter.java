@@ -55,7 +55,8 @@ public class DataInterpreter {
         }
 
         try {
-            the_message.caller_widget.signalDataArrived(the_message.requested_operation.the_table);
+            the_message.iDataInflateListener.signalDataArrived(the_message.requested_operation.the_table);
+            //the_message.caller_widget.signalDataArrived(the_message.requested_operation.the_table);
         }catch(Exception e){
             e.printStackTrace();
         }

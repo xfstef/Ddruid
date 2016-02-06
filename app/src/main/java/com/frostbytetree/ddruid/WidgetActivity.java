@@ -327,6 +327,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
         client.disconnect();
     }
 
+    @Override
     public void signalDataArrived(final Table my_table) {
         System.out.println("DATA HAS ARRIVED!");
 
@@ -364,6 +365,6 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
 
     @Override
     public void invokeLoadingTableData(Table table) {
-        Log.d("Widget Activity","Table invocation requested for: " + table.table_name);
+        Log.d("Widget Activity", "Table invocation requested for: " + table.table_name);
     }
 }
