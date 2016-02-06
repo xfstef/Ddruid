@@ -221,6 +221,7 @@ public class AppLogic extends Thread{
                     e.printStackTrace();
                 }
                 post_procedure.requested_operation.sclable_object = new_object;
+                System.out.println("The POST JSON: " + new_object.toString());
 
                 synchronized (commInterface.message_buffer_lock) {  // Adding message.
                     commInterface.message_buffer.add(post_procedure);
