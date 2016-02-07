@@ -49,17 +49,13 @@ public class SQLiteController extends Thread{
                                 commInterface.message_buffer.get(x).requested_operation.status == 0) {
                             commInterface.message_buffer.get(x).requested_operation.status = 1;
                             local_pile.add(commInterface.message_buffer.get(x));
-                            // TODO: run requested operations
-                        }else if(commInterface.message_buffer.get(x).caller_id == my_id &&
-                                commInterface.message_buffer.get(x).requested_operation.status != 3)
-                            commInterface.message_buffer.get(x).requested_operation.status = 6;
+                        }
                 }
-
+                //Thread.sleep(thread_throttling);
                 for(int x = 0; x < local_pile.size(); x++){
                     if(local_pile.get(x).requested_operation.status != 6)
-                        forwarder(commInterface.message_buffer.get(x));
+                        callerMarshalling(local_pile.get(x));
                 }
-
                 //Thread.sleep(thread_throttling);
                 this.wait();
             } catch (InterruptedException e) {
@@ -68,7 +64,7 @@ public class SQLiteController extends Thread{
         }while(true);
     }
 
-    private void forwarder(Message message) {
+    private void callerMarshalling(Message message) {
 
     }
 }

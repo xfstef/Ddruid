@@ -4,7 +4,9 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -36,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     ActionBarDrawerToggle mDrawerToggle;
     SclableInterpreter sclableInterpreter;
     CommunicationDaemon communicationDaemon;
+    SharedPreferences sharedPreferences;
 
     Toolbar toolbar;
 
@@ -46,11 +49,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        sharedPreferences = getSharedPreferences("com.frostbytetree.ddruid", Context.MODE_PRIVATE);
 
         if (Build.VERSION.SDK_INT > 21){
             setupWindowAnimations();
         }
         initViewItems();
+
+        try{
+            uri.setText(sharedPreferences.getString("last_uri", ""));
+        }catch(Exception e){
+            e.printStackTrace();
+        }
 
         LinearLayout lin_test = (LinearLayout)findViewById(R.id.test_layout);
         lin_test.setOnClickListener(this);
@@ -157,15 +167,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View view){
         // TODO: This is a temporary login protocol. Please fix me.
-        System.out.println("OnClick Funktion called!");
+        //System.out.println("OnClick Funktion called!");
         switch(view.getId()){
             case R.id.bLogin:
-                hideKeyboard();
-                setContentView(R.layout.loading);
                 if(!uri.getText().toString().isEmpty()) {
+                    hideKeyboard();
+                    setContentView(R.layout.loading);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString("last_uri", String.valueOf(uri.getText()));
+                    editor.commit();
                     configFile.server_uri = String.valueOf(uri.getText());
-                    System.out.println("The uri: " + configFile.server_uri);
+                    //System.out.println("The uri: " + configFile.server_uri);
                     appLogic.initLoginProc();
+                }else{
+                    // TODO: Tell the user that the URI field is empty.
                 }
                 break;
 

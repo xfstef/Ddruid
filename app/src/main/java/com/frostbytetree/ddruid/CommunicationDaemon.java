@@ -132,18 +132,21 @@ public class CommunicationDaemon extends Thread{
         // -----------------------------------------------------------------------------------------
 
         ClientResource online_resource = new ClientResource(message.requested_operation.REST_command);
-        Representation representation = online_resource.post(message.requested_operation.sclable_object);
+        Representation representation = null;
         JSONObject response = null;
         message.requested_operation.status = 2;
 
-        try{
-            response = new JSONObject(representation.getText());
-            System.out.println("The POST Response: " + response.toString());
-            message.requested_operation.status = 3;
-        } catch (JSONException e) {
-            e.printStackTrace();
-            message.requested_operation.status = 5;
-        } catch (IOException e) {
+        try {
+            representation = online_resource.post(message.requested_operation.sclable_object);
+            try {
+                response = new JSONObject(representation.getText());
+                System.out.println("The POST Response: " + response.toString());
+                message.requested_operation.status = 3;
+            } catch (JSONException e) {
+                e.printStackTrace();
+                message.requested_operation.status = 5;
+            }
+        } catch (Exception e) {
             e.printStackTrace();
             message.requested_operation.status = 4;
         }
@@ -155,32 +158,34 @@ public class CommunicationDaemon extends Thread{
         // -----------------------------------------------------------------------------------------
 
         ClientResource online_resource = new ClientResource(message.requested_operation.REST_command);
-        Representation representation = online_resource.get();
+        Representation representation = null;
         JSONObject response = null;
+        message.requested_operation.status = 2;
 
         try {
-            response = new JSONObject(representation.getText());
-        } catch (JSONException e) {
+            representation = online_resource.get();
+            try {
+                response = new JSONObject(representation.getText());
+                synchronized (data.data_lock){
+                    data.temp_object = response;
+                }
+                message.requested_operation.status = 3;
+                synchronized (appLogic){
+                    appLogic.notify();
+                }
+            } catch (JSONException e) {
+                message.requested_operation.status = 5;
+                synchronized (appLogic){
+                    appLogic.notify();
+                }
+                e.printStackTrace();
+            }
+        }catch (Exception e) {
             message.requested_operation.status = 5;
             synchronized (appLogic){
                 appLogic.notify();
             }
             e.printStackTrace();
-        } catch (IOException e) {
-            message.requested_operation.status = 5;
-            synchronized (appLogic){
-                appLogic.notify();
-            }
-            e.printStackTrace();
-        }
-
-        synchronized (data.data_lock){
-            data.temp_object = response;
-        }
-
-        message.requested_operation.status = 3;
-        synchronized (appLogic){
-            appLogic.notify();
         }
     }
 
@@ -190,34 +195,36 @@ public class CommunicationDaemon extends Thread{
         // -----------------------------------------------------------------------------------------
 
         ClientResource online_resource = new ClientResource(message.requested_operation.REST_command);
-        Representation representation = online_resource.get();
+        Representation representation = null;
         JSONObject response = null;
+        message.requested_operation.status = 2;
 
         try {
-            response = new JSONObject(representation.getText());
-        } catch (JSONException e) {
+            representation = online_resource.get();
+            try {
+                response = new JSONObject(representation.getText());
+                synchronized (cfgFile.cfg_file_lock){
+                    cfgFile.json_form = response;
+                }
+
+                message.requested_operation.status = 3;
+                synchronized (appLogic){
+                    appLogic.notify();
+                }
+            } catch (JSONException e) {
+                message.requested_operation.status = 5;
+                synchronized (appLogic){
+                    appLogic.notify();
+                }
+                e.printStackTrace();
+            }
+        }catch (Exception e) {
             message.requested_operation.status = 5;
             synchronized (appLogic){
                 appLogic.notify();
             }
             e.printStackTrace();
-        } catch (IOException e) {
-            message.requested_operation.status = 5;
-            synchronized (appLogic){
-                appLogic.notify();
-            }
-            e.printStackTrace();
         }
-
-        synchronized (cfgFile.cfg_file_lock){
-            cfgFile.json_form = response;
-        }
-
-        message.requested_operation.status = 3;
-        synchronized (appLogic){
-            appLogic.notify();
-        }
-
     }
 
     private void sortByPriority() { // TODO: Sort current messages according to priority.
