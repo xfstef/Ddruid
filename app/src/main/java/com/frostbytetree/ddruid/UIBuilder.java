@@ -199,21 +199,21 @@ public class UIBuilder {
         return recList;
     }
 
-    public RecyclerView buildTableRecyclerViewer(FrameLayout mainLayout, Table table_to_reload) {
-        View content = LayoutInflater.from(context).inflate(R.layout.recycler_view_menu, null);
-        LinearLayoutManager llm = new LinearLayoutManager(context);
-        llm.setOrientation(LinearLayoutManager.VERTICAL);
+    public RecyclerView buildTableRecyclerViewer(Table table_to_reload) {
 
-        RecyclerView recList = (RecyclerView) content.findViewById(R.id.itemsRecyclerView);
-        final SwipeRefreshLayout swipe_content = (SwipeRefreshLayout) content.findViewById(R.id.swipeRefreshLayout);
-        SwipeDataRefreshListener swipe_listener = new SwipeDataRefreshListener(context,swipe_content,table_to_reload);
+        View content = LayoutInflater.from(context).inflate(R.layout.activity_tablewidgetitem_list, null);
+        //LinearLayoutManager llm = new LinearLayoutManager(context);
+        //llm.setOrientation(LinearLayoutManager.VERTICAL);
 
-        recList.setLayoutManager(llm);
-        mainLayout.addView(swipe_content);
+        RecyclerView recList = (RecyclerView) content.findViewById(R.id.tablewidgetitem_list);
+        // final SwipeRefreshLayout swipe_content = (SwipeRefreshLayout) content.findViewById(R.id.swipeRefreshLayout);
+        // SwipeDataRefreshListener swipe_listener = new SwipeDataRefreshListener(context,swipe_content,table_to_reload);
+
+        //recList.setLayoutManager(llm);
+        //mainLayout.addView(swipe_content);
 
         // Let's tell the caller activity that Table Data can be requested
-        if(table_to_reload.dataSets.size() == 0)
-            mCallback.invokeLoadingTableData(table_to_reload);
+
 
         //TODO implement: check for rowstamp of the table to know if it's necessary to synchronize -> SCLABLE MUST DELIVER ROWSTAMP
 

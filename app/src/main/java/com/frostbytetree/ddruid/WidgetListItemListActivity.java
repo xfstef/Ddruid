@@ -3,6 +3,7 @@ package com.frostbytetree.ddruid;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -60,7 +61,7 @@ public class WidgetListItemListActivity extends AppCompatActivity implements IDa
         uiBuilder = UIBuilder.getInstance();
         uiBuilder.setContext(this);
         uiBuilder.setCallback(this);
-        setContentView(R.layout.activity_widgetlistitem_list);
+        setContentView(R.layout.activity_tablewidgetitem_list);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -71,39 +72,30 @@ public class WidgetListItemListActivity extends AppCompatActivity implements IDa
 
         initListItems();
 
-
-        if (findViewById(R.id.widgetlistitem_detail_container) != null) {
+        if (findViewById(R.id.tablewidgetitem_detail_container) != null) {
             // The detail container view will be present only in the
             // large-screen layouts (res/values-w900dp).
             // If this view is present, then the
             // activity should be in two-pane mode.
+
             mTwoPane = true;
         }
     }
 
     private void initListItems()
     {
-        View mainContent = findViewById(R.id.frameLayout);
+
         final Table myTable = findTableWithinWidget(myWidget);
+        if(myTable.dataSets.size() == 0)
+            appLogic.getTableData(myTable, this);
 
-        RecyclerView recyclerView = uiBuilder.buildTableRecyclerViewer((FrameLayout)mainContent, myTable);
+        RecyclerView recList = (RecyclerView) findViewById(R.id.tablewidgetitem_list);
         tableAdapter = new TableListItemRecyclerViewAdapter(myTable.dataSets);
-        //tableAdapter.notifyDataSetChanged();
-        recyclerView.setAdapter(tableAdapter);
+        recList.setAdapter(tableAdapter);
 
-        /*
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });*/
+        final SwipeRefreshLayout swipe_content = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
+        SwipeDataRefreshListener swipe_listener = new SwipeDataRefreshListener(this,swipe_content,myTable);
 
-        //View recyclerView = findViewById(R.id.widgetlistitem_list);
-        //assert recyclerView != null;
-        //setupRecyclerView((RecyclerView) recyclerView);
         
     }
 
@@ -184,26 +176,24 @@ public class WidgetListItemListActivity extends AppCompatActivity implements IDa
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
+            holder.mItem = dataSets.get(position).set;
             holder.mTextView.setText(dataSets.get(position).set.toString());
-            holder.set = dataSets.get(position).set;
-            //holder.mIdView.setText(mValues.get(position).id);
-            //holder.mContentView.setText(mValues.get(position).content);
 
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (mTwoPane) {
                         Bundle arguments = new Bundle();
-                        arguments.putStringArrayList(WidgetListItemDetailFragment.ARG_ITEM_ID, holder.set);
+                        arguments.putStringArrayList(WidgetListItemDetailFragment.ARG_ITEM_ID, holder.mItem);
                         WidgetListItemDetailFragment fragment = new WidgetListItemDetailFragment();
                         fragment.setArguments(arguments);
                         getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.widgetlistitem_detail_container, fragment)
+                                .replace(R.id.tablewidgetitem_detail_container, fragment)
                                 .commit();
                     } else {
                         Context context = v.getContext();
                         Intent intent = new Intent(context, WidgetListItemDetailActivity.class);
-                        intent.putExtra(WidgetListItemDetailFragment.ARG_ITEM_ID, holder.set);
+                        intent.putExtra(WidgetListItemDetailFragment.ARG_ITEM_ID, holder.mItem);
 
                         context.startActivity(intent);
                     }
@@ -224,9 +214,9 @@ public class WidgetListItemListActivity extends AppCompatActivity implements IDa
 
 
          class ViewHolder extends RecyclerView.ViewHolder{
-             public TextView mTextView;
-             public ArrayList<String> set;
              public View mView;
+             public TextView mTextView;
+             public ArrayList<String> mItem;
 
              public ViewHolder(View view)
              {
@@ -234,6 +224,7 @@ public class WidgetListItemListActivity extends AppCompatActivity implements IDa
                  mView = view;
                  mTextView = (TextView)view.findViewById(R.id.txtListAttr);
              }
+
         }
     }
 }

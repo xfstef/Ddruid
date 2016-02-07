@@ -16,7 +16,13 @@
     master/detail flow.
     
     -->
-
+    <android.support.v4.widget.SwipeRefreshLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/swipeRefreshLayout"
+        android:layout_width="@dimen/item_width"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp" >
     <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/tablewidgetitem_list"
@@ -28,7 +34,7 @@
         app:layoutManager="LinearLayoutManager"
         tools:context="com.frostbytetree.ddruid.TableWidgetItemListActivity"
         tools:listitem="@layout/tablewidgetitem_list_content" />
-
+    </android.support.v4.widget.SwipeRefreshLayout>
     <FrameLayout
         android:id="@+id/tablewidgetitem_detail_container"
         android:layout_width="0dp"
