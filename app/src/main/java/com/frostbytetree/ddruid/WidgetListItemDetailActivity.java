@@ -6,6 +6,9 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.Pair;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
@@ -22,17 +25,50 @@ import java.util.ArrayList;
  */
 public class WidgetListItemDetailActivity extends AppCompatActivity {
 
-    private static final String ACTIVITY_NAME = "ListDetailActivity";
+    private static final String CLASS_NAME = "ListDetailActivity";
     AppLogic appLogic;
     Widget widget;
     UIBuilder uiBuilder;
-
     ArrayList<String> set;
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu items for use in the action bar
+        Log.i(CLASS_NAME, "On Create Options Menu");
+        Log.i(CLASS_NAME, "Adding Menu elements dynamically");
+        for(int i = 0; i < widget.myTables.get(0).myActions.size(); i++)
+            menu.add(0, i, 0, widget.myTables.get(0).myActions.get(i).name);
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        Log.i(CLASS_NAME, "ON OPTIONS ITEM SELECTED: item id: " + id);
+
+        if (id == android.R.id.home) {
+            // This ID represents the Home or Up button. In the case of this
+            // activity, the Up button is shown. Use NavUtils to allow users
+            // to navigate up one level in the application structure. For
+            // more details, see the Navigation pattern on Android Design:
+            //
+            // http://developer.android.com/design/patterns/navigation.html#up-vs-back
+            //
+            NavUtils.navigateUpTo(this, new Intent(this, WidgetListItemListActivity.class));
+            return true;
+        }
+        else {
+            appLogic.sendPost(appLogic.temporary_dataSet,widget.myTables.get(0).myActions.get(id),widget.myTables.get(0));
+            appLogic.temporary_dataSet = null;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(ACTIVITY_NAME, " has been created!");
+        Log.i(CLASS_NAME, " has been created!");
         appLogic = AppLogic.getInstance();
         widget = appLogic.currentWidget;
         uiBuilder = UIBuilder.getInstance();
@@ -48,15 +84,29 @@ public class WidgetListItemDetailActivity extends AppCompatActivity {
         //TODO: find out which attribute will be set as title
         getSupportActionBar().setTitle(set.toString());
 
+        for(int i  = 0; i < widget.myTables.get(0).myActions.size(); i++)
+            Log.i(CLASS_NAME, " the widget Table Action : " + widget.myTables.get(0).myActions.get(i).name);
 
+
+
+        /*
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own detail action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Snackbar snackbar = Snackbar
+                        .make(view, "Replace with your own detail action", Snackbar.LENGTH_LONG);
+
+                for(int i  = 0; i < widget.myTables.get(0).myActions.size(); i++)
+                {
+                    snackbar.setAction(widget.myTables.get(0).myActions.get(i).name, null);
+                }
+
+                snackbar.show();
             }
         });
+        */
+
 
         // Show the Up button in the action bar.
         ActionBar actionBar = getSupportActionBar();
@@ -87,20 +137,4 @@ public class WidgetListItemDetailActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == android.R.id.home) {
-            // This ID represents the Home or Up button. In the case of this
-            // activity, the Up button is shown. Use NavUtils to allow users
-            // to navigate up one level in the application structure. For
-            // more details, see the Navigation pattern on Android Design:
-            //
-            // http://developer.android.com/design/patterns/navigation.html#up-vs-back
-            //
-            NavUtils.navigateUpTo(this, new Intent(this, WidgetListItemListActivity.class));
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
 }

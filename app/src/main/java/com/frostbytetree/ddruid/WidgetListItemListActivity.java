@@ -178,7 +178,7 @@ public class WidgetListItemListActivity extends AppCompatActivity implements IDa
         public void onBindViewHolder(final ViewHolder holder, int position) {
             holder.mItem = dataSets.get(position).set;
             holder.mTextView.setText(dataSets.get(position).set.toString());
-
+            holder.currentDataSet = dataSets.get(position);
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -194,7 +194,7 @@ public class WidgetListItemListActivity extends AppCompatActivity implements IDa
                         Context context = v.getContext();
                         Intent intent = new Intent(context, WidgetListItemDetailActivity.class);
                         intent.putExtra(WidgetListItemDetailFragment.ARG_ITEM_ID, holder.mItem);
-
+                        appLogic.temporary_dataSet = holder.currentDataSet;
                         context.startActivity(intent);
                     }
                 }
@@ -217,6 +217,7 @@ public class WidgetListItemListActivity extends AppCompatActivity implements IDa
              public View mView;
              public TextView mTextView;
              public ArrayList<String> mItem;
+             public DataSet currentDataSet;
 
              public ViewHolder(View view)
              {
