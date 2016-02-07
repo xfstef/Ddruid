@@ -45,7 +45,7 @@ public class WidgetListItemDetailActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        Log.i(CLASS_NAME, "ON OPTIONS ITEM SELECTED: item id: " + id);
+
 
         if (id == android.R.id.home) {
             // This ID represents the Home or Up button. In the case of this
@@ -55,12 +55,18 @@ public class WidgetListItemDetailActivity extends AppCompatActivity {
             //
             // http://developer.android.com/design/patterns/navigation.html#up-vs-back
             //
+            appLogic.temporary_dataSet = null;
             NavUtils.navigateUpTo(this, new Intent(this, WidgetListItemListActivity.class));
             return true;
         }
         else {
-            appLogic.sendPost(appLogic.temporary_dataSet,widget.myTables.get(0).myActions.get(id),widget.myTables.get(0));
-            appLogic.temporary_dataSet = null;
+            Log.i(CLASS_NAME, "Action : " + widget.myTables.get(0).myActions.get(id).name +" has attribute size: " + widget.myTables.get(0).myActions.get(id).attributes.size());
+            for(int i = 0; i < widget.myTables.get(0).myActions.get(id).attributes.size(); i++)
+                Log.i(CLASS_NAME, "Attribute: " + widget.myTables.get(0).myActions.get(id).attributes.get(i).name);
+
+            Log.i(CLASS_NAME, "-------------------------------");
+            //appLogic.sendPost(appLogic.temporary_dataSet, widget.myTables.get(0).myActions.get(id), widget.myTables.get(0));
+
         }
         return super.onOptionsItemSelected(item);
     }

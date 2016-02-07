@@ -3,6 +3,7 @@ package com.frostbytetree.ddruid;
 import android.os.Looper;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -282,6 +283,11 @@ public class AppLogic extends Thread{
                     action_element.put("transaction", post_procedure.current_rowstamp);
                     JSONObject data = new JSONObject();
                     for(int x = 0; x < dataSet.set.size(); x++){
+                        Log.e("APP LOGIC", "Action Attribute size: " + action.attributes.size());
+                        Log.e("APP LOGIC","Action Attribute : " + action.attributes.get(x).name);
+                        Log.e("APP LOGIC","DataSet set      : " + dataSet.set.get(x));
+
+
                         data.put(action.attributes.get(x).name, dataSet.set.get(x));
                     }
                     action_element.put("data", data);
