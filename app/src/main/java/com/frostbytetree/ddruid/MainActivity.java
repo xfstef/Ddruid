@@ -77,14 +77,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if(!appLogic.isAlive())
             appLogic.start();
 
-        //sqldaemon = SQLiteController.getInstance();
-        //sqldaemon.start();
-
-        // TODO: This is a temporary login protocol. Please fix me.
+        sqldaemon = SQLiteController.getInstance();
+        if(!sqldaemon.isAlive())
+            sqldaemon.start();
 
         startService(new Intent(this, DataTransferController.class));
         communicationDaemon = CommunicationDaemon.getInstance();
         appLogic.communicationDaemon = communicationDaemon;
+        sqldaemon.communicationDaemon = communicationDaemon;
 
         // loading and instanciating toolbar
 
@@ -156,6 +156,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View view){
+        // TODO: This is a temporary login protocol. Please fix me.
         System.out.println("OnClick Funktion called!");
         switch(view.getId()){
             case R.id.bLogin:

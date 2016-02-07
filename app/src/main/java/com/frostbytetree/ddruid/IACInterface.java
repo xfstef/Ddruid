@@ -16,13 +16,12 @@ import java.util.ArrayList;
 
 public class IACInterface {
     private static IACInterface ourInstance = new IACInterface();
-    static ArrayList<Message> message_buffer;
+    ArrayList<Message> message_buffer = new ArrayList<Message>();
     Object message_buffer_lock = new Object();
     int rowstamp;   // To be incremented whenever a new message is created.
 
     public static IACInterface getInstance() {
 
-        message_buffer = new ArrayList<Message>();
         return ourInstance;
     }
 

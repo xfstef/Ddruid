@@ -28,7 +28,6 @@ public class AppLogic extends Thread{
     MainActivity mainActivity;
     WidgetViews widgetViews;
     CommunicationDaemon communicationDaemon;
-    IDataInflateListener iDataInflateListener;
     short thread_throttling = 5000; // This option is used to determine how much the Thread sleeps.
                                     // 5000 - Idle mode: the app is minimized with no bkg operation.
                                     // 1000 - Passive mode: app is sending / getting data.
@@ -38,6 +37,7 @@ public class AppLogic extends Thread{
                         // 1 - Sclable.
     String uri  =   //"http://82.223.15.251";
                     "https://demo23.sclable.me/mobile/sclable-mobile-service";
+    ArrayList<Message> local_pile = new ArrayList<Message>();
 
     public static AppLogic getInstance() {
         return ourInstance;
@@ -72,12 +72,15 @@ public class AppLogic extends Thread{
                     for (int x = 0; x < commInterface.message_buffer.size(); x++)
                         if (commInterface.message_buffer.get(x).target_id == my_id &&
                                 commInterface.message_buffer.get(x).requested_operation.status == 0) {
-                            // TODO: run requested operations
-                        }else if(commInterface.message_buffer.get(x).caller_id == my_id &&
-                                commInterface.message_buffer.get(x).requested_operation.status != 6)
-                            postExecutionForwarder(commInterface.message_buffer.get(x));
+                            commInterface.message_buffer.get(x).requested_operation.status = 1;
+                            local_pile.add(commInterface.message_buffer.get(x));
+                        }
                 }
                 //Thread.sleep(thread_throttling);
+                for(int x = 0; x < local_pile.size(); x++){
+                    if(local_pile.get(x).requested_operation.status != 6)
+                        callerMarshalling(local_pile.get(x));
+                }
                 this.wait();
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -85,36 +88,55 @@ public class AppLogic extends Thread{
         }while(true);
     }
 
+    private void callerMarshalling(Message message) {
+        if(message.caller_id == my_id) {
+            postExecutionForwarder(message);
+            return;
+        }
+        if(message.target_id == my_id){
+            // TODO: Add new message behaviour.
+            return;
+        }
+    }
+
     // This function looks at the messages that the AppLogic got and interprets them.
     private void postExecutionForwarder(Message finished_operation){
         switch(finished_operation.requested_operation.status){
-            case 3:
+            case 2: // This means that the app is either in offline mode or the server is not reachable.
+                break;
+            case 3: // Operation Successful.
                 switch(finished_operation.requested_operation.type){
                     case 110:   // Got Config File successfully. Trying to interpret it now.
                         configFileInterpreter.startStartupProcess();
                         setCurrentWidget(widgetViews.the_widgets.get(widgetViews.the_widgets.size() - 1));
+                        finished_operation.requested_operation.status = 6;
                         mainActivity.startWidgetActivity();
-                        thread_throttling = 5000;
                         break;
-                    case 111: // Got a table from the server succesfully. Trying to read it now.
+                    case 111:   // Got a table from the server succesfully. Trying to read it now.
                         dataInterpreter.processTableData(finished_operation);
+                        finished_operation.requested_operation.status = 6;
+                        break;
+                    case 212:   // Got the POST Operations finished successfully message.
+                        finished_operation.requested_operation.status = 6;
                         break;
                     // TODO: Implement the rest of possible post successful operation calls
                 }
                 break;
-            case 5:
+            case 5: // Operation Error.
                 switch (finished_operation.requested_operation.type){
-                    case 110:   // Did not get the Config File successfully. Retrying soon.
+                    case 110:   // Did not get the Config File successfully.
                         // TODO: Decide what to do in case the comm Daemon couldn't get the cfg file.
                         break;
-                    case 111: // Did not get a server table succesfully. Retrying soon.
+                    case 111:   // Did not get a server table succesfully.
                         System.out.println("Got table data: " + data.temp_object.toString());
+                        break;
+                    case 212:   // Could not post to server error.
+                        System.out.println("Got error from server.");
                         break;
                     // TODO: Implement the rest of possible post failed operation calls
                 }
                 break;
         }
-        finished_operation.requested_operation.status = 6;
     }
 
     public void getTableData(Table the_table, AppCompatActivity caller){
@@ -138,8 +160,10 @@ public class AppLogic extends Thread{
         download_table_data_procedure.iDataInflateListener = (IDataInflateListener) caller;
         download_table_data_procedure.caller_widget = caller;
 
+
         synchronized (commInterface.message_buffer_lock) {  // Adding message.
             commInterface.message_buffer.add(download_table_data_procedure);
+            local_pile.add(commInterface.message_buffer.get(commInterface.message_buffer.size()-1));
         }
         synchronized (communicationDaemon) {    // Waking up communicationDaemon
             communicationDaemon.notify();
@@ -170,6 +194,7 @@ public class AppLogic extends Thread{
         if(configFile.json_form == null) {
             synchronized (commInterface.message_buffer_lock) {
                 commInterface.message_buffer.add(login_procedure);
+                local_pile.add(commInterface.message_buffer.get(commInterface.message_buffer.size()-1));
             }
             synchronized (communicationDaemon) {    // Waking up communicationDaemon
                 communicationDaemon.notify();
@@ -191,11 +216,12 @@ public class AppLogic extends Thread{
         JSONArray table_action = new JSONArray();
         String t_a_concat = table.table_name + "." + action.name;
         JSONObject action_element = new JSONObject();
+        Message post_procedure;
 
         switch(action.type){
             case 0: // Create.
                 // TODO: ------------------------- Automate this whole procedure !!! -----------------------
-                Message post_procedure = new Message();
+                post_procedure = new Message();
                 post_procedure.caller_id = my_id;
                 post_procedure.target_id = 2;  // TODO: set the target ID with a variable.
                 post_procedure.current_rowstamp = commInterface.rowstamp;
@@ -225,6 +251,7 @@ public class AppLogic extends Thread{
 
                 synchronized (commInterface.message_buffer_lock) {  // Adding message.
                     commInterface.message_buffer.add(post_procedure);
+                    local_pile.add(commInterface.message_buffer.get(commInterface.message_buffer.size()-1));
                 }
                 synchronized (communicationDaemon) {    // Waking up communicationDaemon
                     communicationDaemon.notify();
@@ -232,10 +259,49 @@ public class AppLogic extends Thread{
 
                 break;
             case 1: // Edit.
-                //TODO: Write actions necessary for Edit.
+                // TODO: ------------------------- Automate this whole procedure !!! -----------------------
+                post_procedure = new Message();
+                post_procedure.caller_id = my_id;
+                post_procedure.target_id = 2;  // TODO: set the target ID with a variable.
+                post_procedure.current_rowstamp = commInterface.rowstamp;
+                commInterface.rowstamp++;
+                post_procedure.priority = 0;   // TODO: set priority with a variable.
+                post_procedure.requested_operation = new Operation();
+                post_procedure.requested_operation.type = 212;   // TODO: use a variable.
+                post_procedure.requested_operation.REST_command = uri;
+                post_procedure.requested_operation.the_table = table;
+                post_procedure.requested_operation.status = 0;
+                // -----------------------------------------------------------------------------------------
+
+                try {
+                    action_element.put("transaction", post_procedure.current_rowstamp);
+                    JSONObject data = new JSONObject();
+                    for(int x = 0; x < dataSet.set.size(); x++){
+                        data.put(action.attributes.get(x).name, dataSet.set.get(x));
+                    }
+                    action_element.put("data", data);
+                    table_action.put(action_element);
+                    new_object.put(t_a_concat, table_action);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                post_procedure.requested_operation.sclable_object = new_object;
+                System.out.println("The POST JSON: " + new_object.toString());
+
+                synchronized (commInterface.message_buffer_lock) {  // Adding message.
+                    commInterface.message_buffer.add(post_procedure);
+                    local_pile.add(commInterface.message_buffer.get(commInterface.message_buffer.size()-1));
+                }
+                synchronized (communicationDaemon) {    // Waking up communicationDaemon
+                    communicationDaemon.notify();
+                }
+
                 break;
-            case 2: // Delete.
-                //TODO: Write actions necessary for Delete.
+            case 2: // Edit with form.
+                // TODO: Write actions necessary for Edit with form.
+                break;
+            case 3: // Delete.
+                // TODO: Write actions necessary for Delete.
                 break;
         }
     }

@@ -83,8 +83,9 @@ class Attribute{
 class Action{
     String name;
     short type; // 0 - For create new data set;
-                // 1 - For edit data set;
-                // 2 - For delete data set.
+                // 1 - For simple edit data set;
+                // 2 - For complex edit with form;
+                // 3 - For delete data set.
     short sclablePreState = 0;
     short sclablePostState = 0;
     // The sclable States can be:

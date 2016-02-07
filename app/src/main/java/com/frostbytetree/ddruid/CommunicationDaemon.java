@@ -9,6 +9,7 @@ import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 
 import java.io.IOException;
+import java.sql.SQLClientInfoException;
 import java.util.ArrayList;
 
 /**
@@ -22,7 +23,8 @@ public class CommunicationDaemon extends Thread{
     private static short my_id = 2;
     IACInterface commInterface = IACInterface.getInstance();
     ConfigFile cfgFile = ConfigFile.getInstance();
-    AppLogic appLogic =AppLogic.getInstance();
+    AppLogic appLogic = AppLogic.getInstance();
+    SQLiteController sqLiteController = SQLiteController.getInstance();
     short thread_throttling = 1000; // This option is used to determine how much the Thread sleeps.
                                     // 5000 - Idle mode: the app is minimized with no bkg operation.
                                     // 1000 - Passive mode: app is sending / getting data.
@@ -51,19 +53,17 @@ public class CommunicationDaemon extends Thread{
                     for (int x = 0; x < commInterface.message_buffer.size(); x++)
                         if (commInterface.message_buffer.get(x).target_id == my_id &&
                                 commInterface.message_buffer.get(x).requested_operation.status == 0) {
+                            // This part adds all our jobs to the local jobs buffer.
                             commInterface.message_buffer.get(x).requested_operation.status = 1;
                             local_pile.add(commInterface.message_buffer.get(x));
-                        }else if(commInterface.message_buffer.get(x).caller_id == my_id &&
-                                commInterface.message_buffer.get(x).requested_operation.status == 3)
-                            commInterface.message_buffer.get(x).requested_operation.status = 6;
-                            // TODO: Check if there are other functions that need to be called afterwards.
+                        }
                 }
 
                 // Processing found / still ongoing messages.
                 sortByPriority();
                 for(int x = 0; x < local_pile.size(); x++){
                     if(local_pile.get(x).requested_operation.status != 6)
-                        statusMarshalling(local_pile.get(x));
+                        callerMarshalling(local_pile.get(x));
                 }
                 this.wait();
                 //Thread.sleep(thread_throttling);
@@ -71,6 +71,31 @@ public class CommunicationDaemon extends Thread{
                 e.printStackTrace();
             }
         } while(true);
+    }
+
+    private void callerMarshalling(Message message){    // Looks at who the message is directed to.
+        if(message.caller_id == my_id) {
+            postExecutionForwarder(message);
+            return;
+        }
+        if(message.target_id == my_id){
+            statusMarshalling(message);
+            return;
+        }
+    }
+
+    // This function looks at the responses that the CommDaemon got and interprets them.
+    private void postExecutionForwarder(Message finished_operation){
+        switch(finished_operation.requested_operation.status){
+            case 2: // This means that the app is either in offline mode or the server is not reachable.
+                break;
+            case 3: // Operation Successful.
+                finished_operation.requested_operation.status = 6;
+                break;
+            case 5: // Operation Error.
+                // TODO: Decide what happens now.
+                break;
+        }
     }
 
     private void statusMarshalling(Message message) {   // Calls the appropriate message processing
@@ -94,7 +119,33 @@ public class CommunicationDaemon extends Thread{
             case 111:
                 getTableDataFromServer(message);
                 break;
+            case 212:
+                postToServer(message);
+                break;
             // TODO: Define behaviour for the other operation types.
+        }
+    }
+
+    private void postToServer(Message message) {
+        // TODO: ----------------------- Check for user credentials / login ------------------------
+        //
+        // -----------------------------------------------------------------------------------------
+
+        ClientResource online_resource = new ClientResource(message.requested_operation.REST_command);
+        Representation representation = online_resource.post(message.requested_operation.sclable_object);
+        JSONObject response = null;
+        message.requested_operation.status = 2;
+
+        try{
+            response = new JSONObject(representation.getText());
+            System.out.println("The POST Response: " + response.toString());
+            message.requested_operation.status = 3;
+        } catch (JSONException e) {
+            e.printStackTrace();
+            message.requested_operation.status = 5;
+        } catch (IOException e) {
+            e.printStackTrace();
+            message.requested_operation.status = 4;
         }
     }
 
