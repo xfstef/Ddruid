@@ -226,6 +226,7 @@ public class AppLogic extends Thread{
 
         switch(action.type){
             case 0: // Create.
+
                 // TODO: ------------------------- Automate this whole procedure !!! -----------------------
                 post_procedure = new Message();
                 post_procedure.caller_id = my_id;
@@ -243,7 +244,7 @@ public class AppLogic extends Thread{
                 try {
                     action_element.put("transaction", post_procedure.current_rowstamp);
                     JSONObject data = new JSONObject();
-                    for(int x = 0; x < dataSet.set.size(); x++){
+                    for (int x = 0; x < dataSet.set.size(); x++) {
                         data.put(action.attributes.get(x).name, dataSet.set.get(x));
                     }
                     action_element.put("data", data);
@@ -257,14 +258,14 @@ public class AppLogic extends Thread{
 
                 synchronized (commInterface.message_buffer_lock) {  // Adding message.
                     commInterface.message_buffer.add(post_procedure);
-                    local_pile.add(commInterface.message_buffer.get(commInterface.message_buffer.size()-1));
+                    local_pile.add(commInterface.message_buffer.get(commInterface.message_buffer.size() - 1));
                 }
                 synchronized (communicationDaemon) {    // Waking up communicationDaemon
                     communicationDaemon.notify();
                 }
 
                 break;
-            case 1: // Edit.
+            case 1: // Simple Edit.
                 // TODO: ------------------------- Automate this whole procedure !!! -----------------------
                 post_procedure = new Message();
                 post_procedure.caller_id = my_id;
@@ -280,9 +281,9 @@ public class AppLogic extends Thread{
                 // -----------------------------------------------------------------------------------------
 
                 try {
-                    action_element.put("transaction", post_procedure.current_rowstamp);
+
                     JSONObject data = new JSONObject();
-                    for(int x = 0; x < dataSet.set.size(); x++){
+                    for(int x = 0; x < action.attributes.size(); x++){
                         Log.e("APP LOGIC", "Action Attribute size: " + action.attributes.size());
                         Log.e("APP LOGIC","Action Attribute : " + action.attributes.get(x).name);
                         Log.e("APP LOGIC","DataSet set      : " + dataSet.set.get(x));
@@ -290,6 +291,7 @@ public class AppLogic extends Thread{
 
                         data.put(action.attributes.get(x).name, dataSet.set.get(x));
                     }
+                    action_element.put("transaction", String.valueOf(post_procedure.current_rowstamp));
                     action_element.put("data", data);
                     table_action.put(action_element);
                     new_object.put(t_a_concat, table_action);
