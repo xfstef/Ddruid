@@ -162,8 +162,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.bLogin:
                 hideKeyboard();
                 setContentView(R.layout.loading);
-
-                appLogic.initLoginProc();
+                if(!uri.getText().toString().isEmpty()) {
+                    configFile.server_uri = String.valueOf(uri.getText());
+                    System.out.println("The uri: " + configFile.server_uri);
+                    appLogic.initLoginProc();
+                }
                 break;
 
         }

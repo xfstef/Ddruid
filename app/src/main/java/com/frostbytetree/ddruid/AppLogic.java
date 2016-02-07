@@ -35,8 +35,9 @@ public class AppLogic extends Thread{
     short backend = 0;  // This option is used to define which type of server the connection uses.
                         // 0 - Custom Server (Default);
                         // 1 - Sclable.
-    String uri  =   //"http://82.223.15.251";
-                    "https://demo23.sclable.me/mobile/sclable-mobile-service";
+    String uri  =   null;
+                    //"http://82.223.15.251";
+                    //"https://demo23.sclable.me/mobile/sclable-mobile-service";
     ArrayList<Message> local_pile = new ArrayList<Message>();
 
     public static AppLogic getInstance() {
@@ -152,7 +153,7 @@ public class AppLogic extends Thread{
         download_table_data_procedure.priority = 0;   // TODO: set priority with a variable.
         download_table_data_procedure.requested_operation = new Operation();
         download_table_data_procedure.requested_operation.type = 111;   // TODO: use a variable.
-        download_table_data_procedure.requested_operation.REST_command = uri + "/data/" + table_address;
+        download_table_data_procedure.requested_operation.REST_command = configFile.server_uri + "/data/" + table_address;
         download_table_data_procedure.requested_operation.the_table = the_table;
         download_table_data_procedure.requested_operation.status = 0;
         // -----------------------------------------------------------------------------------------
@@ -182,7 +183,7 @@ public class AppLogic extends Thread{
         login_procedure.priority = 0;   // TODO: set priority with a variable.
         login_procedure.requested_operation = new Operation();
         login_procedure.requested_operation.type = 110;   // TODO: use a variable.
-        login_procedure.requested_operation.REST_command = uri + "/config";
+        login_procedure.requested_operation.REST_command = configFile.server_uri + "/config";
         login_procedure.requested_operation.the_table = null;
         login_procedure.requested_operation.status = 0;
         // -----------------------------------------------------------------------------------------
@@ -229,7 +230,7 @@ public class AppLogic extends Thread{
                 post_procedure.priority = 0;   // TODO: set priority with a variable.
                 post_procedure.requested_operation = new Operation();
                 post_procedure.requested_operation.type = 212;   // TODO: use a variable.
-                post_procedure.requested_operation.REST_command = uri;
+                post_procedure.requested_operation.REST_command = configFile.server_uri;
                 post_procedure.requested_operation.the_table = table;
                 post_procedure.requested_operation.status = 0;
                 // -----------------------------------------------------------------------------------------
@@ -268,7 +269,7 @@ public class AppLogic extends Thread{
                 post_procedure.priority = 0;   // TODO: set priority with a variable.
                 post_procedure.requested_operation = new Operation();
                 post_procedure.requested_operation.type = 212;   // TODO: use a variable.
-                post_procedure.requested_operation.REST_command = uri;
+                post_procedure.requested_operation.REST_command = configFile.server_uri;
                 post_procedure.requested_operation.the_table = table;
                 post_procedure.requested_operation.status = 0;
                 // -----------------------------------------------------------------------------------------

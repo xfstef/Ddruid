@@ -16,6 +16,7 @@ public class ConfigFile {
     private static ConfigFile ourInstance = new ConfigFile();
     JSONObject json_form = null;
     Object cfg_file_lock = new Object();
+    String server_uri = null;
 
     public static ConfigFile getInstance() {
         return ourInstance;
