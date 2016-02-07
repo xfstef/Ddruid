@@ -65,7 +65,16 @@ public class WidgetListItemDetailActivity extends AppCompatActivity {
                 Log.i(CLASS_NAME, "Attribute: " + widget.myTables.get(0).myActions.get(id).attributes.get(i).name);
 
             Log.i(CLASS_NAME, "-------------------------------");
-            appLogic.sendPost(appLogic.temporary_dataSet, widget.myTables.get(0).myActions.get(id), widget.myTables.get(0));
+            //
+            if(widget.myTables.get(0).myActions.get(id).attributes.size() == 0) {
+                appLogic.sendPost(appLogic.temporary_dataSet, widget.myTables.get(0).myActions.get(id), widget.myTables.get(0));
+                onBackPressed();
+            }
+            else
+            {
+
+            }
+
 
         }
         return super.onOptionsItemSelected(item);
