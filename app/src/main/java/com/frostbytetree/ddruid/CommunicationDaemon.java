@@ -5,6 +5,7 @@ import android.util.Log;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.restlet.data.Method;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 
@@ -132,12 +133,14 @@ public class CommunicationDaemon extends Thread{
         // -----------------------------------------------------------------------------------------
 
         ClientResource online_resource = new ClientResource(message.requested_operation.REST_command);
+        online_resource.setMethod(Method.POST);
+        //System.out.println("fduifuidf: " + online_resource.toString());
         Representation representation = null;
         JSONObject response = null;
         message.requested_operation.status = 2;
 
         try {
-            representation = online_resource.post(message.requested_operation.sclable_object);
+            representation = online_resource.post(message.requested_operation.sclable_object.toString());
             try {
                 response = new JSONObject(representation.getText());
                 System.out.println("The POST Response: " + response.toString());

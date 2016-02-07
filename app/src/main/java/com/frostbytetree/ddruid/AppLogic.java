@@ -244,7 +244,7 @@ public class AppLogic extends Thread{
                 try {
                     action_element.put("transaction", post_procedure.current_rowstamp);
                     JSONObject data = new JSONObject();
-                    for (int x = 0; x < dataSet.set.size(); x++) {
+                    for (int x = 0; x < action.attributes.size(); x++) {
                         data.put(action.attributes.get(x).name, dataSet.set.get(x));
                     }
                     action_element.put("data", data);
