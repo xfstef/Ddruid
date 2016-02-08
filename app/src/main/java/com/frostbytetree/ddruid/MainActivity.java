@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -15,11 +16,13 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.os.Bundle;
 import android.transition.Slide;
 import android.transition.TransitionInflater;
+import android.view.Gravity;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -34,7 +37,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     UIBuilder uiBuilder;
     WidgetViews widgetViews;
     IACInterface commInterface;
-    DrawerLayout Drawer;
+    DrawerLayout drawer;
     ActionBarDrawerToggle mDrawerToggle;
     SclableInterpreter sclableInterpreter;
     CommunicationDaemon communicationDaemon;
@@ -43,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Toolbar toolbar;
 
     EditText uri, username, password;
+    TextView statusText;
     Button login;
 
     @Override
@@ -115,11 +119,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         uri = (EditText)findViewById(R.id.etUri);
         login = (Button)findViewById(R.id.bLogin);
         login.setOnClickListener(this);
+        statusText = (TextView)findViewById(R.id.txtStatusError);
         toolbar = (Toolbar)findViewById(R.id.login_toolbar);
         setSupportActionBar(toolbar);
 
-        Drawer = (DrawerLayout) findViewById(R.id.DrawerLayout);        // Drawer object Assigned to the view
-        mDrawerToggle = new ActionBarDrawerToggle(this,Drawer,toolbar,R.string.openDrawer,R.string.closeDrawer){
+        drawer = (DrawerLayout) findViewById(R.id.DrawerLayout);        // Drawer object Assigned to the view
+        mDrawerToggle = new ActionBarDrawerToggle(this,drawer,toolbar,R.string.openDrawer,R.string.closeDrawer){
 
             @Override
             public void onDrawerOpened(View drawerView) {
@@ -134,8 +139,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 // Code here will execute once drawer is closed
             }
         }; // Drawer Toggle Object Made
-        Drawer.setDrawerListener(mDrawerToggle); // Drawer Listener set to the Drawer toggle
+        drawer.setDrawerListener(mDrawerToggle); // Drawer Listener set to the Drawer toggle
         mDrawerToggle.syncState();
+
     }
 
     public void startWidgetActivity(){
@@ -172,6 +178,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.bLogin:
                 if(!uri.getText().toString().isEmpty()) {
                     hideKeyboard();
+                    statusText.setVisibility(View.GONE);
                     setContentView(R.layout.loading);
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.putString("last_uri", String.valueOf(uri.getText()));
@@ -196,6 +203,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void loginFailed(short i) {
+
         System.out.println("Login failed because: " + i);
+        final short code = i;
+        // failurecode 0 : URI fail
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                setContentView(R.layout.activity_main);
+                initViewItems();
+                showErrorMessage(code);
+            }
+        });
+
+    }
+    private void showErrorMessage(short i)
+    {
+        switch(i)
+        {
+            case 0 :
+                statusText.setText("Could not connect to Server, please verify your URI or Internet Connection!");
+                statusText.setVisibility(View.VISIBLE);
+                break;
+        }
     }
 }
