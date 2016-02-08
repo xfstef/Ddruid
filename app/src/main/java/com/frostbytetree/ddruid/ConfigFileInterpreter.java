@@ -151,7 +151,7 @@ class SclableInterpreter {
                         new_action.type = 2;
                         break;
                 }
-                type = sclable_transition.getString("pre_sate");
+                type = sclable_transition.getString("pre_state");
                 switch (type){
                     case "incoming":
                         new_action.sclablePreState = 1;
