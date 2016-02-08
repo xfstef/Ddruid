@@ -216,103 +216,74 @@ public class AppLogic extends Thread{
     }
 
     // This Function is called when the App wants to send a POST / DELETE message to the server.
-    // It requires the new / to be modied DataSet, the action and the table that will be modified.
+    // It requires the new / to be modified DataSet, the action and the table that will be modified.
     public void sendPost(DataSet dataSet, Action action, Table table){
+
+        try{
+            sendPostHelper(dataSet, action, table);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        switch(action.type){
+            case 0: // Create.
+                // TODO: Implement logic for creating a new tuple successfully.
+                break;
+            case 1: // Simple Edit.
+                // TODO: Implement logic for handling this change in the app.
+                break;
+            case 2: // Edit with form.
+                // TODO: Implement logic for handling this change in the app.
+                break;
+            case 3: // Delete.
+                // TODO: Implement logic for handling this change in the app.
+                break;
+        }
+    }
+
+    private void sendPostHelper(DataSet dataSet, Action action, Table table){
         JSONObject new_object = new JSONObject();
         JSONArray table_action = new JSONArray();
         String t_a_concat = table.table_name + "." + action.name;
         JSONObject action_element = new JSONObject();
         Message post_procedure;
-        System.out.println("Action type: " + action.type);
 
-        switch(action.type){
-            case 0: // Create.
+        // TODO: ------------------------- Automate this whole procedure !!! -----------------------
+        post_procedure = new Message();
+        post_procedure.caller_id = my_id;
+        post_procedure.target_id = 2;  // TODO: set the target ID with a variable.
+        post_procedure.current_rowstamp = commInterface.rowstamp;
+        commInterface.rowstamp++;
+        post_procedure.priority = 0;   // TODO: set priority with a variable.
+        post_procedure.requested_operation = new Operation();
+        post_procedure.requested_operation.type = 212;   // TODO: use a variable.
+        post_procedure.requested_operation.REST_command = configFile.server_uri + "/data";
+        post_procedure.requested_operation.the_table = table;
+        post_procedure.requested_operation.status = 0;
+        // -----------------------------------------------------------------------------------------
 
-                // TODO: ------------------------- Automate this whole procedure !!! -----------------------
-                post_procedure = new Message();
-                post_procedure.caller_id = my_id;
-                post_procedure.target_id = 2;  // TODO: set the target ID with a variable.
-                post_procedure.current_rowstamp = commInterface.rowstamp;
-                commInterface.rowstamp++;
-                post_procedure.priority = 0;   // TODO: set priority with a variable.
-                post_procedure.requested_operation = new Operation();
-                post_procedure.requested_operation.type = 212;   // TODO: use a variable.
-                post_procedure.requested_operation.REST_command = configFile.server_uri + "/data";
-                post_procedure.requested_operation.the_table = table;
-                post_procedure.requested_operation.status = 0;
-                // -----------------------------------------------------------------------------------------
+        try {
+            JSONObject data = new JSONObject();
+            for(int x = 0; x < action.attributes.size(); x++){
+                data.put(action.attributes.get(x).name, dataSet.set.get(x));
+            }
+            System.out.println("Compressed data: " + data.toString());
+            action_element.put("transaction", String.valueOf(post_procedure.current_rowstamp));
+            action_element.put("data", data);
+            table_action.put(action_element);
+            new_object.put(t_a_concat, table_action);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        post_procedure.requested_operation.sclable_object = new_object;
+        System.out.println("The POST JSON: " + new_object.toString());
 
-                try {
-                    action_element.put("transaction", post_procedure.current_rowstamp);
-                    JSONObject data = new JSONObject();
-                    for (int x = 0; x < action.attributes.size(); x++) {
-                        data.put(action.attributes.get(x).name, dataSet.set.get(x));
-                    }
-                    action_element.put("data", data);
-                    table_action.put(action_element);
-                    new_object.put(t_a_concat, table_action);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                post_procedure.requested_operation.sclable_object = new_object;
-                System.out.println("The POST JSON: " + new_object.toString());
-
-                synchronized (commInterface.message_buffer_lock) {  // Adding message.
-                    commInterface.message_buffer.add(post_procedure);
-                    local_pile.add(commInterface.message_buffer.get(commInterface.message_buffer.size() - 1));
-                }
-                synchronized (communicationDaemon) {    // Waking up communicationDaemon
-                    communicationDaemon.notify();
-                }
-
-                break;
-            case 1: // Simple Edit.
-                // TODO: ------------------------- Automate this whole procedure !!! -----------------------
-                post_procedure = new Message();
-                post_procedure.caller_id = my_id;
-                post_procedure.target_id = 2;  // TODO: set the target ID with a variable.
-                post_procedure.current_rowstamp = commInterface.rowstamp;
-                commInterface.rowstamp++;
-                post_procedure.priority = 0;   // TODO: set priority with a variable.
-                post_procedure.requested_operation = new Operation();
-                post_procedure.requested_operation.type = 212;   // TODO: use a variable.
-                post_procedure.requested_operation.REST_command = configFile.server_uri + "/data";
-                post_procedure.requested_operation.the_table = table;
-                post_procedure.requested_operation.status = 0;
-                // -----------------------------------------------------------------------------------------
-
-                try {
-
-                    JSONObject data = new JSONObject();
-                    for(int x = 0; x < action.attributes.size(); x++){
-                        data.put(action.attributes.get(x).name, dataSet.set.get(x));
-                    }
-                    System.out.println("Compressed data: " + data.toString());
-                    action_element.put("transaction", String.valueOf(post_procedure.current_rowstamp));
-                    action_element.put("data", data);
-                    table_action.put(action_element);
-                    new_object.put(t_a_concat, table_action);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                post_procedure.requested_operation.sclable_object = new_object;
-                System.out.println("The POST JSON: " + new_object.toString());
-
-                synchronized (commInterface.message_buffer_lock) {  // Adding message.
-                    commInterface.message_buffer.add(post_procedure);
-                    local_pile.add(commInterface.message_buffer.get(commInterface.message_buffer.size()-1));
-                }
-                synchronized (communicationDaemon) {    // Waking up communicationDaemon
-                    communicationDaemon.notify();
-                }
-
-                break;
-            case 2: // Edit with form.
-                // TODO: Write actions necessary for Edit with form.
-                break;
-            case 3: // Delete.
-                // TODO: Write actions necessary for Delete.
-                break;
+        synchronized (commInterface.message_buffer_lock) {  // Adding message.
+            commInterface.message_buffer.add(post_procedure);
+            local_pile.add(commInterface.message_buffer.get(commInterface.message_buffer.size()-1));
+        }
+        synchronized (communicationDaemon) {    // Waking up communicationDaemon
+            communicationDaemon.notify();
         }
     }
 }

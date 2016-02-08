@@ -34,6 +34,7 @@ public class WidgetListItemDetailActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu items for use in the action bar
+        // TODO: Implement code for handling 2 or more tables / widget.
         Log.i(CLASS_NAME, "On Create Options Menu");
         Log.i(CLASS_NAME, "Adding Menu elements dynamically");
         for(int i = 0; i < widget.myTables.get(0).myActions.size(); i++)
@@ -60,13 +61,21 @@ public class WidgetListItemDetailActivity extends AppCompatActivity {
             return true;
         }
         else {
-            Log.i(CLASS_NAME, "Action : " + widget.myTables.get(0).myActions.get(id).name +" has attribute size: " + widget.myTables.get(0).myActions.get(id).attributes.size());
+            //Log.i(CLASS_NAME, "Action : " + widget.myTables.get(0).myActions.get(id).name +" has attribute size: " + widget.myTables.get(0).myActions.get(id).attributes.size());
             //for(int i = 0; i < widget.myTables.get(0).myActions.get(id).attributes.size(); i++)
                 //Log.i(CLASS_NAME, "Attribute: " + widget.myTables.get(0).myActions.get(id).attributes.get(i).name);
 
             //Log.i(CLASS_NAME, "-------------------------------");
             //
-            if(widget.myTables.get(0).myActions.get(id).attributes.size() == 1) {
+
+            boolean is_simple = true;
+            for(int x = 0; x < widget.myTables.get(0).myActions.get(id).attributes.size(); x++)
+                if(widget.myTables.get(0).myActions.get(id).attribute_readonly.get(x) == false){
+                    is_simple = false;
+                    break;
+                }
+
+            if(is_simple) {
                 appLogic.sendPost(appLogic.temporary_dataSet, widget.myTables.get(0).myActions.get(id), widget.myTables.get(0));
                 onBackPressed();
             }
