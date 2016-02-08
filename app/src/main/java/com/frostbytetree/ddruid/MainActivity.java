@@ -195,4 +195,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+    public void loginFailed(short i) {
+        System.out.println("Login failed because: " + i);
+    }
 }

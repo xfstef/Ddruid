@@ -131,7 +131,7 @@ public class AppLogic extends Thread{
             case 5: // Operation Error.
                 switch (finished_operation.requested_operation.type){
                     case 110:   // Did not get the Config File successfully.
-                        // TODO: Decide what to do in case the comm Daemon couldn't get the cfg file.
+                        mainActivity.loginFailed((short) 0); // TODO: Add failure code.
                         break;
                     case 111:   // Did not get a server table succesfully.
                         System.out.println("Got table data: " + data.temp_object.toString());
