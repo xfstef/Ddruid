@@ -223,6 +223,7 @@ public class AppLogic extends Thread{
         String t_a_concat = table.table_name + "." + action.name;
         JSONObject action_element = new JSONObject();
         Message post_procedure;
+        System.out.println("Action type: " + action.type);
 
         switch(action.type){
             case 0: // Create.
@@ -236,7 +237,7 @@ public class AppLogic extends Thread{
                 post_procedure.priority = 0;   // TODO: set priority with a variable.
                 post_procedure.requested_operation = new Operation();
                 post_procedure.requested_operation.type = 212;   // TODO: use a variable.
-                post_procedure.requested_operation.REST_command = configFile.server_uri;
+                post_procedure.requested_operation.REST_command = configFile.server_uri + "/data";
                 post_procedure.requested_operation.the_table = table;
                 post_procedure.requested_operation.status = 0;
                 // -----------------------------------------------------------------------------------------
@@ -275,7 +276,7 @@ public class AppLogic extends Thread{
                 post_procedure.priority = 0;   // TODO: set priority with a variable.
                 post_procedure.requested_operation = new Operation();
                 post_procedure.requested_operation.type = 212;   // TODO: use a variable.
-                post_procedure.requested_operation.REST_command = configFile.server_uri;
+                post_procedure.requested_operation.REST_command = configFile.server_uri + "/data";
                 post_procedure.requested_operation.the_table = table;
                 post_procedure.requested_operation.status = 0;
                 // -----------------------------------------------------------------------------------------
@@ -284,13 +285,9 @@ public class AppLogic extends Thread{
 
                     JSONObject data = new JSONObject();
                     for(int x = 0; x < action.attributes.size(); x++){
-                        Log.e("APP LOGIC", "Action Attribute size: " + action.attributes.size());
-                        Log.e("APP LOGIC","Action Attribute : " + action.attributes.get(x).name);
-                        Log.e("APP LOGIC","DataSet set      : " + dataSet.set.get(x));
-
-
                         data.put(action.attributes.get(x).name, dataSet.set.get(x));
                     }
+                    System.out.println("Compressed data: " + data.toString());
                     action_element.put("transaction", String.valueOf(post_procedure.current_rowstamp));
                     action_element.put("data", data);
                     table_action.put(action_element);

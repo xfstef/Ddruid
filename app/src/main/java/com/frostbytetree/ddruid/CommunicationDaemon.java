@@ -136,13 +136,13 @@ public class CommunicationDaemon extends Thread{
         online_resource.setMethod(Method.POST);
         //System.out.println("fduifuidf: " + online_resource.toString());
         Representation representation = null;
-        JSONObject response = null;
+        JSONArray response = null;
         message.requested_operation.status = 2;
 
         try {
             representation = online_resource.post(message.requested_operation.sclable_object.toString());
             try {
-                response = new JSONObject(representation.getText());
+                response = new JSONArray(representation.getText());
                 System.out.println("The POST Response: " + response.toString());
                 message.requested_operation.status = 3;
             } catch (JSONException e) {

@@ -177,7 +177,7 @@ class SclableInterpreter {
                 }
 
                 JSONArray act_attr = the_action.getJSONArray("action_attributes");
-                if(act_attr.length() > 0)
+                if(act_attr.length() > 1)
                     new_action.type = 2;
                 new_action.attributes = new ArrayList<Attribute>(act_attr.length());
                 new_action.attribute_readonly = new ArrayList<Boolean>(act_attr.length());
