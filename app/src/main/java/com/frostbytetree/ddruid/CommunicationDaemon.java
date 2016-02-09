@@ -178,31 +178,21 @@ public class CommunicationDaemon extends Thread{
     private void getLogin(Message message) {
         ClientResource online_resource = new ClientResource(message.requested_operation.REST_command);
         online_resource.setMethod(Method.POST);
-        //online_resource.accept(MediaType.APPLICATION_JSON);
-
 
         Representation representation = null;
         JSONObject response = null;
         message.requested_operation.status = 2;
 
-        Form headers = (Form)online_resource.getRequestAttributes().get("org.restlet.http.headers");
-        if (headers == null) {
-            headers = new Form();
-            online_resource.getRequestAttributes().put("org.restlet.http.headers", headers);
-        }
-
+        Series<Header> headers = new Series<Header>(Header.class);
+        //online_resource.getRequestAttributes().put("org.restlet.https.headers", headers);
+        online_resource.getRequestAttributes().put("org.restlet.http.headers", headers);
         headers.add("Accept", "application/json");
         headers.add("Content-Type", "application/json");
-
-        System.out.println("fduifuidf: " + online_resource.toString());
 
         try{
             JSONObject login_res = new JSONObject();
             login_res.put("username", User);
             login_res.put("password", Pass);
-            //message.requested_operation.sclable_object = login_res;
-            //representation = new StringRepresentation(login_res.toString());
-            //representation.setMediaType(MediaType.APPLICATION_JSON);
             representation = online_resource.post(login_res.toString(), MediaType.APPLICATION_JSON);
             try{
                 response = new JSONObject(representation.getText());
