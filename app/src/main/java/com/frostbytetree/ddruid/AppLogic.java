@@ -112,6 +112,10 @@ public class AppLogic extends Thread{
                 break;
             case 3: // Operation Successful.
                 switch(finished_operation.requested_operation.type){
+                    case 0: // Got session token.
+                        finished_operation.requested_operation.status = 6;
+                        getConfig();
+                        break;
                     case 110:   // Got Config File successfully. Trying to interpret it now.
                         configFileInterpreter.startStartupProcess();
                         setCurrentWidget(widgetViews.the_widgets.get(widgetViews.the_widgets.size() - 1));
@@ -128,8 +132,32 @@ public class AppLogic extends Thread{
                     // TODO: Implement the rest of possible post successful operation calls
                 }
                 break;
+            case 4: // No server connection.
+                switch(finished_operation.requested_operation.type) {
+                    case 0:
+                        /*
+                        If no config file download it and interpret it
+                        if it is so then just switch to widget
+                        */
+                        if(configFile.json_form != null) {
+                            setCurrentWidget(widgetViews.the_widgets.get(widgetViews.the_widgets.size() - 1));
+                            mainActivity.startWidgetActivity();
+                            finished_operation.requested_operation.status = 6;
+                        }
+                        break;
+                    case 110:
+                        break;
+                    case 111:
+                        break;
+                    case 212:
+                        break;
+                }
+                break;
             case 5: // Operation Error.
                 switch (finished_operation.requested_operation.type){
+                    case 0: // Could not get session token.
+                        mainActivity.loginFailed((short) 0); // TODO: Add failure code.
+                        break;
                     case 110:   // Did not get the Config File successfully.
                         mainActivity.loginFailed((short) 0); // TODO: Add failure code.
                         break;
@@ -166,7 +194,6 @@ public class AppLogic extends Thread{
         download_table_data_procedure.iDataInflateListener = (IDataInflateListener) caller;
         download_table_data_procedure.caller_widget = caller;
 
-
         synchronized (commInterface.message_buffer_lock) {  // Adding message.
             commInterface.message_buffer.add(download_table_data_procedure);
             local_pile.add(commInterface.message_buffer.get(commInterface.message_buffer.size()-1));
@@ -176,9 +203,7 @@ public class AppLogic extends Thread{
         }
     }
 
-    public void initLoginProc() {
-        String user, pass;  // TODO: Get the real user name and pass and send them to the server.
-
+    public void login(String user, String pass) {
         // TODO: ------------------------- Automate this whole procedure !!! -----------------------
         Message login_procedure = new Message();
         login_procedure.caller_id = my_id;
@@ -187,32 +212,53 @@ public class AppLogic extends Thread{
         commInterface.rowstamp++;
         login_procedure.priority = 0;   // TODO: set priority with a variable.
         login_procedure.requested_operation = new Operation();
-        login_procedure.requested_operation.type = 110;   // TODO: use a variable.
-        login_procedure.requested_operation.REST_command = configFile.server_uri + "/config";
+        login_procedure.requested_operation.type = 0;   // TODO: use a variable.
+        login_procedure.requested_operation.REST_command = configFile.server_uri;
         login_procedure.requested_operation.the_table = null;
         login_procedure.requested_operation.status = 0;
         // -----------------------------------------------------------------------------------------
 
-        /*
-        If no config file download it and interpret it
-        if it is so then just switch to widget
-         */
-        if(configFile.json_form == null) {
-            synchronized (commInterface.message_buffer_lock) {
-                commInterface.message_buffer.add(login_procedure);
-                local_pile.add(commInterface.message_buffer.get(commInterface.message_buffer.size()-1));
-            }
-            synchronized (communicationDaemon) {    // Waking up communicationDaemon
-                communicationDaemon.notify();
-            }
-            thread_throttling = 100;
-        }else {
-            // The last widget is always the widget menu
-            // For now when the user goes back then widget menu is displayed fist when rejoining
-            setCurrentWidget(widgetViews.the_widgets.get(widgetViews.the_widgets.size()-1));
-            mainActivity.startWidgetActivity();
+        JSONObject login_object = new JSONObject();
+        try {
+            login_object.put("username", user);
+            login_object.put("password", pass);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        login_procedure.requested_operation.sclable_object = login_object;
+
+        synchronized (commInterface.message_buffer_lock) {
+            commInterface.message_buffer.add(login_procedure);
+            local_pile.add(commInterface.message_buffer.get(commInterface.message_buffer.size()-1));
+        }
+        synchronized (communicationDaemon){
+            communicationDaemon.notify();
         }
 
+    }
+
+    public void getConfig() {
+        // TODO: ------------------------- Automate this whole procedure !!! -----------------------
+        Message get_config = new Message();
+        get_config.caller_id = my_id;
+        get_config.target_id = 2;  // TODO: set the target ID with a variable.
+        get_config.current_rowstamp = commInterface.rowstamp;
+        commInterface.rowstamp++;
+        get_config.priority = 0;   // TODO: set priority with a variable.
+        get_config.requested_operation = new Operation();
+        get_config.requested_operation.type = 110;   // TODO: use a variable.
+        get_config.requested_operation.REST_command = configFile.server_uri + "/config";
+        get_config.requested_operation.the_table = null;
+        get_config.requested_operation.status = 0;
+        // -----------------------------------------------------------------------------------------
+
+        synchronized (commInterface.message_buffer_lock) {
+            commInterface.message_buffer.add(get_config);
+            local_pile.add(commInterface.message_buffer.get(commInterface.message_buffer.size()-1));
+        }
+        synchronized (communicationDaemon) {    // Waking up communicationDaemon
+            communicationDaemon.notify();
+        }
     }
 
     // This Function is called when the App wants to send a POST / DELETE message to the server.

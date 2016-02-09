@@ -176,7 +176,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //System.out.println("OnClick Funktion called!");
         switch(view.getId()){
             case R.id.bLogin:
-                if(!uri.getText().toString().isEmpty()) {
+                if(!uri.getText().toString().isEmpty() && !username.getText().toString().isEmpty()
+                        && !password.getText().toString().isEmpty()) {
                     hideKeyboard();
                     statusText.setVisibility(View.GONE);
                     setContentView(R.layout.loading);
@@ -185,7 +186,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     editor.commit();
                     configFile.server_uri = String.valueOf(uri.getText());
                     //System.out.println("The uri: " + configFile.server_uri);
-                    appLogic.initLoginProc();
+                    appLogic.login(username.getText().toString(), password.getText().toString());
                 }else{
                     // TODO: Tell the user that the URI field is empty.
                 }

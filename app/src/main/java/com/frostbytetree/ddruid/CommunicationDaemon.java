@@ -114,6 +114,9 @@ public class CommunicationDaemon extends Thread{
     private void typeMarshalling(Message message) { // Calls the appropriate message processing
         // procedure according to its type.
         switch(message.requested_operation.type){
+            case 0:
+                getLogin(message);
+                break;
             case 110:
                 getConfigurations(message);
                 break;
@@ -124,6 +127,29 @@ public class CommunicationDaemon extends Thread{
                 postToServer(message);
                 break;
             // TODO: Define behaviour for the other operation types.
+        }
+    }
+
+    private void getLogin(Message message) {
+        ClientResource online_resource = new ClientResource(message.requested_operation.REST_command);
+        online_resource.setMethod(Method.POST);
+        //System.out.println("fduifuidf: " + online_resource.toString());
+        Representation representation = null;
+        JSONArray response = null;
+        message.requested_operation.status = 2;
+
+        try{
+            representation = online_resource.post(message.requested_operation.sclable_object.toString());
+            try{
+                response = new JSONArray(representation.getText());
+                System.out.println("The login response: " + response.toString());
+            } catch (JSONException e){
+                e.printStackTrace();
+                message.requested_operation.status = 5;
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+            message.requested_operation.status = 4;
         }
     }
 

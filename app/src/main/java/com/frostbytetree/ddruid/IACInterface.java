@@ -52,6 +52,7 @@ class Operation {
                     // 5 - Operation generated ERROR;
                     // 6 - Operation finished and is now marked as archived.
     short type;     // Get or Post data from or to server, SQLite, RawData using a 3 digit number:
+                    //   0 - GET Login TOKEN;
                     // 1xx - GET; 2xx - POST;
                     // x0x - SQLite DB; x1x - Server;
                     // xx0 - Config File; xx1 - DB Table; xx2 - Create DS; xx3 - Edit DS; xx4 - Delete DS; TODO: finish definitions.
