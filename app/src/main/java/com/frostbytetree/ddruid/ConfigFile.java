@@ -25,3 +25,18 @@ public class ConfigFile {
     private ConfigFile() {
     }
 }
+
+class SclableURIS {
+    private static SclableURIS ourInstance = new SclableURIS();
+    String login = null;
+    String config = null;
+    String data = null;
+    String data_single = null;
+
+    public static SclableURIS getInstance() {
+        return ourInstance;
+    }
+
+    private SclableURIS() {
+    }
+}

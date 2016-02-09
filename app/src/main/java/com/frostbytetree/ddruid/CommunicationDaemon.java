@@ -1,13 +1,19 @@
 package com.frostbytetree.ddruid;
 
+import android.util.JsonWriter;
 import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.restlet.data.Form;
+import org.restlet.data.Header;
+import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
+import org.restlet.util.Series;
 
 import java.io.IOException;
 import java.sql.SQLClientInfoException;
@@ -25,7 +31,10 @@ public class CommunicationDaemon extends Thread{
     IACInterface commInterface = IACInterface.getInstance();
     ConfigFile cfgFile = ConfigFile.getInstance();
     AppLogic appLogic = AppLogic.getInstance();
+    SclableURIS sclableURIS = SclableURIS.getInstance();
     SQLiteController sqLiteController = SQLiteController.getInstance();
+    String User = null;
+    String Pass = null;
     short thread_throttling = 1000; // This option is used to determine how much the Thread sleeps.
                                     // 5000 - Idle mode: the app is minimized with no bkg operation.
                                     // 1000 - Passive mode: app is sending / getting data.
@@ -115,7 +124,7 @@ public class CommunicationDaemon extends Thread{
         // procedure according to its type.
         switch(message.requested_operation.type){
             case 0:
-                getLogin(message);
+                firstContact(message);
                 break;
             case 110:
                 getConfigurations(message);
@@ -130,18 +139,73 @@ public class CommunicationDaemon extends Thread{
         }
     }
 
+    private void firstContact(Message message){
+        ClientResource online_resource = new ClientResource(message.requested_operation.REST_command);
+        Representation representation = null;
+        JSONObject response = null;
+
+        try {
+            representation = online_resource.get();
+            try {
+                response = new JSONObject(representation.getText());
+                if(response.keys().next().toString().matches("v1")){
+                    JSONObject child = response.getJSONObject("v1");
+                    sclableURIS.login = child.getString("login");
+                    sclableURIS.config = child.getString("config");
+                    sclableURIS.data = child.getString("data");
+                    sclableURIS.data_single = sclableURIS.data.substring(0, sclableURIS.data.length() - 5);
+                }
+            } catch (JSONException e) {
+                message.requested_operation.status = 5;
+                synchronized (appLogic){
+                    appLogic.notify();
+                }
+                e.printStackTrace();
+            }
+        }catch (Exception e) {
+            message.requested_operation.status = 5;
+            synchronized (appLogic){
+                appLogic.notify();
+            }
+            e.printStackTrace();
+        }
+
+        // TODO: Build switch case so that you can see what type of server this is.
+        message.requested_operation.REST_command = sclableURIS.login;
+        getLogin(message);
+    }
+
     private void getLogin(Message message) {
         ClientResource online_resource = new ClientResource(message.requested_operation.REST_command);
         online_resource.setMethod(Method.POST);
-        //System.out.println("fduifuidf: " + online_resource.toString());
+        //online_resource.accept(MediaType.APPLICATION_JSON);
+
+
         Representation representation = null;
-        JSONArray response = null;
+        JSONObject response = null;
         message.requested_operation.status = 2;
 
+        Form headers = (Form)online_resource.getRequestAttributes().get("org.restlet.http.headers");
+        if (headers == null) {
+            headers = new Form();
+            online_resource.getRequestAttributes().put("org.restlet.http.headers", headers);
+        }
+
+        headers.add("Accept", "application/json");
+        headers.add("Content-Type", "application/json");
+
+        System.out.println("fduifuidf: " + online_resource.toString());
+
         try{
-            representation = online_resource.post(message.requested_operation.sclable_object.toString());
+            JSONObject login_res = new JSONObject();
+            login_res.put("username", User);
+            login_res.put("password", Pass);
+            //message.requested_operation.sclable_object = login_res;
+            //representation = new StringRepresentation(login_res.toString());
+            //representation.setMediaType(MediaType.APPLICATION_JSON);
+            representation = online_resource.post(login_res.toString(), MediaType.APPLICATION_JSON);
             try{
-                response = new JSONArray(representation.getText());
+                response = new JSONObject(representation.getText());
                 System.out.println("The login response: " + response.toString());
             } catch (JSONException e){
                 e.printStackTrace();

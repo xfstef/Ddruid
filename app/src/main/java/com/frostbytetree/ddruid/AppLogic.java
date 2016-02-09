@@ -29,6 +29,7 @@ public class AppLogic extends Thread{
     MainActivity mainActivity;
     WidgetViews widgetViews;
     CommunicationDaemon communicationDaemon;
+    SclableURIS sclableURIS;
 
     // This approach is used when selecting a object within a list, because passing objects via
     // activity less efficient
@@ -59,6 +60,7 @@ public class AppLogic extends Thread{
         widgetViews = WidgetViews.getInstance();
         dataInterpreter = DataInterpreter.getInstance();
         configFileInterpreter.appLogic = this;
+        sclableURIS = SclableURIS.getInstance();
     }
 
     void setCurrentWidget(Widget the_widget){
@@ -186,7 +188,8 @@ public class AppLogic extends Thread{
         download_table_data_procedure.priority = 0;   // TODO: set priority with a variable.
         download_table_data_procedure.requested_operation = new Operation();
         download_table_data_procedure.requested_operation.type = 111;   // TODO: use a variable.
-        download_table_data_procedure.requested_operation.REST_command = configFile.server_uri + "/data/" + table_address;
+        download_table_data_procedure.requested_operation.REST_command = sclableURIS.data_single +
+                the_table.table_name;
         download_table_data_procedure.requested_operation.the_table = the_table;
         download_table_data_procedure.requested_operation.status = 0;
         // -----------------------------------------------------------------------------------------
@@ -203,7 +206,7 @@ public class AppLogic extends Thread{
         }
     }
 
-    public void login(String user, String pass) {
+    public void login() {
         // TODO: ------------------------- Automate this whole procedure !!! -----------------------
         Message login_procedure = new Message();
         login_procedure.caller_id = my_id;
@@ -217,15 +220,6 @@ public class AppLogic extends Thread{
         login_procedure.requested_operation.the_table = null;
         login_procedure.requested_operation.status = 0;
         // -----------------------------------------------------------------------------------------
-
-        JSONObject login_object = new JSONObject();
-        try {
-            login_object.put("username", user);
-            login_object.put("password", pass);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        login_procedure.requested_operation.sclable_object = login_object;
 
         synchronized (commInterface.message_buffer_lock) {
             commInterface.message_buffer.add(login_procedure);
@@ -247,7 +241,7 @@ public class AppLogic extends Thread{
         get_config.priority = 0;   // TODO: set priority with a variable.
         get_config.requested_operation = new Operation();
         get_config.requested_operation.type = 110;   // TODO: use a variable.
-        get_config.requested_operation.REST_command = configFile.server_uri + "/config";
+        get_config.requested_operation.REST_command = sclableURIS.config;
         get_config.requested_operation.the_table = null;
         get_config.requested_operation.status = 0;
         // -----------------------------------------------------------------------------------------
@@ -303,7 +297,7 @@ public class AppLogic extends Thread{
         post_procedure.priority = 0;   // TODO: set priority with a variable.
         post_procedure.requested_operation = new Operation();
         post_procedure.requested_operation.type = 212;   // TODO: use a variable.
-        post_procedure.requested_operation.REST_command = configFile.server_uri + "/data";
+        post_procedure.requested_operation.REST_command = sclableURIS.data;
         post_procedure.requested_operation.the_table = table;
         post_procedure.requested_operation.status = 0;
         // -----------------------------------------------------------------------------------------

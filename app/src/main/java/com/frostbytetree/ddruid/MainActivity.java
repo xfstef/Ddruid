@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     SclableInterpreter sclableInterpreter;
     CommunicationDaemon communicationDaemon;
     SharedPreferences sharedPreferences;
+    SclableURIS sclableURIS;
 
     Toolbar toolbar;
 
@@ -72,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         data = Data.getInstance();
         configFile = ConfigFile.getInstance();
+        sclableURIS = SclableURIS.getInstance();
 
         uiBuilder = UIBuilder.getInstance();
         uiBuilder.setContext(this);
@@ -186,7 +188,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     editor.commit();
                     configFile.server_uri = String.valueOf(uri.getText());
                     //System.out.println("The uri: " + configFile.server_uri);
-                    appLogic.login(username.getText().toString(), password.getText().toString());
+                    communicationDaemon.User = username.getText().toString();
+                    communicationDaemon.Pass = password.getText().toString();
+                    appLogic.login();
                 }else{
                     // TODO: Tell the user that the URI field is empty.
                 }
