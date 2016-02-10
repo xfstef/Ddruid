@@ -33,6 +33,7 @@ public class CommunicationDaemon extends Thread{
     AppLogic appLogic = AppLogic.getInstance();
     SclableURIS sclableURIS = SclableURIS.getInstance();
     SQLiteController sqLiteController = SQLiteController.getInstance();
+    DataInterpreter dataInterpreter = DataInterpreter.getInstance();
     String User = null;
     String Pass = null;
     String sessionToken = null;
@@ -77,7 +78,7 @@ public class CommunicationDaemon extends Thread{
                         callerMarshalling(local_pile.get(x));
                 }
                 this.wait();
-                //Thread.sleep(thread_throttling);
+                //Thread.sleep(10000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -274,6 +275,7 @@ public class CommunicationDaemon extends Thread{
                 synchronized (data.data_lock){
                     data.temp_object = response;
                 }
+                dataInterpreter.processTableData(message);
                 message.requested_operation.status = 3;
                 synchronized (appLogic){
                     appLogic.notify();

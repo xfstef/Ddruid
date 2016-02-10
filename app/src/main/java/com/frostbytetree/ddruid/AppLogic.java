@@ -125,7 +125,7 @@ public class AppLogic extends Thread{
                         mainActivity.startWidgetActivity();
                         break;
                     case 111:   // Got a table from the server succesfully. Trying to read it now.
-                        dataInterpreter.processTableData(finished_operation);
+                        //dataInterpreter.processTableData(finished_operation);
                         finished_operation.requested_operation.status = 6;
                         break;
                     case 212:   // Got the POST Operations finished successfully message.
