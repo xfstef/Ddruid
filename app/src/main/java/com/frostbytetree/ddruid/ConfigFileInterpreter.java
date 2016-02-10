@@ -244,22 +244,16 @@ class SclableInterpreter {
                 if(temp_attribute.length() > 3){
                     new_attribute.attribute_type = 2;
                     new_attribute.items = new Spinner();
-                    new_attribute.spinner_name = temp_attribute.getString("reference");
-                    new_attribute.reference_name = temp_attribute.getString("reference");
-                    char searched;
-                    for(int k = new_attribute.spinner_name.length()-1; k >= 0; k--) {
-                        searched = new_attribute.spinner_name.charAt(k);
-                        if (searched == '.') {
-                            new_attribute.spinner_name = new_attribute.spinner_name.substring(k+1);
-                            break;
-                        }
-                    }
-                    new_attribute.items.myName = temp_attribute.getString("reference");
+                    JSONObject ref = new JSONObject();
+                    ref = temp_attribute.getJSONObject("reference");
+                    new_attribute.spinner_name = temp_attribute.getString("name");
+                    new_attribute.reference_name = ref.getString("name");
                     JSONArray reference_names = new JSONArray();
-                    reference_names = temp_attribute.getJSONArray("reference_lookup");
+                    reference_names = ref.getJSONArray("reference_lookup");
                     new_attribute.items.dataSetName = new ArrayList<String>(reference_names.length());
-                    for(int b = 0; b < reference_names.length(); b++)
-                        new_attribute.items.dataSetName.add(reference_names.getString(b));
+                    for(int g = 0; g < reference_names.length(); g++){
+                        new_attribute.items.dataSetName.add(reference_names.getString(g));
+                    }
                 }
             } catch (JSONException e) {
                 e.printStackTrace();

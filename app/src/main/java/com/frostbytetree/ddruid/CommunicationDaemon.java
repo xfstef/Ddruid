@@ -223,18 +223,20 @@ public class CommunicationDaemon extends Thread{
         online_resource.setMethod(Method.POST);
         //System.out.println("fduifuidf: " + online_resource.toString());
         Representation representation = null;
-        JSONArray response = null;
+        JSONObject response = null;
         message.requested_operation.status = 2;
 
         Series<Header> headers = new Series<Header>(Header.class);
         //online_resource.getRequestAttributes().put("org.restlet.https.headers", headers);
         online_resource.getRequestAttributes().put("org.restlet.http.headers", headers);
         headers.add("Authorization", sessionToken);
+        headers.add("Accept", "application/json");
+        headers.add("Content-Type", "application/json");
 
         try {
             representation = online_resource.post(message.requested_operation.sclable_object.toString());
             try {
-                response = new JSONArray(representation.getText());
+                response = new JSONObject(representation.getText());
                 System.out.println("The POST Response: " + response.toString());
                 message.requested_operation.status = 3;
             } catch (JSONException e) {
@@ -261,6 +263,8 @@ public class CommunicationDaemon extends Thread{
         //online_resource.getRequestAttributes().put("org.restlet.https.headers", headers);
         online_resource.getRequestAttributes().put("org.restlet.http.headers", headers);
         headers.add("Authorization", sessionToken);
+        headers.add("Accept", "application/json");
+        headers.add("Content-Type", "application/json");
         System.out.println("Address: " + online_resource.toString());
 
         try {
@@ -304,6 +308,8 @@ public class CommunicationDaemon extends Thread{
         //online_resource.getRequestAttributes().put("org.restlet.https.headers", headers);
         online_resource.getRequestAttributes().put("org.restlet.http.headers", headers);
         headers.add("Authorization", sessionToken);
+        headers.add("Accept", "application/json");
+        headers.add("Content-Type", "application/json");
 
         try {
             representation = online_resource.get();
