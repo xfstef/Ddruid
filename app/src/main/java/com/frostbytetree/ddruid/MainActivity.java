@@ -61,11 +61,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         initViewItems();
 
-        try{
-            uri.setText(sharedPreferences.getString("last_uri", ""));
-        }catch(Exception e){
-            e.printStackTrace();
-        }
 
         LinearLayout lin_test = (LinearLayout)findViewById(R.id.test_layout);
         lin_test.setOnClickListener(this);
@@ -143,6 +138,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }; // Drawer Toggle Object Made
         drawer.setDrawerListener(mDrawerToggle); // Drawer Listener set to the Drawer toggle
         mDrawerToggle.syncState();
+
+        try{
+            uri.setText(sharedPreferences.getString("last_uri", ""));
+
+            //TODO: remove this
+            username.setText("frostbyte");
+            password.setText("fr0st");
+        }catch(Exception e){
+            e.printStackTrace();
+        }
 
     }
 
