@@ -35,6 +35,7 @@ public class CommunicationDaemon extends Thread{
     SQLiteController sqLiteController = SQLiteController.getInstance();
     String User = null;
     String Pass = null;
+    String sessionToken = null;
     short thread_throttling = 1000; // This option is used to determine how much the Thread sleeps.
                                     // 5000 - Idle mode: the app is minimized with no bkg operation.
                                     // 1000 - Passive mode: app is sending / getting data.
@@ -153,7 +154,7 @@ public class CommunicationDaemon extends Thread{
                     sclableURIS.login = child.getString("login");
                     sclableURIS.config = child.getString("config");
                     sclableURIS.data = child.getString("data");
-                    sclableURIS.data_single = sclableURIS.data.substring(0, sclableURIS.data.length() - 5);
+                    sclableURIS.data_single = child.getString("data") + "/";
                 }
             } catch (JSONException e) {
                 message.requested_operation.status = 5;
@@ -196,7 +197,13 @@ public class CommunicationDaemon extends Thread{
             representation = online_resource.post(login_res.toString(), MediaType.APPLICATION_JSON);
             try{
                 response = new JSONObject(representation.getText());
-                System.out.println("The login response: " + response.toString());
+                sessionToken = response.getString("token");
+                System.out.println("The login response: " + sessionToken);
+
+                message.requested_operation.status = 3;
+                synchronized (appLogic){
+                    appLogic.notify();
+                }
             } catch (JSONException e){
                 e.printStackTrace();
                 message.requested_operation.status = 5;
@@ -218,6 +225,11 @@ public class CommunicationDaemon extends Thread{
         Representation representation = null;
         JSONArray response = null;
         message.requested_operation.status = 2;
+
+        Series<Header> headers = new Series<Header>(Header.class);
+        //online_resource.getRequestAttributes().put("org.restlet.https.headers", headers);
+        online_resource.getRequestAttributes().put("org.restlet.http.headers", headers);
+        headers.add("Authorization", sessionToken);
 
         try {
             representation = online_resource.post(message.requested_operation.sclable_object.toString());
@@ -244,6 +256,12 @@ public class CommunicationDaemon extends Thread{
         Representation representation = null;
         JSONObject response = null;
         message.requested_operation.status = 2;
+
+        Series<Header> headers = new Series<Header>(Header.class);
+        //online_resource.getRequestAttributes().put("org.restlet.https.headers", headers);
+        online_resource.getRequestAttributes().put("org.restlet.http.headers", headers);
+        headers.add("Authorization", sessionToken);
+        System.out.println("Address: " + online_resource.toString());
 
         try {
             representation = online_resource.get();
@@ -281,6 +299,11 @@ public class CommunicationDaemon extends Thread{
         Representation representation = null;
         JSONObject response = null;
         message.requested_operation.status = 2;
+
+        Series<Header> headers = new Series<Header>(Header.class);
+        //online_resource.getRequestAttributes().put("org.restlet.https.headers", headers);
+        online_resource.getRequestAttributes().put("org.restlet.http.headers", headers);
+        headers.add("Authorization", sessionToken);
 
         try {
             representation = online_resource.get();

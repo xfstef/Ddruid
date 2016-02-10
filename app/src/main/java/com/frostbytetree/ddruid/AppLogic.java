@@ -189,7 +189,7 @@ public class AppLogic extends Thread{
         download_table_data_procedure.requested_operation = new Operation();
         download_table_data_procedure.requested_operation.type = 111;   // TODO: use a variable.
         download_table_data_procedure.requested_operation.REST_command = sclableURIS.data_single +
-                the_table.table_name;
+                table_address;
         download_table_data_procedure.requested_operation.the_table = the_table;
         download_table_data_procedure.requested_operation.status = 0;
         // -----------------------------------------------------------------------------------------
