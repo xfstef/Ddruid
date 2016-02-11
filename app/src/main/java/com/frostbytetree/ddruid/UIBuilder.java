@@ -41,6 +41,13 @@ import fr.ganfra.materialspinner.MaterialSpinner;
 public class UIBuilder {
     private static final String CLASS_NAME = "UIBuilder";
 
+
+    public static final short IS_INPUT_TEXT = 0;
+    //public static final short IS_EDIT_TEXT = 1;
+    public static final short IS_SPINNER = 2;
+    public static final short IS_DATE_INPUT = 3;
+    public static final short IS_ACTION_BUTTON = 4;
+
     private static UIBuilder ourInstance = new UIBuilder();
 
     Data data;
@@ -48,11 +55,16 @@ public class UIBuilder {
     AppLogic appLogic;
     IDataInflateListener mCallback;
 
-    ArrayList<View> all_view_elements = new ArrayList<>();
+    //TEMP solution the views will be created in seperated classes
+    ArrayList<Pair<Short, View>> all_view_elements = new ArrayList<>();
+
+
+    Button action_button;
+    Action current_action;
 
     //TODO: find a better way to fill the spinners this is a temporary_solution
     // this is a Pair of <Spinner(View)><TABLE> which to load
-    ArrayList<Pair<View, Table>> spinner_data_to_load = new ArrayList<>();
+    ArrayList<Pair<View, com.frostbytetree.ddruid.Spinner>> spinner_data_to_load = new ArrayList<>();
 
     //WidgetViews widgetViews;
 
@@ -75,19 +87,21 @@ public class UIBuilder {
     // and returns the build custom model
     public Widget inflateModel(Widget widget)
     {
-
+        loadInitialState();
         // step I: find table within Widget.myTables.TableName which matches to the Widget.myTableActions.first (Table)
         for(int i = 0; i < widget.myTableActions.size(); i++)
         {
             Table inflating_table = Utils.findTableToAction(widget.myTables, widget.myTableActions.get(i).first);
-            System.out.println("Table name: " + inflating_table.table_name);
+            Log.d(CLASS_NAME,"Table name: " + inflating_table.table_name);
 
             // Step II: find the corresponding action which matches to the found table
             for(int j = 0; j < widget.myTables.size(); j++)
             {
                 Action inflating_action = Utils.findTableAction(inflating_table.myActions, widget.myTableActions.get(i).second);
-                System.out.println("Inflating action: " + inflating_action.name);
+                Log.d(CLASS_NAME, "Inflating action: " + inflating_action.name);
                 widget = inflateFormAndAddUIElements(widget, inflating_action);
+                current_action = inflating_action;
+
             }
         }
         return widget;
@@ -126,19 +140,12 @@ public class UIBuilder {
         }
 
         // At last take button from the action
-        Button action_button = new Button(context);
+        this.action_button = new Button(context);
         action_button.setText(action.name);
         action_button.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimary));
         action_button.setTextColor(ContextCompat.getColor(context, R.color.textColorPrimary));
 
-        action_button.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(context, "Not implemented yet!", Toast.LENGTH_LONG).show();
-            }
-        });
-
-        all_view_elements.add(action_button);
+        all_view_elements.add(new Pair <Short, View>(IS_ACTION_BUTTON,action_button));
         widget.addView(action_button, layoutParams);
 
         return widget;
@@ -153,12 +160,12 @@ public class UIBuilder {
             // Normal Text Input
             case 0:
                 item = addEditTextElement(attribute, required, read_only);
-                all_view_elements.add(item);
+                //all_view_elements.add(item);
                 break;
             // Spinner
             case 2:
                 item = addSpinnerElement(attribute, required, read_only);
-                all_view_elements.add(item);
+                //all_view_elements.add(item);
                 break;
             case 5:
                 // Calender Object
@@ -199,27 +206,6 @@ public class UIBuilder {
         return recList;
     }
 
-    public RecyclerView buildTableRecyclerViewer(Table table_to_reload) {
-
-        View content = LayoutInflater.from(context).inflate(R.layout.activity_tablewidgetitem_list, null);
-        //LinearLayoutManager llm = new LinearLayoutManager(context);
-        //llm.setOrientation(LinearLayoutManager.VERTICAL);
-
-        RecyclerView recList = (RecyclerView) content.findViewById(R.id.tablewidgetitem_list);
-        // final SwipeRefreshLayout swipe_content = (SwipeRefreshLayout) content.findViewById(R.id.swipeRefreshLayout);
-        // SwipeDataRefreshListener swipe_listener = new SwipeDataRefreshListener(context,swipe_content,table_to_reload);
-
-        //recList.setLayoutManager(llm);
-        //mainLayout.addView(swipe_content);
-
-        // Let's tell the caller activity that Table Data can be requested
-
-
-        //TODO implement: check for rowstamp of the table to know if it's necessary to synchronize -> SCLABLE MUST DELIVER ROWSTAMP
-
-        return recList;
-    }
-
     private void addTextViewElements(LinearLayout ui_content, Widget widget, ArrayList<String> data_to_be_displayed)
     {
         for(int i = 0; i < data_to_be_displayed.size(); i++)
@@ -243,12 +229,19 @@ public class UIBuilder {
 
         // EditText input_text = new EditText(context);
         EditText input_text = (EditText)content.findViewById(R.id.input);
-        input_item.setHint(attribute.name);
-        //input_text.setHint(attribute.name);
-        //input_item.addView(input_text, (new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-        //        LinearLayout.LayoutParams.WRAP_CONTENT)));
 
+        // if field is required a teg will be set key 0 -> 1(true)
+        if(required) {
+            input_item.setHint(attribute.name + " (required)");
+            input_text.setTag("required");
+        }
+        else
+            input_item.setHint(attribute.name);
 
+        if(read_only)
+            input_item.setEnabled(false);
+
+        all_view_elements.add(new Pair<Short, View>(IS_INPUT_TEXT, input_text));
         return input_item;
     }
 
@@ -257,13 +250,21 @@ public class UIBuilder {
         final DatePickerDialog.OnDateSetListener onDateSetListener;
         View content = LayoutInflater.from(context).inflate(R.layout.date_input_form, null);
         LinearLayout lin_1 = (LinearLayout)content.findViewById(R.id.lin_layout_date_input);
-        // TextInputLayout input_item = new TextInputLayout(context);
+
         TextInputLayout input_item = (TextInputLayout)content.findViewById(R.id.input_layout);
-        input_item.setHint(attribute.name);
-
         final EditText editDate = (EditText)content.findViewById(R.id.input);
-
         Button selectDate = (Button)content.findViewById(R.id.select_date);
+
+        if(required) {
+            input_item.setHint(attribute.name + " (required)");
+            editDate.setTag("required");
+        }
+        else
+            input_item.setHint(attribute.name);
+
+
+        if(read_only)
+            selectDate.setEnabled(false);
 
         selectDate.setText("SELECT");
         //selectDate.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimary));
@@ -296,6 +297,7 @@ public class UIBuilder {
             }
         });
 
+        all_view_elements.add(new Pair<Short, View>((short)5, editDate));
         return lin_1;
     }
 
@@ -304,14 +306,38 @@ public class UIBuilder {
         View content = LayoutInflater.from(context).inflate(R.layout.spinner_input_form, null);
         // TextInputLayout input_item = new TextInputLayout(context);
         MaterialSpinner spinner_input = (MaterialSpinner)content.findViewById(R.id.input_spinner);
-        System.out.println("Attribute name: " + attribute.name);
-        spinner_input.setHint(attribute.name);
+        System.out.println("Attribute name is: " + attribute.name);
 
-        // TODO get the data and initialize
+        if(required) {
+            spinner_input.setTag("required");
+            spinner_input.setHint(attribute.name + " (required)");
+        }
+        else
+            spinner_input.setHint(attribute.name);
+
+        if(read_only)
+            spinner_input.setEnabled(false);
+
+        Log.i(CLASS_NAME, "----------- ENTERING --------------");
+        Log.i(CLASS_NAME, attribute.name.toString());
+
+
+        Log.i(CLASS_NAME, attribute.items.dataSetName.get(0));
+
+        ArrayList<String> referenced_attributes = attribute.items.dataSetName;
+        ArrayList<String> spinnerData = new ArrayList<>();
+
+        Table reference_table = getTableFromReferenceName(attribute.reference_name);
+        if(reference_table != null)
+        {
+            spinnerData = getReferencedDataFromTable(reference_table, referenced_attributes);
+        }
+
+        /*
         String spinner_table = attribute.reference_name;
         Table table = null;
-        //System.out.println("Spinner table: " + spinner_table);
-        ArrayList<DataSet> spinnerData = new ArrayList<>();
+        Log.d(CLASS_NAME, "Spinner table for the attribute reference: " + spinner_table);
+        ArrayList<String> spinnerData = new ArrayList<>();
         for(int i = 0; i < data.tables.size(); i++)
         {
             //Get the coresponding table for the spinner reference
@@ -321,40 +347,94 @@ public class UIBuilder {
                 System.out.println("Spinner table found: " + data.tables.get(i).table_name);
 
 
-                if(table.dataSets != null)
-                    spinnerData = table.dataSets;
-
+                if(table.dataSets != null) {
+                    spinnerData = table.attributes.get(0).items.dataSetName;
+                    //spinnerData = table.dataSets;
+                }
                 System.out.println("Spinner data: " + spinnerData.toString());
                 break;
             }
-        }
+        } */
 
         initSpinnerAdapter(spinner_input, spinnerData);
 
         // If no data could be loaded
         if(spinnerData.size() == 0)
-            spinner_data_to_load.add(new Pair<View, Table>(spinner_input, table));
+        {
 
+            spinner_data_to_load.add(new Pair<View, com.frostbytetree.ddruid.Spinner>(spinner_input, attribute.items));
+        }
+        all_view_elements.add(new Pair<Short, View>(IS_SPINNER, spinner_input));
+        //referenced_attributes.add(new Pair<Attribute, String>(attribute,attribute.items.items));
 
         return spinner_input;
 
     }
 
-    public void initSpinnerAdapter(Spinner spinner, ArrayList<DataSet> spinnerData)
+    public void initSpinnerAdapter(Spinner spinner, ArrayList<String> spinnerData)
     {
         SpinnerAdapter adapter = new SpinnerAdapter(context,
                 android.R.layout.simple_spinner_dropdown_item,spinnerData);
         spinner.setAdapter(adapter);
     }
 
+    // Set every variable to it's initial form
+    private void loadInitialState()
+    {
+        all_view_elements.clear();
+        //referenced_attributes.clear();
+        this.action_button = null;
+        this.current_action = null;
+
+    }
+
+
+    private Table getTableFromReferenceName(String referenced_table_name)
+    {
+        for(int i = 0; i < data.tables.size(); i++)
+            if(data.tables.get(i).table_name.matches(referenced_table_name))
+                return data.tables.get(i);
+
+        return null;
+    }
+
+
+    // Referenced Data from the spinner
+    private ArrayList<String> getReferencedDataFromTable(Table referenced_table, ArrayList<String> referenced_attributes)
+    {
+        ArrayList<String> spinnerData = new ArrayList<>();
+
+        StringBuilder currentDataSet;
+
+        for(int i = 0; i < referenced_attributes.size(); i++)
+            Log.i(CLASS_NAME,"Referenced attribute   :::" + referenced_attributes.get(i));
+
+
+        for (int i = 0; i < referenced_attributes.size(); i++)
+        {
+            for(int j = 0; j < referenced_table.attributes.size(); j++)
+            {
+                if(referenced_attributes.get(i).matches(referenced_table.attributes.get(j).name)) {
+                    Log.i(CLASS_NAME, referenced_table.dataSets.toString());
+                    //currentDataSet = new StringBuilder();
+                    //currentDataSet.append(referenced_table.dataSets.get(0).set.get(i));
+                    Log.i(CLASS_NAME, "Referenced Attribute> " + referenced_table.attributes.get(j).name);
+
+                    //Log.i(CLASS_NAME, "Referenced DataSet: " + currentDataSet);
+                }
+            }
+        }
+
+        return spinnerData;
+    }
 }
 
-class SpinnerAdapter extends ArrayAdapter<DataSet>
+class SpinnerAdapter extends ArrayAdapter<String>
 {
-    ArrayList<DataSet> data_sets;
+    ArrayList<String> data_sets;
     Context context;
 
-    public SpinnerAdapter(Context context, int textViewResourceId, ArrayList<DataSet> dataSets)
+    public SpinnerAdapter(Context context, int textViewResourceId, ArrayList<String> dataSets)
     {
         super(context, textViewResourceId, dataSets);
         this.context = context;
@@ -365,7 +445,7 @@ class SpinnerAdapter extends ArrayAdapter<DataSet>
         return data_sets.size();
     }
 
-    public DataSet getItem(int position){
+    public String getItem(int position){
         return data_sets.get(position);
     }
 
@@ -379,7 +459,7 @@ class SpinnerAdapter extends ArrayAdapter<DataSet>
 
         TextView label = new TextView(context);
 
-        label.setText(data_sets.get(position).set.toString());
+        label.setText(data_sets.get(position).toString());
 
         // And finally return your dynamic (or custom) view for each spinner item
         return label;
@@ -391,7 +471,7 @@ class SpinnerAdapter extends ArrayAdapter<DataSet>
     public View getDropDownView(int position, View convertView,
                                 ViewGroup parent) {
         TextView label = new TextView(context);
-        label.setText(data_sets.get(position).set.toString());
+        label.setText(data_sets.get(position).toString());
 
         return label;
     }
@@ -539,51 +619,3 @@ class Utils
         return null;
     }
 }
-
-/*
-class RecycleViewDataSetAdapter extends RecyclerView.Adapter<RecycleViewDataSetAdapter.ViewHolder>
-{
-    private ArrayList<DataSet> dataSets;
-    Context mContext;
-    public TextView mTextView;
-
-    static class ViewHolder extends RecyclerView.ViewHolder{
-        public TextView mTextView;
-
-        public ViewHolder(View v)
-        {
-            super(v);
-            mTextView = (TextView)v.findViewById(R.id.txtListAttr);
-
-        }
-    }
-
-
-    public RecycleViewDataSetAdapter(Context context, ArrayList<DataSet> dataSet)
-    {
-        this.mContext = context;
-        this.dataSets = dataSet;
-        System.out.println("DataSet1: " + dataSets.toString() + "\n");
-    }
-
-    @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
-    {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
-        ViewHolder vh = new ViewHolder(v);
-        return vh;
-    }
-
-    @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.mTextView.setText(dataSets.get(position).set.toString());
-    }
-
-    @Override
-    public int getItemCount() {
-        return dataSets.size();
-    }
-
-
-}
-*/

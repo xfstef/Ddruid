@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -13,8 +14,11 @@ import android.util.Log;
 import android.util.Pair;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.google.android.gms.appindexing.*;
 import com.google.android.gms.appindexing.Action;
@@ -34,6 +38,7 @@ import java.util.ArrayList;
 public class WidgetActivity extends AppCompatActivity implements IDataInflateListener{
 
     private static final String CLASS_NAME = "Widget Activity";
+    private static final String EMPTY_ERROR_MSG = "Field is required!";
     private static final int LIST_ACTIVITY_START = 2;
 
     FrameLayout widgetScreen;
@@ -116,24 +121,87 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
     {
 
         Widget new_ui_widget = uiBuilder.inflateModel(my_widget);
-
         widgetScreen.addView(new_ui_widget);
 
         checkForSpinnerDataLoading();
+
+        Button action = uiBuilder.action_button;
+
+        action.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DataSet setPost = new DataSet();
+                setPost.set = new ArrayList<String>();
+                // first check if all fields are filled correctly
+                for (int i = 0; i < uiBuilder.all_view_elements.size(); i++) {
+                    switch (uiBuilder.all_view_elements.get(i).first) {
+                        case 0:
+                            String tag = (String) uiBuilder.all_view_elements.get(i).second.getTag();
+                            EditText current_view = (EditText) uiBuilder.all_view_elements.get(i).second;
+                            if (tag != null && tag.matches("required") && current_view.getText().toString().isEmpty()) {
+
+                                current_view.setError(EMPTY_ERROR_MSG);
+                                return;
+                                //Log.i(CLASS_NAME, "Field " + i + " is required!");
+                            }
+                            setPost.set.add(current_view.getText().toString());
+                            break;
+                        case 2:
+                            Spinner current_spinner = (Spinner)uiBuilder.all_view_elements.get(i).second;
+
+                            String tag1 = (String) uiBuilder.all_view_elements.get(i).second.getTag();
+                            if (tag1 != null && tag1.matches("required") ) {
+
+                                return;
+                                //Log.i(CLASS_NAME, "Field " + i + " is required!");
+                            }
+
+                            setPost.set.add(current_spinner.getItemAtPosition(current_spinner.getSelectedItemPosition()-1).toString());
+                            break;
+                        case 5:
+                            String tag2 = (String) uiBuilder.all_view_elements.get(i).second.getTag();
+                            EditText current_date = (EditText) uiBuilder.all_view_elements.get(i).second;
+                            if (tag2 != null && tag2.matches("required") && current_date.getText().toString().isEmpty()) {
+
+                                current_date.setError(EMPTY_ERROR_MSG);
+                                return;
+                                //Log.i(CLASS_NAME, "Field " + i + " is required!");
+                            }
+                            setPost.set.add(current_date.getText().toString());
+                            break;
+
+                    }
+
+
+                }
+
+
+
+                for(int i = 0; i < setPost.set.size(); i++)
+                    Log.i(CLASS_NAME, "SET POST : " + setPost.set.get(i));
+
+
+                for (int i = 0; i < my_widget.myTables.get(0).myActions.size(); i++) {
+
+                    appLogic.sendPost(setPost, uiBuilder.current_action, my_widget.myTables.get(0));
+                }
+                Toast.makeText(getApplicationContext(), "POST: " + uiBuilder.current_action.name, Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     // This function loads the table datasets for each Spinner on the screen
     private void checkForSpinnerDataLoading()
     {
-        ArrayList<Pair<View, Table>> spinners = uiBuilder.spinner_data_to_load;
+        ArrayList<Pair<View, com.frostbytetree.ddruid.Spinner>> spinners = uiBuilder.spinner_data_to_load;
         if(spinners.size() != 0)
         {
             for(int i = 0; i < spinners.size(); i++)
             {
                 if(spinners.get(i).second != null)
                 {
-                    System.out.println("spinners has to load data from table: " + spinners.get(i).second.table_name);
-                    appLogic.getTableData(spinners.get(i).second, this);
+                    System.out.println("spinners has to load data from table: " + spinners.get(i).second.referenced_table);
+                    appLogic.getTableData(spinners.get(i).second.referenced_table, this);
                 }
             }
 
@@ -324,18 +392,46 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
                         // If table data has recieved and spinners should be filled first check the size
                         // then see if the requested table matches with the incomming
                         for(int i = 0; i < uiBuilder.spinner_data_to_load.size(); i++)
-                            if(my_table == uiBuilder.spinner_data_to_load.get(i).second)
+                            if(my_table == uiBuilder.spinner_data_to_load.get(i).second.referenced_table)
                             {
-                                uiBuilder.initSpinnerAdapter((Spinner) uiBuilder.spinner_data_to_load.get(i).first, my_table.dataSets);
+                                int offset = getReferenceOffsetForSpinner(uiBuilder.spinner_data_to_load.get(i).second);
+                                ArrayList<String> values = getReferencedAttribute(my_table, offset);
+                                uiBuilder.initSpinnerAdapter((Spinner) uiBuilder.spinner_data_to_load.get(i).first, values);
                                 uiBuilder.spinner_data_to_load.remove(uiBuilder.spinner_data_to_load.get(i));
                             }
                     }
                 });
                 break;
-
         }
 
+    }
 
+    private int getReferenceOffsetForSpinner(com.frostbytetree.ddruid.Spinner spinner)
+    {
+        int offset = 0;
+        for(int i = 0; i < spinner.referenced_table.attributes.size(); i++)
+        {
+            Log.i(CLASS_NAME, "Table " + spinner.referenced_table.attributes.get(i).name);
+            if(spinner.referenced_table.attributes.get(i).name.matches(spinner.dataSetName.get(0)))
+            {
+                offset = i;
+            }
+
+        }
+        return offset;
+    }
+
+    private ArrayList<String> getReferencedAttribute(Table table, int offset)
+    {
+        ArrayList<String> attributes = new ArrayList<>();
+
+
+
+
+        for(int i = 0; i < table.dataSets.size(); i++)
+            attributes.add(table.dataSets.get(i).set.get(0));
+
+        return attributes;
     }
 
     @Override
