@@ -319,6 +319,21 @@ public class CommunicationDaemon extends Thread{
                 response = new JSONObject(representation.getText());
                 synchronized (cfgFile.cfg_file_lock){
                     cfgFile.json_form = response;
+                    if(cfgFile.json_form.has("app_color")) {
+                        switch (cfgFile.json_form.getString("app_color")) {
+                            case "teal":
+                                cfgFile.custom_color = R.style.AppTheme;
+                                break;
+                            case "orange":
+                                cfgFile.custom_color = R.style.AppTheme_Orange;
+                                break;
+                            case "purple":
+                                cfgFile.custom_color = R.style.AppTheme_Indigo;
+                                break;
+                        }
+                    }
+                    else
+                        cfgFile.custom_color = R.style.AppTheme;
                 }
 
                 message.requested_operation.status = 3;

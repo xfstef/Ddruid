@@ -78,16 +78,14 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
-        setTheme(R.style.AppTheme_Indigo);
-
         super.onCreate(savedInstanceState);
         //my_widget = new Widget(this);
         //widgetViews = WidgetViews.getInstance();
 
-
-
         appLogic = AppLogic.getInstance();
         my_widget = appLogic.currentWidget;
+
+        setTheme(appLogic.configFile.custom_color);
 
         // init the UI Builder
         uiBuilder = UIBuilder.getInstance();
@@ -313,8 +311,8 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
 
                 Intent mStartActivity = new Intent(getApplicationContext(), MainActivity.class);
                 int mPendingIntentId = 123456;
-                PendingIntent mPendingIntent = PendingIntent.getActivity(getApplicationContext(), mPendingIntentId,    mStartActivity, PendingIntent.FLAG_CANCEL_CURRENT);
-                AlarmManager mgr = (AlarmManager)getApplicationContext().getSystemService(getApplicationContext().ALARM_SERVICE);
+                PendingIntent mPendingIntent = PendingIntent.getActivity(getApplicationContext(), mPendingIntentId, mStartActivity, PendingIntent.FLAG_CANCEL_CURRENT);
+                AlarmManager mgr = (AlarmManager) getApplicationContext().getSystemService(getApplicationContext().ALARM_SERVICE);
                 mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);
                 System.exit(0);
 

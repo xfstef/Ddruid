@@ -102,7 +102,12 @@ class Action{
 
 class Spinner{
     String myName;
+
+    Table referenced_table = null;
     ArrayList<String> dataSetName;
     ArrayList<DataSet> items;
-    Table referenced_table = null;
+    int source_column;
+    ArrayList<Integer> target_columns;
+
+    ArrayList<Integer> target_view_columns;
 }

@@ -17,6 +17,7 @@ public class ConfigFile {
     JSONObject json_form = null;
     Object cfg_file_lock = new Object();
     String server_uri = null;
+    int custom_color;
 
     public static ConfigFile getInstance() {
         return ourInstance;

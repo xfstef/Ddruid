@@ -49,6 +49,9 @@ public class ConfigFileInterpreter {
 
             try {
                 String backend = configFile.json_form.getString("backend");
+
+                System.out.println("The color: " + configFile.custom_color);
+
                 switch (backend){
                     case "proprietary":
                         appLogic.backend = 0;

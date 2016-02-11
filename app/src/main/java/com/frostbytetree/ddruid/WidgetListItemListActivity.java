@@ -53,11 +53,12 @@ public class WidgetListItemListActivity extends AppCompatActivity implements IDa
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTheme(R.style.AppTheme_Indigo);
+
         super.onCreate(savedInstanceState);
 
         appLogic = AppLogic.getInstance();
         myWidget = appLogic.currentWidget;
+        setTheme(appLogic.configFile.custom_color);
         uiBuilder = UIBuilder.getInstance();
         uiBuilder.setContext(this);
         uiBuilder.setCallback(this);
