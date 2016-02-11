@@ -54,6 +54,7 @@ class Table{
     ArrayList<DataSet> dataSets = new ArrayList<>(1);
     ArrayList<Widget> usedBy;
     ArrayList<Action> myActions;
+    ArrayList<Table> children = new ArrayList<>(1);
 }
 
 class DataSet{
@@ -78,6 +79,7 @@ class Attribute{
     String spinner_name = null;
     String reference_name = null;
     Spinner items = null;
+    Table vader = null;    // I am your father !
 }
 
 class Action{
@@ -102,4 +104,5 @@ class Spinner{
     String myName;
     ArrayList<String> dataSetName;
     ArrayList<DataSet> items;
+    Table referenced_table = null;
 }

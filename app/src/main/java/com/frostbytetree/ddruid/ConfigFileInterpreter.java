@@ -127,7 +127,25 @@ class SclableInterpreter {
         }
 
         linkTablesToWidgets();
+        linkReferencesToTable();
 
+    }
+
+    private void linkReferencesToTable() {
+        for(int l = 0; l < data.tables.size(); l++)
+            for(int k = 0; k < data.tables.get(l).attributes.size(); k++)
+                if(data.tables.get(l).attributes.get(k).attribute_type == 2) {
+                    Table father = getVader(data.tables.get(l).attributes.get(k).reference_name);
+                    data.tables.get(l).attributes.get(k).vader.children.add(father);
+                    data.tables.get(l).attributes.get(k).items.referenced_table = father;
+                }
+    }
+
+    private Table getVader(String Annakin){
+        for(int j = 0; j < data.tables.size(); j++)
+            if(data.tables.get(j).table_name.matches(Annakin))
+                return data.tables.get(j);
+        return null;
     }
 
     private void addActions(Table table, JSONArray actions) {
@@ -258,6 +276,7 @@ class SclableInterpreter {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+            new_attribute.vader = new_table;
             new_table.attributes.add(new_attribute);
         }
 
