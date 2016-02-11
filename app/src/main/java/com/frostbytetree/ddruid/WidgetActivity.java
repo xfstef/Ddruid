@@ -302,7 +302,10 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
         TextView username = (TextView)findViewById(R.id.txtUserName);
         Button logout = (Button)findViewById(R.id.bLogout);
 
-        username.setText("Hello, " + getIntent().getStringExtra("username"));
+        if(appLogic.configFile.username == null)
+            username.setText("Hello " + getIntent().getStringExtra("username"));
+        else
+            username.setText("Hello " + appLogic.configFile.username);
 
 
         logout.setOnClickListener(new View.OnClickListener() {
