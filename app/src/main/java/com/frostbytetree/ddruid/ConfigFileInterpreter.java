@@ -315,7 +315,7 @@ class SclableInterpreter {
                     // TODO: Implement the rest widget types.
                 }
                 new_widget.titleBar = temp_obj.getString("name");
-                if(temp_obj.length() > 3) {
+                if(temp_obj.has("parents")) {
                     JSONArray temp_parents = temp_obj.getJSONArray("parents");
                     new_widget.myParentNames = new ArrayList<String>();
                     for(int y = 0; y < temp_parents.length(); y++)
@@ -333,8 +333,15 @@ class SclableInterpreter {
                     //new_widget.myTableNames.add(temp_key);
                     //new_widget.myActionNames.add(temp_action_obj.getString(temp_key));
                     new_widget.myTableActions.add(new Pair<String, String>(temp_key, temp_action_obj.getString(temp_key)));
-
                 }
+                if(new_widget.widgetType == 0) {
+                    action_list = new JSONArray();
+                    action_list = temp_obj.getJSONArray("attributes");
+                    for(int r = 0; r < action_list.length(); r++){
+
+                    }
+                }
+
             } catch (JSONException e) {
                 e.printStackTrace();
                 break;
