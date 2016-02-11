@@ -7,6 +7,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Build;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -53,6 +54,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //int resourceID = getResources().getIdentifier("green", "color", getPackageName());
+
 
         sharedPreferences = getSharedPreferences("com.frostbytetree.ddruid", Context.MODE_PRIVATE);
 
@@ -145,6 +149,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             //TODO: remove this
             username.setText("frostbyte");
             password.setText("fr0st");
+            uri.setText("https://demo23.sclable.me/mobile/mobile-api");
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -155,14 +160,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         Intent i = new Intent(getApplicationContext(), WidgetActivity.class);
         //i.putExtra("widget", new_widget.id);
+        i.putExtra("username",username.getText().toString());
         startActivityForResult(i, 0);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        if(appLogic.currentWidget != null)
+        if (appLogic.currentWidget != null)
             startWidgetActivity();
+
 
     }
 

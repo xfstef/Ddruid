@@ -91,6 +91,7 @@ public class WidgetListItemDetailActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.AppTheme_Indigo);
         super.onCreate(savedInstanceState);
         Log.i(CLASS_NAME, " has been created!");
         appLogic = AppLogic.getInstance();

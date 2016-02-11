@@ -1,6 +1,8 @@
 package com.frostbytetree.ddruid;
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -18,6 +20,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.appindexing.*;
@@ -74,9 +77,14 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
+        setTheme(R.style.AppTheme_Indigo);
+
         super.onCreate(savedInstanceState);
         //my_widget = new Widget(this);
         //widgetViews = WidgetViews.getInstance();
+
+
 
         appLogic = AppLogic.getInstance();
         my_widget = appLogic.currentWidget;
@@ -147,16 +155,16 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
                             setPost.set.add(current_view.getText().toString());
                             break;
                         case 2:
-                            Spinner current_spinner = (Spinner)uiBuilder.all_view_elements.get(i).second;
+                            Spinner current_spinner = (Spinner) uiBuilder.all_view_elements.get(i).second;
 
                             String tag1 = (String) uiBuilder.all_view_elements.get(i).second.getTag();
-                            if (tag1 != null && tag1.matches("required") ) {
+                            if (tag1 != null && tag1.matches("required")) {
 
                                 return;
                                 //Log.i(CLASS_NAME, "Field " + i + " is required!");
                             }
 
-                            setPost.set.add(current_spinner.getItemAtPosition(current_spinner.getSelectedItemPosition()-1).toString());
+                            setPost.set.add(current_spinner.getItemAtPosition(current_spinner.getSelectedItemPosition() - 1).toString());
                             break;
                         case 5:
                             String tag2 = (String) uiBuilder.all_view_elements.get(i).second.getTag();
@@ -176,8 +184,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
                 }
 
 
-
-                for(int i = 0; i < setPost.set.size(); i++)
+                for (int i = 0; i < setPost.set.size(); i++)
                     Log.i(CLASS_NAME, "SET POST : " + setPost.set.get(i));
 
 
@@ -258,11 +265,14 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
             Log.e(CLASS_NAME, "Could not find action bar", exception);
         }
 
+
+
         // if that is not the root widget then, the back arrow should be displayed
         // else the main should show the hamburger menu
         if(my_widget.myParent != null)
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         else {
+            initNavigationDrawer();
             Drawer = (DrawerLayout) findViewById(R.id.DrawerLayout);        // Drawer object Assigned to the view
             mDrawerToggle = new ActionBarDrawerToggle(this, Drawer, toolbar, R.string.openDrawer, R.string.closeDrawer) {
 
@@ -286,6 +296,37 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
         }
         widgetScreen.removeAllViews();
         checkWidgetType();
+    }
+
+
+    private void initNavigationDrawer()
+    {
+        TextView username = (TextView)findViewById(R.id.txtUserName);
+        Button logout = (Button)findViewById(R.id.bLogout);
+
+        username.setText("Hello, " + getIntent().getStringExtra("username"));
+
+
+        logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent mStartActivity = new Intent(getApplicationContext(), MainActivity.class);
+                int mPendingIntentId = 123456;
+                PendingIntent mPendingIntent = PendingIntent.getActivity(getApplicationContext(), mPendingIntentId,    mStartActivity, PendingIntent.FLAG_CANCEL_CURRENT);
+                AlarmManager mgr = (AlarmManager)getApplicationContext().getSystemService(getApplicationContext().ALARM_SERVICE);
+                mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);
+                System.exit(0);
+
+                // setResult(Activity.RESULT_CANCELED);
+                // finish();
+
+
+            }
+        });
+
+
+
     }
 
     @Override
@@ -424,9 +465,6 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
     private ArrayList<String> getReferencedAttribute(Table table, int offset)
     {
         ArrayList<String> attributes = new ArrayList<>();
-
-
-
 
         for(int i = 0; i < table.dataSets.size(); i++)
             attributes.add(table.dataSets.get(i).set.get(0));

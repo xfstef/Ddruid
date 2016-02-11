@@ -14,7 +14,7 @@
         android:paddingRight="16dp"
         android:paddingTop="16dp"
         android:textIsSelectable="true"
-        android:textColor="@color/colorPrimary"
+        android:textColor="?attr/colorAccent"
         tools:context="com.frostbytetree.ddruid.WidgetListItemDetailFragment" />
     <TextView
         xmlns:tools="http://schemas.android.com/tools"

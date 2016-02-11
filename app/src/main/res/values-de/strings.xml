@@ -7,4 +7,5 @@
     <string name="openDrawer">Einstellungen öffnen</string>
     <string name="closeDrawer">Einstellungen schließen</string>
     <string name="Einstellungen">Einstellungen</string>
+    <string name="logout_string">Logout</string>
 </resources>

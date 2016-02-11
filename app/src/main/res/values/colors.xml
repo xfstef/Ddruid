@@ -6,6 +6,8 @@
     <color name="colorAccent">#64b5f6</color>
     -->
 
+
+    <!-- Color Primary -->
     <color name="colorPrimary">#009688</color>
     <color name="colorPrimaryDark">#004D40</color>
     <color name="colorAccent">#00897B</color>
@@ -15,5 +17,30 @@
     <color name="navigationBarColor">#FFFFFF</color>
     <color name="colorBackground">#f9f9f9</color>
     <color name="disabled_background">#BDBDBD</color>
+
+    <!-- Color Theme Indigo -->
+    <color name="colorPrimaryIndigo">#3F51B5</color>
+    <color name="colorPrimaryDarkIndigo">#1A237E</color>
+    <color name="colorAccentIndigo">#3F51B5</color>
+    <color name="textColorIndigo">#FFFFFF</color>
+    <color name="textColorPrimaryIndigo">#FFFFFF</color>
+    <color name="colorControlNormalIndigo">#7c7b7b</color>
+    <color name="windowBackgroundIndigo">#FFFFFF</color>
+    <color name="navigationBarColorIndigo">#FFFFFF</color>
+    <color name="colorBackgroundIndigo">#f9f9f9</color>
+    <color name="disabled_backgroundIndigo">#BDBDBD</color>
+
+    <!-- Color Theme Orange -->
+    <color name="colorPrimaryOrange">#FF9800</color>
+    <color name="colorPrimaryDarkOrange">#E65100</color>
+    <color name="colorAccentOrange">#FF9800</color>
+    <color name="textColorOrange">#FFFFFF</color>
+    <color name="colorControlNormalOrange">#7c7b7b</color>
+    <color name="windowBackgroundOrange">#FFFFFF</color>
+    <color name="navigationBarColorOrange">#FFFFFF</color>
+    <color name="colorBackgroundOrange">#f9f9f9</color>
+    <color name="disabled_backgroundOrange">#BDBDBD</color>
+
+
     <color name="red">#B71C1C</color>
 </resources>

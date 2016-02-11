@@ -140,10 +140,9 @@ public class UIBuilder {
         }
 
         // At last take button from the action
-        this.action_button = new Button(context);
+        View content = LayoutInflater.from(context).inflate(R.layout.action_button, null);
+        this.action_button = (Button)content.findViewById(R.id.action_button);
         action_button.setText(action.name);
-        action_button.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimary));
-        action_button.setTextColor(ContextCompat.getColor(context, R.color.textColorPrimary));
 
         all_view_elements.add(new Pair <Short, View>(IS_ACTION_BUTTON,action_button));
         widget.addView(action_button, layoutParams);

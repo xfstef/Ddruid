@@ -13,6 +13,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorButtonNormal">@color/textColorPrimary</item>
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
         <item name="android:colorBackground">@color/colorBackground</item>
@@ -24,11 +25,41 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorPrimary</item>
-
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="AppTheme.Indigo" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+
+        <item name="colorControlNormal">@color/colorControlNormalIndigo</item>
+        <item name="colorControlActivated">@color/colorAccentIndigo</item>
+        <item name="colorControlHighlight">@color/colorAccentIndigo</item>
+        <item name="colorPrimary">@color/colorPrimaryIndigo</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkIndigo</item>
+        <item name="colorAccent">@color/colorAccentIndigo</item>
+        <item name="colorButtonNormal">@color/textColorIndigo</item>
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="android:colorBackground">@color/colorBackgroundIndigo</item>
+        <item name="android:dialogTheme">@style/AppTheme.DialogTheme</item>
+    </style>
+
+    <style name="AppTheme.Orange" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+
+        <item name="colorControlNormal">@color/colorControlNormalOrange</item>
+        <item name="colorControlActivated">@color/colorAccentOrange</item>
+        <item name="colorControlHighlight">@color/colorAccentOrange</item>
+        <item name="colorPrimary">@color/colorPrimaryOrange</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkOrange</item>
+        <item name="colorAccent">@color/colorAccentOrange</item>
+        <item name="colorButtonNormal">@color/textColorOrange</item>
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="android:colorBackground">@color/colorBackgroundOrange</item>
+        <item name="android:dialogTheme">@style/AppTheme.DialogTheme</item>
+    </style>
 
 </resources>

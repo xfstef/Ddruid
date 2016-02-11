@@ -85,6 +85,7 @@ public class WidgetListItemDetailFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         View rootView = inflater.inflate(R.layout.widgetlistitem_detail, container, false);
         LinearLayout mainContent = (LinearLayout)rootView.findViewById(R.id.listItemContent);
         Log.i(CLASS_NAME, dataSet.toString());
