@@ -37,8 +37,8 @@ public class WidgetListItemDetailActivity extends AppCompatActivity {
         // TODO: Implement code for handling 2 or more tables / widget.
         Log.i(CLASS_NAME, "On Create Options Menu");
         Log.i(CLASS_NAME, "Adding Menu elements dynamically");
-        for(int i = 0; i < widget.myTables.get(0).myActions.size(); i++)
-            menu.add(0, i, 0, widget.myTables.get(0).myActions.get(i).name);
+        for(int i = 0; i < widget.myActions.size(); i++)
+            menu.add(0, i, 0, widget.myActions.get(i).name);
 
         return super.onCreateOptionsMenu(menu);
     }

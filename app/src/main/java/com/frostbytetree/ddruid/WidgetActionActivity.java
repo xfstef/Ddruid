@@ -7,6 +7,7 @@ import android.util.Log;
 import android.util.Pair;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.*;
 
 import java.util.ArrayList;
@@ -68,6 +69,7 @@ public class WidgetActionActivity extends AppCompatActivity {
     void initScreenItems() {
 
         widgetScreen = (FrameLayout) findViewById(R.id.mainContent);
+
         toolbar = (Toolbar) findViewById(R.id.widget_toolbar);
         my_widget = appLogic.currentWidget;
         setSupportActionBar(toolbar);
@@ -111,8 +113,15 @@ public class WidgetActionActivity extends AppCompatActivity {
         }
     }
 
+
     void initFormWidget()
     {
+
+        if((ViewGroup)my_widget.getParent() != null)
+        {
+            ((ViewGroup)my_widget.getParent()).removeView(my_widget);
+        }
+
 
         Widget new_ui_widget = uiBuilder.inflateModel(my_widget);
 
@@ -172,11 +181,9 @@ public class WidgetActionActivity extends AppCompatActivity {
                 for (int i = 0; i < setPost.set.size(); i++)
                     Log.i(CLASS_NAME, "SET POST : " + setPost.set.get(i));
 
-                for(int i = 0; i < my_widget.myActions.size(); i++)
-                {
+                for (int i = 0; i < my_widget.myActions.size(); i++) {
                     // Only create statement in this case
-                    if(my_widget.myActions.get(i).type == 0)
-                    {
+                    if (my_widget.myActions.get(i).type == 0) {
                         appLogic.sendPost(setPost, uiBuilder.current_action, my_widget.myTables.get(0));
                         break;
                     }
@@ -190,6 +197,7 @@ public class WidgetActionActivity extends AppCompatActivity {
             }
         });
     }
+
 
 
 

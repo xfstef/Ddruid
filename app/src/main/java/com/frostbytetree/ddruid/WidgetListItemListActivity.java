@@ -105,24 +105,11 @@ public class WidgetListItemListActivity extends AppCompatActivity implements IDa
         SwipeDataRefreshListener swipe_listener = new SwipeDataRefreshListener(this,swipe_content,myTable);
 
 
-
-
         final Action defaultAction = findDefaultActionWithinWidget(myWidget);
-        //Log.i(CLASS_NAME, "Default Action found: " + defaultAction.name);
-        floatingAction = (FloatingActionButton)findViewById(R.id.fabAction);
-        floatingAction.setVisibility(View.VISIBLE);
-
-        for(int i = 0; i < myWidget.myChildren.size(); i++)
-            Log.i(CLASS_NAME, "PRE WIdget child: " + myWidget.myChildren.get(i).titleBar);
-
-
-        for(int i = 0; i < myWidget.myChildren.get(0).myActions.size(); i++)
-            Log.i(CLASS_NAME, "PRE Action for first child: " + myWidget.myChildren.get(0).myActions.get(i).name);
-
-        // Every widget now has a list of myActions where only HIS actions are referenced !!!!!!!!!!!!!!!!
-
         if(defaultAction != null)
         {
+            floatingAction = (FloatingActionButton)findViewById(R.id.fabAction);
+            floatingAction.setVisibility(View.VISIBLE);
             floatingAction.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -159,9 +146,9 @@ public class WidgetListItemListActivity extends AppCompatActivity implements IDa
 
     private Action findDefaultActionWithinWidget(Widget widget)
     {
-        for(int i = 0; i < widget.myTables.get(0).myActions.size(); i++)
-            if(widget.myTables.get(0).myActions.get(i).type == 0) // 0 is the defined magic number for default Action
-                return widget.myTables.get(0).myActions.get(i);
+        for(int i = 0; i < widget.myActions.size(); i++)
+            if(widget.myActions.get(i).type == 0) // 0 is the defined magic number for default Action
+                return widget.myActions.get(i);
 
         return null;
     }

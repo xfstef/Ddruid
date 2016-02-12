@@ -87,7 +87,7 @@ public class UIBuilder {
     // and returns the build custom model
     public Widget inflateModel(Widget widget)
     {
-        loadInitialState();
+        loadInitialState(widget);
         // step I: find table within Widget.myTables.TableName which matches to the Widget.myTableActions.first (Table)
         for(int i = 0; i < widget.myTableActions.size(); i++)
         {
@@ -127,6 +127,7 @@ public class UIBuilder {
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         layoutParams.setMargins(16,16,16,16);
+        widget.removeAllViews();
         for(int i = 0; i < action.attributes.size(); i++)
         {
 
@@ -377,8 +378,9 @@ public class UIBuilder {
     }
 
     // Set every variable to it's initial form
-    private void loadInitialState()
+    private void loadInitialState(Widget widget)
     {
+        widget.removeAllViews();
         all_view_elements.clear();
         //referenced_attributes.clear();
         this.action_button = null;
