@@ -292,7 +292,7 @@ class SclableInterpreter {
                     reference_childs = ref.getJSONArray("reference_lookup");
                     new_attribute.items.target_columns = new ArrayList<Integer>(reference_childs.length());
                     for(int g = 0; g < reference_childs.length(); g++){
-                        new_attribute.items.target_columns.add(reference_childs.getInt(g));
+                        new_attribute.items.target_columns.add(Integer.valueOf(reference_childs.getString(g)));
                     }
                 }
             } catch (JSONException e) {
