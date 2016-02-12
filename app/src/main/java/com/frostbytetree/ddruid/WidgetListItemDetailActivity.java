@@ -34,11 +34,24 @@ public class WidgetListItemDetailActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu items for use in the action bar
-        // TODO: Implement code for handling 2 or more tables / widget.
+
         Log.i(CLASS_NAME, "On Create Options Menu");
         Log.i(CLASS_NAME, "Adding Menu elements dynamically");
-        for(int i = 0; i < widget.myActions.size(); i++)
-            menu.add(0, i, 0, widget.myActions.get(i).name);
+
+        //TODO: Actions for the detail
+        /*
+        for(int i = 0; i < widget.myChildren.size(); i++)
+        {
+            for(int j = 0; j < widget.myChildren.get(i).myActions.size(); j++)
+            {
+                if(widget.myChildren.get(i).myActions.get(j).type == 0)
+                {
+
+                }
+            }
+        }
+        menu.add(0, i, 0, widget.myActions.get(i).name);
+        */
 
         return super.onCreateOptionsMenu(menu);
     }

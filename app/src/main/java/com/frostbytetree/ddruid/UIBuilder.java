@@ -26,6 +26,8 @@ import android.widget.TextView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import org.w3c.dom.Attr;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -64,7 +66,7 @@ public class UIBuilder {
 
     //TODO: find a better way to fill the spinners this is a temporary_solution
     // this is a Pair of <Spinner(View)><TABLE> which to load
-    ArrayList<Pair<View, com.frostbytetree.ddruid.Spinner>> spinner_data_to_load = new ArrayList<>();
+    ArrayList<Pair<View, Attribute>> spinner_data_to_load = new ArrayList<>();
 
     //WidgetViews widgetViews;
 
@@ -126,7 +128,7 @@ public class UIBuilder {
     {
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        layoutParams.setMargins(16,16,16,16);
+        layoutParams.setMargins(16, 16, 16, 16);
         widget.removeAllViews();
         for(int i = 0; i < action.attributes.size(); i++)
         {
@@ -321,39 +323,17 @@ public class UIBuilder {
         Log.i(CLASS_NAME, attribute.name.toString());
 
 
-        Log.i(CLASS_NAME, attribute.items.dataSetName.get(0));
 
-        ArrayList<String> referenced_attributes = attribute.items.dataSetName;
         ArrayList<String> spinnerData = new ArrayList<>();
 
-        Table reference_table = getTableFromReferenceName(attribute.reference_name);
-        if(reference_table != null)
-        {
-            spinnerData = getReferencedDataFromTable(reference_table, referenced_attributes);
-        }
+        Table reference_table = attribute.items.referenced_table;
 
         /*
-        String spinner_table = attribute.reference_name;
-        Table table = null;
-        Log.d(CLASS_NAME, "Spinner table for the attribute reference: " + spinner_table);
-        ArrayList<String> spinnerData = new ArrayList<>();
-        for(int i = 0; i < data.tables.size(); i++)
+        if(reference_table != null)
         {
-            //Get the coresponding table for the spinner reference
-            if(data.tables.get(i).table_name.matches(spinner_table))
-            {
-                table = data.tables.get(i);
-                System.out.println("Spinner table found: " + data.tables.get(i).table_name);
-
-
-                if(table.dataSets != null) {
-                    spinnerData = table.attributes.get(0).items.dataSetName;
-                    //spinnerData = table.dataSets;
-                }
-                System.out.println("Spinner data: " + spinnerData.toString());
-                break;
-            }
-        } */
+            spinnerData = getReferencedDataFromTable(attribute);
+        }
+        */
 
         initSpinnerAdapter(spinner_input, spinnerData);
 
@@ -361,7 +341,7 @@ public class UIBuilder {
         if(spinnerData.size() == 0)
         {
 
-            spinner_data_to_load.add(new Pair<View, com.frostbytetree.ddruid.Spinner>(spinner_input, attribute.items));
+            spinner_data_to_load.add(new Pair<View, Attribute>(spinner_input, attribute));
         }
         all_view_elements.add(new Pair<Short, View>(IS_SPINNER, spinner_input));
         //referenced_attributes.add(new Pair<Attribute, String>(attribute,attribute.items.items));
@@ -400,28 +380,18 @@ public class UIBuilder {
 
 
     // Referenced Data from the spinner
-    private ArrayList<String> getReferencedDataFromTable(Table referenced_table, ArrayList<String> referenced_attributes)
+    private ArrayList<String> getReferencedDataFromTable(Attribute attribute)
     {
         ArrayList<String> spinnerData = new ArrayList<>();
 
-        StringBuilder currentDataSet;
-
-        for(int i = 0; i < referenced_attributes.size(); i++)
-            Log.i(CLASS_NAME,"Referenced attribute   :::" + referenced_attributes.get(i));
-
-
-        for (int i = 0; i < referenced_attributes.size(); i++)
+        StringBuilder tuple = new StringBuilder();
+        for(int i = 0; i < attribute.vader.dataSets.size(); i++)
         {
-            for(int j = 0; j < referenced_table.attributes.size(); j++)
+            for(int j = 0; j < attribute.items.referenced_table.dataSets.size(); j++)
             {
-                if(referenced_attributes.get(i).matches(referenced_table.attributes.get(j).name)) {
-                    Log.i(CLASS_NAME, referenced_table.dataSets.toString());
-                    //currentDataSet = new StringBuilder();
-                    //currentDataSet.append(referenced_table.dataSets.get(0).set.get(i));
-                    Log.i(CLASS_NAME, "Referenced Attribute> " + referenced_table.attributes.get(j).name);
-
-                    //Log.i(CLASS_NAME, "Referenced DataSet: " + currentDataSet);
-                }
+                tuple.append("Test");
+                tuple.append(" noch mal");
+                spinnerData.add(tuple.toString());
             }
         }
 

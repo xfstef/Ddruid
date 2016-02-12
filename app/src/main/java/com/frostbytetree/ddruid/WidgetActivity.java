@@ -192,15 +192,15 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
     // This function loads the table datasets for each Spinner on the screen
     private void checkForSpinnerDataLoading()
     {
-        ArrayList<Pair<View, com.frostbytetree.ddruid.Spinner>> spinners = uiBuilder.spinner_data_to_load;
+        ArrayList<Pair<View, Attribute>> spinners = uiBuilder.spinner_data_to_load;
         if(spinners.size() != 0)
         {
             for(int i = 0; i < spinners.size(); i++)
             {
                 if(spinners.get(i).second != null)
                 {
-                    System.out.println("spinners has to load data from table: " + spinners.get(i).second.referenced_table);
-                    appLogic.getTableData(spinners.get(i).second.referenced_table, this);
+                    System.out.println("spinners has to load data from table: " + spinners.get(i).second.items.referenced_table);
+                    appLogic.getTableData(spinners.get(i).second.items.referenced_table, this);
                 }
             }
         }
@@ -427,9 +427,9 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
                         // If table data has recieved and spinners should be filled first check the size
                         // then see if the requested table matches with the incomming
                         for(int i = 0; i < uiBuilder.spinner_data_to_load.size(); i++)
-                            if(my_table == uiBuilder.spinner_data_to_load.get(i).second.referenced_table)
+                            if(my_table == uiBuilder.spinner_data_to_load.get(i).second.items.referenced_table)
                             {
-                                int offset = getReferenceOffsetForSpinner(uiBuilder.spinner_data_to_load.get(i).second);
+                                int offset = getReferenceOffsetForSpinner(uiBuilder.spinner_data_to_load.get(i).second.items);
                                 ArrayList<String> values = getReferencedAttribute(my_table, offset);
                                 uiBuilder.initSpinnerAdapter((Spinner) uiBuilder.spinner_data_to_load.get(i).first, values);
                                 uiBuilder.spinner_data_to_load.remove(uiBuilder.spinner_data_to_load.get(i));

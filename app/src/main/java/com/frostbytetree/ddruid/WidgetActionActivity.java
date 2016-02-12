@@ -12,7 +12,7 @@ import android.widget.*;
 
 import java.util.ArrayList;
 
-public class WidgetActionActivity extends AppCompatActivity {
+public class WidgetActionActivity extends AppCompatActivity implements IDataInflateListener{
 
     Toolbar toolbar;
 
@@ -20,6 +20,8 @@ public class WidgetActionActivity extends AppCompatActivity {
     AppLogic appLogic;
     Widget my_widget;
     UIBuilder uiBuilder;
+    // Used for spinner to add the id's
+    ArrayList<String> selected_source_columns;
 
     private final static String CLASS_NAME = "Widget Action Activity";
     private static final String EMPTY_ERROR_MSG = "Field is required!";
@@ -146,7 +148,7 @@ public class WidgetActionActivity extends AppCompatActivity {
                 // first check if all fields are filled correctly
                 for (int i = 0; i < uiBuilder.all_view_elements.size(); i++) {
                     switch (uiBuilder.all_view_elements.get(i).first) {
-                        case 0:
+                        case 0: // Text Input
                             String tag = (String) uiBuilder.all_view_elements.get(i).second.getTag();
                             EditText current_view = (EditText) uiBuilder.all_view_elements.get(i).second;
                             if (tag != null && tag.matches("required") && current_view.getText().toString().isEmpty()) {
@@ -157,7 +159,7 @@ public class WidgetActionActivity extends AppCompatActivity {
                             }
                             setPost.set.add(current_view.getText().toString());
                             break;
-                        case 2:
+                        case 2: // Spinner
                             android.widget.Spinner current_spinner = (android.widget.Spinner) uiBuilder.all_view_elements.get(i).second;
 
                             String tag1 = (String) uiBuilder.all_view_elements.get(i).second.getTag();
@@ -167,9 +169,9 @@ public class WidgetActionActivity extends AppCompatActivity {
                                 //Log.i(CLASS_NAME, "Field " + i + " is required!");
                             }
 
-                            setPost.set.add(current_spinner.getItemAtPosition(current_spinner.getSelectedItemPosition() - 1).toString());
+                            setPost.set.add(selected_source_columns.get(current_spinner.getSelectedItemPosition() - 1));
                             break;
-                        case 5:
+                        case 5: // Date Input
                             String tag2 = (String) uiBuilder.all_view_elements.get(i).second.getTag();
                             EditText current_date = (EditText) uiBuilder.all_view_elements.get(i).second;
                             if (tag2 != null && tag2.matches("required") && current_date.getText().toString().isEmpty()) {
@@ -211,18 +213,86 @@ public class WidgetActionActivity extends AppCompatActivity {
     // This function loads the table datasets for each Spinner on the screen
     private void checkForSpinnerDataLoading()
     {
-        ArrayList<Pair<View, Spinner>> spinners = uiBuilder.spinner_data_to_load;
+        ArrayList<Pair<View, Attribute>> spinners = uiBuilder.spinner_data_to_load;
         if(spinners.size() != 0)
         {
             for(int i = 0; i < spinners.size(); i++)
             {
                 if(spinners.get(i).second != null)
                 {
-                    System.out.println("spinners has to load data from table: " + spinners.get(i).second.referenced_table);
-                    appLogic.getTableData(spinners.get(i).second.referenced_table, this);
+                    System.out.println("spinners has to load data from table: " + spinners.get(i).second.items.referenced_table.table_name);
+                    appLogic.getTableData(spinners.get(i).second.items.referenced_table, this);
+                    //appLogic.getTableData();
                 }
             }
 
         }
+    }
+
+    @Override
+    public void invokeLoadingTableData(Table table) {
+
+    }
+
+    @Override
+    public void signalDataArrived(final Table my_table) {
+        System.out.println("DATA HAS ARRIVED!");
+
+        // 0 - Widget-List;
+        // 1 - Form;
+        // 2 - Detail - could be never used;
+        // 3 - Code Scanner;
+        // 4 - List with datasets
+        // 31 - Code Scanner + GPS;
+
+        switch(my_widget.widgetType)
+        {
+            case 1:
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+
+                        for(int i = 0; i < uiBuilder.spinner_data_to_load.size(); i++)
+                            if(my_table == uiBuilder.spinner_data_to_load.get(i).second.items.referenced_table)
+                            {
+
+                                ArrayList<String> values = getReferencedAttributesForSpinner(uiBuilder.spinner_data_to_load.get(i).second);
+
+
+                                uiBuilder.initSpinnerAdapter((android.widget.Spinner)
+                                        uiBuilder.spinner_data_to_load.get(i).first, values);
+                                uiBuilder.spinner_data_to_load.remove(uiBuilder.spinner_data_to_load.get(i));
+                            }
+                    }
+                });
+                break;
+        }
+    }
+
+
+    private ArrayList<String> getReferencedAttributesForSpinner(Attribute spinnerAttribute)
+    {
+        ArrayList<String> attributes = new ArrayList<>();
+        selected_source_columns = new ArrayList<>(spinnerAttribute.items.referenced_table.dataSets.size());
+
+        for(int i = 0; i < spinnerAttribute.items.referenced_table.dataSets.size(); i++) {
+            StringBuilder temp_string = new StringBuilder();
+            for(int j = 0; j < spinnerAttribute.items.target_columns.size(); j++) {
+
+                temp_string.append(spinnerAttribute.items.referenced_table.dataSets.get(i).set.get(
+                        spinnerAttribute.items.target_columns.get(j)));
+
+                if(j+1 != spinnerAttribute.items.target_columns.size())
+                    temp_string.append(" | ");
+
+
+            }
+            attributes.add(temp_string.toString());
+            selected_source_columns.add(spinnerAttribute.items.referenced_table.dataSets.get(i).set.
+                    get(spinnerAttribute.items.source_column));
+        }
+
+        return attributes;
     }
 }
