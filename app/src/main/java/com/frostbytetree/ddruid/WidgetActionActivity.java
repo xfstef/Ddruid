@@ -32,11 +32,18 @@ public class WidgetActionActivity extends AppCompatActivity {
         switch(id)
         {
             case android.R.id.home:
-                appLogic.setCurrentWidget(my_widget.myParent);
                 onBackPressed();
                 break;
         }
         return true;
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        super.onBackPressed();
+        appLogic.setCurrentWidget(my_widget.myParent);
+        finish();
     }
 
 
