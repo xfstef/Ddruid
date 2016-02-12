@@ -146,9 +146,15 @@ public class WidgetListItemListActivity extends AppCompatActivity implements IDa
 
     private Action findDefaultActionWithinWidget(Widget widget)
     {
-        for(int i = 0; i < widget.myActions.size(); i++)
-            if(widget.myActions.get(i).type == 0) // 0 is the defined magic number for default Action
-                return widget.myActions.get(i);
+        for(int i = 0; i < widget.myChildren.size(); i++)
+        {
+            for(int j = 0;j < widget.myChildren.get(i).myActions.size(); j++)
+            {
+                if(widget.myChildren.get(i).myActions.get(j).type == 0) // 0 is the defined magic number for default Action
+                    return widget.myChildren.get(i).myActions.get(j);
+            }
+        }
+
 
         return null;
     }
