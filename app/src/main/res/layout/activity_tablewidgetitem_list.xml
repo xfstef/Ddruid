@@ -32,8 +32,11 @@
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fabAction"
             android:visibility="gone"
-            android:layout_width="165dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginRight="16dp"
+            app:fabSize="normal"
             android:layout_gravity="right|bottom"
             android:layout_margin="@dimen/fab_margin"
             android:src="@android:drawable/ic_input_add"
