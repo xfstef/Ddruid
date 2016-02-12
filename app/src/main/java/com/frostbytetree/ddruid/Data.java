@@ -88,6 +88,7 @@ class Action{
                 // 1 - For simple edit data set;
                 // 2 - For complex edit with form;
                 // 3 - For delete data set.
+                // 4 - Read action.
     short sclablePreState = 0;
     short sclablePostState = 0;
     // The sclable States can be:
