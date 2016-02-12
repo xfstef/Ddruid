@@ -214,8 +214,6 @@ class SclableInterpreter {
                 }
 
                 JSONArray act_attr = the_action.getJSONArray("action_attributes");
-                if(act_attr.length() > 1)
-                    new_action.type = 2;
                 new_action.attributes = new ArrayList<Attribute>(act_attr.length());
                 new_action.attribute_readonly = new ArrayList<Boolean>(act_attr.length());
                 new_action.attribute_required = new ArrayList<Boolean>(act_attr.length());
@@ -281,18 +279,20 @@ class SclableInterpreter {
                         new_attribute.attribute_type = 6;
                         break;
                 }
-                if(temp_attribute.length() > 3){
+                if(temp_attribute.has("reference")){
                     new_attribute.attribute_type = 2;
                     new_attribute.items = new Spinner();
                     JSONObject ref = new JSONObject();
                     ref = temp_attribute.getJSONObject("reference");
-                    new_attribute.spinner_name = temp_attribute.getString("name");
                     new_attribute.reference_name = ref.getString("name");
-                    JSONArray reference_names = new JSONArray();
-                    reference_names = ref.getJSONArray("reference_lookup");
-                    new_attribute.items.dataSetName = new ArrayList<String>(reference_names.length());
-                    for(int g = 0; g < reference_names.length(); g++){
-                        new_attribute.items.dataSetName.add(reference_names.getString(g));
+                    JSONArray reference_childs = new JSONArray();
+                    reference_childs = ref.getJSONArray("referenced_attributes");
+                    new_attribute.items.source_column = ((JSONObject)reference_childs.get(0)).getInt("target_attribute_number");
+                    reference_childs = new JSONArray();
+                    reference_childs = ref.getJSONArray("reference_lookup");
+                    new_attribute.items.target_columns = new ArrayList<Integer>(reference_childs.length());
+                    for(int g = 0; g < reference_childs.length(); g++){
+                        new_attribute.items.target_columns.add(reference_childs.getInt(g));
                     }
                 }
             } catch (JSONException e) {

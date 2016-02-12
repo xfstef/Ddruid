@@ -1,5 +1,7 @@
 package com.frostbytetree.ddruid;
 
+import android.util.Pair;
+
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -55,6 +57,7 @@ class Table{
     ArrayList<Widget> usedBy;
     ArrayList<Action> myActions;
     ArrayList<Table> children = new ArrayList<>(1);
+    ArrayList<Pair<Short, ArrayList<Short>>> list_view_columns; // AAAAaaaahhhhhhhhhhhhhhhhh !
 }
 
 class DataSet{
@@ -76,8 +79,7 @@ class Attribute{
     // ...
 
     // By default NULL. Only needed if this attribute is a spinner.
-    String spinner_name = null;
-    String reference_name = null;
+    String reference_name;
     Spinner items = null;
     Table vader = null;    // I am your father !
 }
@@ -102,13 +104,9 @@ class Action{
 }
 
 class Spinner{
-    String myName;
-
     Table referenced_table = null;
     ArrayList<String> dataSetName;
     ArrayList<DataSet> items;
     int source_column;
     ArrayList<Integer> target_columns;
-
-    ArrayList<Integer> target_view_columns;
 }
