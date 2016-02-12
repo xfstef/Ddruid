@@ -18,6 +18,7 @@ public class ConfigFile {
     Object cfg_file_lock = new Object();
     String server_uri = null;
     int custom_color;
+    String username = null;
 
     public static ConfigFile getInstance() {
         return ourInstance;

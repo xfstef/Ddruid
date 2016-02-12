@@ -174,6 +174,7 @@ public class CommunicationDaemon extends Thread{
 
         // TODO: Build switch case so that you can see what type of server this is.
         message.requested_operation.REST_command = sclableURIS.login;
+        System.out.println("URIS: " + sclableURIS.login + ", " + sclableURIS.config);
         getLogin(message);
     }
 
@@ -334,6 +335,9 @@ public class CommunicationDaemon extends Thread{
                     }
                     else
                         cfgFile.custom_color = R.style.AppTheme;
+                    if(cfgFile.json_form.has("user_name")){
+                        cfgFile.username = cfgFile.json_form.getString("user_name");
+                    }
                 }
 
                 message.requested_operation.status = 3;

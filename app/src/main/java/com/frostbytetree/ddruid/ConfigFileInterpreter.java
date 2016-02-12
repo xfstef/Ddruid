@@ -336,6 +336,7 @@ class SclableInterpreter {
                     //new_widget.myTableNames.add(temp_key);
                     //new_widget.myActionNames.add(temp_action_obj.getString(temp_key));
                     new_widget.myTableActions.add(new Pair<String, String>(temp_key, temp_action_obj.getString(temp_key)));
+                    System.out.println("Actions: " + temp_key + ", " + temp_action_obj.getString(temp_key));
                 }
                 if(new_widget.widgetType == 0) {
                     action_list = new JSONArray();
