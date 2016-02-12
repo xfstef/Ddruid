@@ -131,9 +131,25 @@ class SclableInterpreter {
 
         linkTablesToWidgets();
         linkReferencesToTable();
+        linkActionsToWidgets();
 
     }
 
+    private void linkActionsToWidgets(){
+        for(int f = 0; f < widgetViews.the_widgets.size()-1; f++){
+            for (int y = 0; y < widgetViews.the_widgets.get(f).myTableActions.size(); y++) {
+                widgetViews.the_widgets.get(f).myActions = new ArrayList<Action>(widgetViews.the_widgets.get(f).myTableActions.size());
+                for (int z = 0; z < widgetViews.the_widgets.get(f).myTables.size(); z++)
+                    for(int d = 0; d < widgetViews.the_widgets.get(f).myTables.get(z).myActions.size(); d++)
+                        if (widgetViews.the_widgets.get(f).myTableActions.get(y).second.matches(
+                                widgetViews.the_widgets.get(f).myTables.get(z).myActions.get(d).name))
+                            widgetViews.the_widgets.get(f).myActions.add(widgetViews.the_widgets.get(f).myTables.get(z).myActions.get(d));
+
+            }
+        }
+    }
+
+    // This function finds all the referenced tables and links them to the tables.
     private void linkReferencesToTable() {
         for(int l = 0; l < data.tables.size(); l++)
             for(int k = 0; k < data.tables.get(l).attributes.size(); k++)
@@ -222,14 +238,17 @@ class SclableInterpreter {
 
     private void linkTablesToWidgets() {
         synchronized (data.data_lock){
-            for(int x = 0; x < widgetViews.the_widgets.size()-1; x++)   // Only goes to n-1 because the last Widget is the Menu Widget
+            for(int x = 0; x < widgetViews.the_widgets.size()-1; x++) {  // Only goes to n-1 because the last Widget is the Menu Widget
                 // that doesn't have any tables or actions.
-                for(int y = 0; y < widgetViews.the_widgets.get(x).myTableActions.size(); y++) {
+                for (int y = 0; y < widgetViews.the_widgets.get(x).myTableActions.size(); y++) {
                     widgetViews.the_widgets.get(x).myTables = new ArrayList<Table>(widgetViews.the_widgets.get(x).myTableActions.size());
                     for (int z = 0; z < data.tables.size(); z++)
                         if (widgetViews.the_widgets.get(x).myTableActions.get(y).first.matches(data.tables.get(z).table_name))
                             widgetViews.the_widgets.get(x).myTables.add(data.tables.get(z));
+
                 }
+
+            }
         }
 
         /*for(int u = 0; u < widgetViews.the_widgets.size()-1; u++)

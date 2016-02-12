@@ -106,6 +106,16 @@ public class WidgetListItemListActivity extends AppCompatActivity implements IDa
         //Log.i(CLASS_NAME, "Default Action found: " + defaultAction.name);
         floatingAction = (FloatingActionButton)findViewById(R.id.fabAction);
         floatingAction.setVisibility(View.VISIBLE);
+
+        for(int i = 0; i < myWidget.myChildren.size(); i++)
+            Log.i(CLASS_NAME, "PRE WIdget child: " + myWidget.myChildren.get(i).titleBar);
+
+
+        for(int i = 0; i < myWidget.myChildren.get(0).myActions.size(); i++)
+            Log.i(CLASS_NAME, "PRE Action for first child: " + myWidget.myChildren.get(0).myActions.get(i).name);
+
+        // Every widget now has a list of myActions where only HIS actions are referenced !!!!!!!!!!!!!!!!
+
         if(defaultAction != null)
         {
             floatingAction.setOnClickListener(new View.OnClickListener() {
