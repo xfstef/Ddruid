@@ -87,6 +87,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
 
         setTheme(appLogic.configFile.custom_color);
 
+
         // init the UI Builder
         uiBuilder = UIBuilder.getInstance();
 
@@ -125,7 +126,6 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
 
     void initFormWidget()
     {
-
         Widget new_ui_widget = uiBuilder.inflateModel(my_widget);
         widgetScreen.addView(new_ui_widget);
 
@@ -161,7 +161,6 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
                                 return;
                                 //Log.i(CLASS_NAME, "Field " + i + " is required!");
                             }
-
                             setPost.set.add(current_spinner.getItemAtPosition(current_spinner.getSelectedItemPosition() - 1).toString());
                             break;
                         case 5:
@@ -175,13 +174,8 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
                             }
                             setPost.set.add(current_date.getText().toString());
                             break;
-
                     }
-
-
                 }
-
-
                 for (int i = 0; i < setPost.set.size(); i++)
                     Log.i(CLASS_NAME, "SET POST : " + setPost.set.get(i));
 
@@ -209,7 +203,6 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
                     appLogic.getTableData(spinners.get(i).second.referenced_table, this);
                 }
             }
-
         }
     }
 

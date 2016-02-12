@@ -3,6 +3,7 @@ package com.frostbytetree.ddruid;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -31,6 +32,7 @@ public class WidgetListItemListActivity extends AppCompatActivity implements IDa
     Widget myWidget;
     UIBuilder uiBuilder;
     TableListItemRecyclerViewAdapter tableAdapter;
+    FloatingActionButton floatingAction;
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
@@ -97,7 +99,66 @@ public class WidgetListItemListActivity extends AppCompatActivity implements IDa
         final SwipeRefreshLayout swipe_content = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
         SwipeDataRefreshListener swipe_listener = new SwipeDataRefreshListener(this,swipe_content,myTable);
 
+
+
+
+        final Action defaultAction = findDefaultActionWithinWidget(myWidget);
+        //Log.i(CLASS_NAME, "Default Action found: " + defaultAction.name);
+        floatingAction = (FloatingActionButton)findViewById(R.id.fabAction);
+        floatingAction.setVisibility(View.VISIBLE);
+        if(defaultAction != null)
+        {
+            floatingAction.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    for(int i = 0; i < myWidget.myChildren.size(); i++)
+                        Log.i(CLASS_NAME, "WIdget child: " + myWidget.myChildren.get(i).titleBar);
+
+
+                    for(int i = 0; i < myWidget.myChildren.get(0).myTables.get(0).myActions.size(); i++)
+                        Log.i(CLASS_NAME, "Action for first child: " + myWidget.myChildren.get(0).myTables.get(0).myActions.get(i).name);
+
+
+                    for(int i = 0; i < myWidget.myChildren.size(); i++) {
+                        for (int j = 0; j < myWidget.myChildren.get(i).myTables.get(0).myActions.size(); j++)
+                            if (myWidget.myChildren.get(i).myTables.get(0).myActions.get(j) == defaultAction) {
+                                Log.i(CLASS_NAME, "FOUND default action " +
+                                        myWidget.myChildren.get(i).myTables.get(0).myActions.get(j).name);
+                                Widget current_widget = myWidget.myChildren.get(i);
+                                appLogic.setCurrentWidget(current_widget);
+
+
+
+                                //Intent intent = new Intent(getApplicationContext(), WidgetActionActivity.class);
+                                // Started from floating button
+                                //startActivity(intent);
+
+                            }
+                    }
+
+
+
+                }
+            });
+        }
         
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        //if (requestCode == 5)
+
+    }
+
+
+    private Action findDefaultActionWithinWidget(Widget widget)
+    {
+        for(int i = 0; i < widget.myTables.get(0).myActions.size(); i++)
+            if(widget.myTables.get(0).myActions.get(i).type == 0) // 0 is the defined magic number for default Action
+                return widget.myTables.get(0).myActions.get(i);
+
+        return null;
     }
 
     //TODO: not only first table, in the future maybe more tables within one widget

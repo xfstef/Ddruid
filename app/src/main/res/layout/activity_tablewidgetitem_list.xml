@@ -28,6 +28,17 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <include layout="@layout/tablewidgetitem_list" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fabAction"
+            android:visibility="gone"
+            android:layout_width="165dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right|bottom"
+            android:layout_margin="@dimen/fab_margin"
+            android:src="@android:drawable/ic_input_add"
+            app:layout_anchor="@+id/frameLayout"
+            app:layout_anchorGravity="top|end" />
     </FrameLayout>
 
     <!--

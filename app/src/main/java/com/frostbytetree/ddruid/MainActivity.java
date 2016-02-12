@@ -166,10 +166,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
         if (appLogic.currentWidget != null)
             startWidgetActivity();
-
 
     }
 

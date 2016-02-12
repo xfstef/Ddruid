@@ -43,7 +43,13 @@
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
         <item name="android:colorBackground">@color/colorBackgroundIndigo</item>
-        <item name="android:dialogTheme">@style/AppTheme.DialogTheme</item>
+        <item name="android:dialogTheme">@style/AppTheme.DialogThemeIndigo</item>
+    </style>
+
+    <style name="AppTheme.DialogThemeIndigo" parent="Theme.AppCompat.Light.Dialog">
+        <item name="colorPrimary">@color/colorPrimaryIndigo</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkIndigo</item>
+        <item name="colorAccent">@color/colorPrimaryIndigo</item>
     </style>
 
     <style name="AppTheme.Orange" parent="Theme.AppCompat.Light.DarkActionBar">
@@ -59,7 +65,13 @@
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
         <item name="android:colorBackground">@color/colorBackgroundOrange</item>
-        <item name="android:dialogTheme">@style/AppTheme.DialogTheme</item>
+        <item name="android:dialogTheme">@style/AppTheme.DialogThemeOrange</item>
+    </style>
+
+    <style name="AppTheme.DialogThemeOrange" parent="Theme.AppCompat.Light.Dialog">
+        <item name="colorPrimary">@color/colorPrimaryOrange</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkOrange</item>
+        <item name="colorAccent">@color/colorPrimaryOrange</item>
     </style>
 
 </resources>

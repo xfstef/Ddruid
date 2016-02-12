@@ -291,7 +291,6 @@ public class UIBuilder {
 
                             }
                         }, year, month, day);
-
                 dpd.show();
             }
         });

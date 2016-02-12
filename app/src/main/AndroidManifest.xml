@@ -14,7 +14,7 @@
         android:theme="@style/AppTheme">
         <service
             android:name=".DataTransferController"
-            android:exported="false"></service>
+            android:exported="false" />
 
         <activity
             android:name=".MainActivity"
@@ -46,7 +46,7 @@
         <activity
             android:name=".WidgetListItemListActivity"
             android:label="@string/title_widgetlistitem_list"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".WidgetListItemDetailActivity"
             android:label="@string/title_widgetlistitem_detail"
@@ -56,6 +56,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.frostbytetree.ddruid.WidgetListItemListActivity" />
         </activity>
+        <activity android:name=".WidgetActionActivity"></activity>
     </application>
 
 </manifest>
