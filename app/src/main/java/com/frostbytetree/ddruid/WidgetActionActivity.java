@@ -1,7 +1,5 @@
 package com.frostbytetree.ddruid;
 
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -44,14 +42,15 @@ public class WidgetActionActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_widget_action_activitiy);
-
+        setContentView(R.layout.activity_widget_action_activity);
+        Log.i(CLASS_NAME, "onCreate!");
         //my_widget = new Widget(this);
         //widgetViews = WidgetViews.getInstance();
 
         appLogic = AppLogic.getInstance();
         my_widget = appLogic.currentWidget;
-
+        my_widget.removeAllViews();
+        Log.i(CLASS_NAME, "My current widget: " + my_widget.titleBar);
         setTheme(appLogic.configFile.custom_color);
 
 
@@ -60,7 +59,7 @@ public class WidgetActionActivity extends AppCompatActivity {
 
         uiBuilder.setContext(this);
         //uiBuilder.setCallback(this);
-        setContentView(R.layout.activity_widget_action_activitiy);
+        setContentView(R.layout.activity_widget_action_activity);
         initScreenItems();
 
     }
@@ -88,7 +87,6 @@ public class WidgetActionActivity extends AppCompatActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        widgetScreen.removeAllViews();
         checkWidgetType();
     }
 
@@ -117,6 +115,7 @@ public class WidgetActionActivity extends AppCompatActivity {
     {
 
         Widget new_ui_widget = uiBuilder.inflateModel(my_widget);
+
         widgetScreen.addView(new_ui_widget);
 
         checkForSpinnerDataLoading();
@@ -127,7 +126,7 @@ public class WidgetActionActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 DataSet setPost = new DataSet();
-                setPost.set = new ArrayList<String>();
+                setPost.set = new ArrayList<>();
                 // first check if all fields are filled correctly
                 for (int i = 0; i < uiBuilder.all_view_elements.size(); i++) {
                     switch (uiBuilder.all_view_elements.get(i).first) {
@@ -165,25 +164,35 @@ public class WidgetActionActivity extends AppCompatActivity {
                             }
                             setPost.set.add(current_date.getText().toString());
                             break;
-
                     }
-
-
                 }
 
 
+                // Print the whole dataset
                 for (int i = 0; i < setPost.set.size(); i++)
                     Log.i(CLASS_NAME, "SET POST : " + setPost.set.get(i));
 
+                for(int i = 0; i < my_widget.myActions.size(); i++)
+                {
+                    // Only create statement in this case
+                    if(my_widget.myActions.get(i).type == 0)
+                    {
+                        appLogic.sendPost(setPost, uiBuilder.current_action, my_widget.myTables.get(0));
+                        break;
+                    }
 
-                for (int i = 0; i < my_widget.myTables.get(0).myActions.size(); i++) {
-
-                    appLogic.sendPost(setPost, uiBuilder.current_action, my_widget.myTables.get(0));
                 }
+
                 Toast.makeText(getApplicationContext(), "POST: " + uiBuilder.current_action.name, Toast.LENGTH_LONG).show();
+                appLogic.setCurrentWidget(my_widget.myParent);
+                finish();
+
             }
         });
     }
+
+
+
     // This function loads the table datasets for each Spinner on the screen
     private void checkForSpinnerDataLoading()
     {

@@ -59,19 +59,11 @@ public class WidgetListItemListActivity extends AppCompatActivity implements IDa
         super.onCreate(savedInstanceState);
 
         appLogic = AppLogic.getInstance();
-        myWidget = appLogic.currentWidget;
         setTheme(appLogic.configFile.custom_color);
         uiBuilder = UIBuilder.getInstance();
         uiBuilder.setContext(this);
         uiBuilder.setCallback(this);
         setContentView(R.layout.activity_tablewidgetitem_list);
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        assert myWidget != null;
-        getSupportActionBar().setTitle(myWidget.titleBar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         initListItems();
 
@@ -87,6 +79,19 @@ public class WidgetListItemListActivity extends AppCompatActivity implements IDa
 
     private void initListItems()
     {
+        myWidget = appLogic.currentWidget;
+
+        uiBuilder.setContext(this);
+        uiBuilder.setCallback(this);
+
+
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        assert myWidget != null;
+        getSupportActionBar().setTitle(myWidget.titleBar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         final Table myTable = findTableWithinWidget(myWidget);
         if(myTable.dataSets.size() == 0)
@@ -122,33 +127,23 @@ public class WidgetListItemListActivity extends AppCompatActivity implements IDa
                 @Override
                 public void onClick(View v) {
 
-                    for(int i = 0; i < myWidget.myChildren.size(); i++)
-                        Log.i(CLASS_NAME, "WIdget child: " + myWidget.myChildren.get(i).titleBar);
-
-
-                    for(int i = 0; i < myWidget.myChildren.get(0).myTables.get(0).myActions.size(); i++)
-                        Log.i(CLASS_NAME, "Action for first child: " + myWidget.myChildren.get(0).myTables.get(0).myActions.get(i).name);
-
-
                     for(int i = 0; i < myWidget.myChildren.size(); i++) {
-                        for (int j = 0; j < myWidget.myChildren.get(i).myTables.get(0).myActions.size(); j++)
-                            if (myWidget.myChildren.get(i).myTables.get(0).myActions.get(j) == defaultAction) {
-                                Log.i(CLASS_NAME, "FOUND default action " +
-                                        myWidget.myChildren.get(i).myTables.get(0).myActions.get(j).name);
+                        for (int j = 0; j < myWidget.myChildren.get(i).myActions.size(); j++)
+                            if (myWidget.myChildren.get(i).myActions.get(j) == defaultAction) {
+
+                                // set child widget as current
                                 Widget current_widget = myWidget.myChildren.get(i);
                                 appLogic.setCurrentWidget(current_widget);
 
+                                // set this widget as parent widget
+                                appLogic.currentWidget.myParent = myWidget;
 
-
-                                //Intent intent = new Intent(getApplicationContext(), WidgetActionActivity.class);
+                                Intent intent = new Intent(getApplicationContext(), WidgetActionActivity.class);
                                 // Started from floating button
-                                //startActivity(intent);
-
+                                startActivityForResult(intent, 5);
+                                break;
                             }
                     }
-
-
-
                 }
             });
         }
@@ -157,8 +152,8 @@ public class WidgetListItemListActivity extends AppCompatActivity implements IDa
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        //if (requestCode == 5)
 
+        initListItems();
     }
 
 
