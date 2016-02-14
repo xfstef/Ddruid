@@ -84,6 +84,8 @@ public class WidgetListItemListActivity extends AppCompatActivity implements IDa
         uiBuilder.setContext(this);
         uiBuilder.setCallback(this);
 
+        // set the current Interface for ui_endpoint (signalDataArived)
+        appLogic.iDataInflateListener = this;
 
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

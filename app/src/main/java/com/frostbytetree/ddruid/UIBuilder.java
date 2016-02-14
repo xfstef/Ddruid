@@ -2,6 +2,7 @@ package com.frostbytetree.ddruid;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.os.Handler;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -479,6 +480,7 @@ class SwipeDataRefreshListener implements SwipeRefreshLayout.OnRefreshListener {
         // ...
 
         // Stop refresh animation
+
         swipe_content.setRefreshing(false);
     }
 }

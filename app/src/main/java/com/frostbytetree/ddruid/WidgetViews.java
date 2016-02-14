@@ -73,19 +73,4 @@ class Widget extends LinearLayout{
         setGravity(Gravity.CENTER);
         setOrientation(LinearLayout.VERTICAL);
     }
-
-
-
-    /*
-    public void addElement(){
-        Button a1 = new Button(context);
-        a1.setText("@string/app_name");
-        a1.setVisibility(View.VISIBLE);
-        addView(a1, (new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)));
-        System.out.println("Element Should be added!");
-        Activity MainActivity = (Activity)context;
-        //MainActivity.setContentView(widgetLinearLayout);
-    }
-    */
-
 }
