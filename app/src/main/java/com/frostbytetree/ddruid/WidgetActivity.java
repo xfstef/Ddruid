@@ -246,15 +246,13 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
         widgetScreen = (FrameLayout) findViewById(R.id.mainContent);
         toolbar = (Toolbar) findViewById(R.id.widget_toolbar);
         my_widget = appLogic.currentWidget;
+
+        // set the current Interface for ui_endpoint (signalDataArived)
+        appLogic.iDataInflateListener = this;
+
         setSupportActionBar(toolbar);
-        try
-        {
-            getSupportActionBar().setTitle(my_widget.titleBar);
-        }
-        catch(Exception exception)
-        {
-            Log.e(CLASS_NAME, "Could not find action bar", exception);
-        }
+        getSupportActionBar().setTitle(my_widget.titleBar);
+
 
 
 
@@ -318,8 +316,6 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
 
             }
         });
-
-
 
     }
 
