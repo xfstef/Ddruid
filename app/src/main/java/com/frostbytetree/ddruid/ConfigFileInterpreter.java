@@ -117,6 +117,11 @@ class SclableInterpreter {
                 new_table.myActions = new ArrayList<Action>(actions.length());
                 addActions(new_table, actions);
 
+                JSONArray states = temp_table.getJSONArray("states");
+                new_table.table_states = new ArrayList<>(states.length());
+                for(int u = 0; u < states.length(); u++)
+                    new_table.table_states.add(states.getString(u));
+
             } catch (JSONException e) {
                 e.printStackTrace();
                 break;

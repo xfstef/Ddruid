@@ -230,11 +230,6 @@ public class WidgetActionActivity extends AppCompatActivity implements IDataInfl
     }
 
     @Override
-    public void invokeLoadingTableData(Table table) {
-
-    }
-
-    @Override
     public void signalDataArrived(final Table my_table) {
         System.out.println("DATA HAS ARRIVED!");
 

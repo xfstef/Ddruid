@@ -462,8 +462,4 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
         return attributes;
     }
 
-    @Override
-    public void invokeLoadingTableData(Table table) {
-        //Log.d("Widget Activity", "Table invocation requested for: " + table.table_name);
-    }
 }
