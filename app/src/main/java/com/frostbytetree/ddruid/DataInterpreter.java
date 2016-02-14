@@ -44,7 +44,8 @@ public class DataInterpreter {
                     //JSONObject set = data_list.getJSONObject(x);
                     new_set.set = new ArrayList<String>(data_list.getJSONObject(x).length());
                     for(int y = 0; y < the_message.requested_operation.the_table.attributes.size(); y++){
-                        new_set.set.add(data_list.getJSONObject(x).getString(the_message.requested_operation.the_table.attributes.get(y).name));
+                        new_set.set.add(String.valueOf(data_list.getJSONObject(x).get(
+                                the_message.requested_operation.the_table.attributes.get(y).name)));
                     }
                     the_message.requested_operation.the_table.dataSets.add(new_set);
                 }

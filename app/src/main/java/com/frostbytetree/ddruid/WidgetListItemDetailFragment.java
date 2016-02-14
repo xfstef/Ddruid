@@ -91,7 +91,7 @@ public class WidgetListItemDetailFragment extends Fragment {
         Log.i(CLASS_NAME, dataSet.toString());
 
         Widget new_ui_widget = uiBuilder.inflateTableDetailModel(mainContent, widget, dataSet);
-        mainContent.addView(new_ui_widget);
+        //mainContent.addView(new_ui_widget);
 
         return rootView;
     }

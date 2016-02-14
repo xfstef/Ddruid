@@ -60,5 +60,5 @@ class Operation {
     Table the_table;   // If a table is needed then a data model will be given.
     JSONObject sclable_object;  // Used to send POST and DELETE commands to Sclable.
     DataSet new_post_set = null;
-
+    String table_action;    // Used to save the table + the action names.
 }
