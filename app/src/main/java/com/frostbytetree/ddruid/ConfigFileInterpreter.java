@@ -188,30 +188,10 @@ class SclableInterpreter {
                         new_action.type = 2;
                         break;
                 }
-                type = sclable_transition.getString("pre_state");
-                switch (type){
-                    case "incoming":
-                        new_action.sclablePreState = 1;
-                        break;
-                    case "second_level":
-                        new_action.sclablePreState = 2;
-                        break;
-                    case "done":
-                        new_action.sclablePreState = 3;
-                        break;
-                }
-                type = sclable_transition.getString("post_state");
-                switch (type){
-                    case "incoming":
-                        new_action.sclablePostState = 1;
-                        break;
-                    case "second_level":
-                        new_action.sclablePostState = 2;
-                        break;
-                    case "done":
-                        new_action.sclablePostState = 3;
-                        break;
-                }
+                new_action.sclablePreState = sclable_transition.getString("pre_state");
+                new_action.sclablePostState = sclable_transition.getString("post_state");
+
+                System.out.println(new_action.sclablePreState + ", " + new_action.sclablePostState);
 
                 JSONArray act_attr = the_action.getJSONArray("action_attributes");
                 new_action.attributes = new ArrayList<Attribute>(act_attr.length());

@@ -59,5 +59,6 @@ class Operation {
     String REST_command;    // If a REST command is needed, else this string is NULL.
     Table the_table;   // If a table is needed then a data model will be given.
     JSONObject sclable_object;  // Used to send POST and DELETE commands to Sclable.
+    DataSet new_post_set = null;
 
 }

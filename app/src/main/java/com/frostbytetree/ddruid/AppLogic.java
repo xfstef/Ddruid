@@ -130,6 +130,8 @@ public class AppLogic extends Thread{
                         break;
                     case 212:   // Got the POST Operations finished successfully message.
                         finished_operation.requested_operation.status = 6;
+                        finished_operation.requested_operation.the_table.dataSets.add(finished_operation.requested_operation.new_post_set);
+                        finished_operation.iDataInflateListener.signalDataArrived(finished_operation.requested_operation.the_table);
                         break;
                     // TODO: Implement the rest of possible post successful operation calls
                 }
@@ -301,6 +303,8 @@ public class AppLogic extends Thread{
         post_procedure.requested_operation.the_table = table;
         post_procedure.requested_operation.status = 0;
         // -----------------------------------------------------------------------------------------
+
+        post_procedure.requested_operation.new_post_set = dataSet;
 
         try {
             JSONObject data = new JSONObject();

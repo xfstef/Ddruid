@@ -91,8 +91,8 @@ class Action{
                 // 2 - For complex edit with form;
                 // 3 - For delete data set.
                 // 4 - Read action.
-    short sclablePreState = 0;
-    short sclablePostState = 0;
+    String sclablePreState;
+    String sclablePostState;
     // The sclable States can be:
     // 0 - null;
     // 1 - incoming;
