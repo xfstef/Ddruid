@@ -241,13 +241,22 @@ public class CommunicationDaemon extends Thread{
                 response = new JSONObject(representation.getText());
                 System.out.println("The POST Response: " + response.toString());
                 message.requested_operation.status = 3;
+                synchronized (appLogic){
+                    appLogic.notify();
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
                 message.requested_operation.status = 5;
+                synchronized (appLogic){
+                    appLogic.notify();
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
             message.requested_operation.status = 4;
+            synchronized (appLogic){
+                appLogic.notify();
+            }
         }
     }
 

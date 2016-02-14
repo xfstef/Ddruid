@@ -10,6 +10,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Created by XfStef on 11/27/2015.
@@ -131,8 +132,10 @@ public class AppLogic extends Thread{
                         break;
                     case 212:   // Got the POST Operations finished successfully message.
                         finished_operation.requested_operation.status = 6;
-                        finished_operation.requested_operation.the_table.dataSets.add(finished_operation.requested_operation.new_post_set);
-                        iDataInflateListener.signalDataArrived(finished_operation.requested_operation.the_table);
+                        finished_operation.requested_operation.the_table.dataSets.addAll(0,
+                                (Collection<? extends DataSet>) finished_operation.requested_operation.new_post_set);
+                        if(iDataInflateListener == finished_operation.iDataInflateListener)
+                            iDataInflateListener.signalDataArrived(finished_operation.requested_operation.the_table);
                         break;
                     // TODO: Implement the rest of possible post successful operation calls
                 }
@@ -306,6 +309,7 @@ public class AppLogic extends Thread{
         // -----------------------------------------------------------------------------------------
 
         post_procedure.requested_operation.new_post_set = dataSet;
+        post_procedure.iDataInflateListener = iDataInflateListener;
 
         try {
             JSONObject data = new JSONObject();

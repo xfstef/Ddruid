@@ -175,14 +175,9 @@ public class WidgetListItemListActivity extends AppCompatActivity implements IDa
     INTERFACE METHOD IMPLEMENTATIONS
      */
     @Override
-    public void invokeLoadingTableData(Table table) {
-        Log.d(CLASS_NAME, "Table invocation requested for: " + table.table_name);
-        appLogic.getTableData(table, this);
-    }
-
-    @Override
     public void signalDataArrived(final Table my_table) {
         Log.d(CLASS_NAME, "DATA HAS ARRIVED FOR: " + my_table.table_name);
+        Log.d(CLASS_NAME, "Widget type: " + myWidget.widgetType);
 
         // 0 - Widget-List;
         // 1 - Form;
