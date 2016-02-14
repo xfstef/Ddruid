@@ -90,10 +90,8 @@ public class WidgetListItemDetailFragment extends Fragment {
         LinearLayout mainContent = (LinearLayout)rootView.findViewById(R.id.listItemContent);
         Log.i(CLASS_NAME, dataSet.toString());
 
-        Widget new_ui_widget = uiBuilder.inflateTableDetailModel(mainContent, widget, dataSet);
-
+        //Widget new_ui_widget = uiBuilder.inflateTableDetailModel(mainContent, widget, dataSet);
         //mainContent.addView(new_ui_widget);
-
 
         return rootView;
     }

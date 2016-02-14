@@ -290,8 +290,8 @@ public class UIBuilder {
                             @Override
                             public void onDateSet(DatePicker view, int year,
                                                   int monthOfYear, int dayOfMonth) {
-                                editDate.setText(dayOfMonth + "-"
-                                        + (monthOfYear + 1) + "-" + year);
+                                editDate.setText(year  + "-"
+                                        + (monthOfYear + 1) + "-" + dayOfMonth);
 
                             }
                         }, year, month, day);

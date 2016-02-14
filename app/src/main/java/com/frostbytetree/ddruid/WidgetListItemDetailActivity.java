@@ -30,28 +30,27 @@ public class WidgetListItemDetailActivity extends AppCompatActivity {
     Widget widget;
     UIBuilder uiBuilder;
     ArrayList<String> set;
+    ArrayList<Action> actions;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu items for use in the action bar
 
+        actions.clear();
+
         Log.i(CLASS_NAME, "On Create Options Menu");
         Log.i(CLASS_NAME, "Adding Menu elements dynamically");
 
-        //TODO: Actions for the detail
-        /*
+
         for(int i = 0; i < widget.myChildren.size(); i++)
-        {
             for(int j = 0; j < widget.myChildren.get(i).myActions.size(); j++)
             {
-                if(widget.myChildren.get(i).myActions.get(j).type == 0)
-                {
-
+                // if Action is not create add to menu
+                if(widget.myChildren.get(i).myActions.get(j).type != 0) {
+                    menu.add(0, i, 0, widget.myChildren.get(i).myActions.get(j).name);
+                    actions.add(widget.myChildren.get(i).myActions.get(j));
                 }
             }
-        }
-        menu.add(0, i, 0, widget.myActions.get(i).name);
-        */
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -83,7 +82,7 @@ public class WidgetListItemDetailActivity extends AppCompatActivity {
 
             boolean is_simple = true;
             for(int x = 0; x < widget.myTables.get(0).myActions.get(id).attributes.size(); x++)
-                if(widget.myTables.get(0).myActions.get(id).attribute_readonly.get(x) == false){
+                if(actions.get(id).attribute_readonly.get(x) == false){
                     is_simple = false;
                     break;
                 }
@@ -112,6 +111,7 @@ public class WidgetListItemDetailActivity extends AppCompatActivity {
         setTheme(appLogic.configFile.custom_color);
         uiBuilder = UIBuilder.getInstance();
         uiBuilder.setContext(this);
+        actions = new ArrayList<>();
 
         Intent intent = getIntent();
         set = intent.getStringArrayListExtra(WidgetListItemDetailFragment.ARG_ITEM_ID);

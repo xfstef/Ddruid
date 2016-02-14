@@ -6,7 +6,6 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -303,6 +302,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
             @Override
             public void onClick(View v) {
 
+                // Functional but second instance
                 Intent mStartActivity = new Intent(getApplicationContext(), MainActivity.class);
                 int mPendingIntentId = 123456;
                 PendingIntent mPendingIntent = PendingIntent.getActivity(getApplicationContext(), mPendingIntentId, mStartActivity, PendingIntent.FLAG_CANCEL_CURRENT);
@@ -310,10 +310,10 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
                 mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);
                 System.exit(0);
 
-                // setResult(Activity.RESULT_CANCELED);
+
+
+                // appLogic.currentWidget = null;
                 // finish();
-
-
             }
         });
 

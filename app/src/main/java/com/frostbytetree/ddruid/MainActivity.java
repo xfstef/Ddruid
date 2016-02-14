@@ -169,6 +169,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (appLogic.currentWidget != null)
             startWidgetActivity();
 
+        initViewItems();
+
     }
 
     @Override

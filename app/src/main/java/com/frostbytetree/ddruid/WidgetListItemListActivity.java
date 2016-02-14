@@ -84,8 +84,8 @@ public class WidgetListItemListActivity extends AppCompatActivity implements IDa
         uiBuilder.setContext(this);
         uiBuilder.setCallback(this);
 
-        // set the current Interface for ui_endpoint (signalDataArived)
         appLogic.iDataInflateListener = this;
+
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -148,14 +148,9 @@ public class WidgetListItemListActivity extends AppCompatActivity implements IDa
     private Action findDefaultActionWithinWidget(Widget widget)
     {
         for(int i = 0; i < widget.myChildren.size(); i++)
-        {
             for(int j = 0;j < widget.myChildren.get(i).myActions.size(); j++)
-            {
                 if(widget.myChildren.get(i).myActions.get(j).type == 0) // 0 is the defined magic number for default Action
                     return widget.myChildren.get(i).myActions.get(j);
-            }
-        }
-
 
         return null;
     }
