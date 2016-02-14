@@ -58,7 +58,7 @@ class Table{
     ArrayList<Action> myActions;
     ArrayList<Table> children = new ArrayList<>(1);
     ArrayList<Pair<Short, ArrayList<Short>>> list_view_columns; // AAAAaaaahhhhhhhhhhhhhhhhh !
-    ArrayList<String> table_states;
+    ArrayList<String> sclable_states;
 }
 
 class DataSet{
