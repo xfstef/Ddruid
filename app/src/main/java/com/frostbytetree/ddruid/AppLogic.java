@@ -30,6 +30,7 @@ public class AppLogic extends Thread{
     WidgetViews widgetViews;
     CommunicationDaemon communicationDaemon;
     SclableURIS sclableURIS;
+    IDataInflateListener iDataInflateListener;
 
     // This approach is used when selecting a object within a list, because passing objects via
     // activity less efficient
@@ -131,7 +132,7 @@ public class AppLogic extends Thread{
                     case 212:   // Got the POST Operations finished successfully message.
                         finished_operation.requested_operation.status = 6;
                         finished_operation.requested_operation.the_table.dataSets.add(finished_operation.requested_operation.new_post_set);
-                        finished_operation.iDataInflateListener.signalDataArrived(finished_operation.requested_operation.the_table);
+                        iDataInflateListener.signalDataArrived(finished_operation.requested_operation.the_table);
                         break;
                     // TODO: Implement the rest of possible post successful operation calls
                 }
