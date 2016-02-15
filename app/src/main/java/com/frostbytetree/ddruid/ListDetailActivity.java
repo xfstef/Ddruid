@@ -2,18 +2,14 @@ package com.frostbytetree.ddruid;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.util.Pair;
 import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.View;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -21,9 +17,9 @@ import java.util.ArrayList;
  * An activity representing a single WidgetListItem detail screen. This
  * activity is only used narrow width devices. On tablet-size devices,
  * item details are presented side-by-side with a list of items
- * in a {@link WidgetListItemListActivity}.
+ * in a {@link ListActivity}.
  */
-public class WidgetListItemDetailActivity extends AppCompatActivity {
+public class ListDetailActivity extends AppCompatActivity {
 
     private static final String CLASS_NAME = "ListDetailActivity";
     AppLogic appLogic;
@@ -42,15 +38,18 @@ public class WidgetListItemDetailActivity extends AppCompatActivity {
         Log.i(CLASS_NAME, "Adding Menu elements dynamically");
 
 
-        for(int i = 0; i < widget.myChildren.size(); i++)
-            for(int j = 0; j < widget.myChildren.get(i).myActions.size(); j++)
-            {
+        int index = 0;
+        for(int i = 0; i < widget.myChildren.size(); i++) {
+            for (int j = 0; j < widget.myChildren.get(i).myActions.size(); j++) {
                 // if Action is not create add to menu
-                if(widget.myChildren.get(i).myActions.get(j).type != 0) {
-                    menu.add(0, i, 0, widget.myChildren.get(i).myActions.get(j).name);
+                if (widget.myChildren.get(i).myActions.get(j).type != 0) {
+                    Log.i(CLASS_NAME, "Created Item ID: " + i + "MenuItem: " + widget.myChildren.get(i).myActions.get(j).name);
+                    menu.add(0, index, 0, widget.myChildren.get(i).myActions.get(j).name);
+                    index++;
                     actions.add(widget.myChildren.get(i).myActions.get(j));
                 }
             }
+        }
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -59,33 +58,28 @@ public class WidgetListItemDetailActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-
         if (id == android.R.id.home) {
-            // This ID represents the Home or Up button. In the case of this
-            // activity, the Up button is shown. Use NavUtils to allow users
-            // to navigate up one level in the application structure. For
-            // more details, see the Navigation pattern on Android Design:
-            //
-            // http://developer.android.com/design/patterns/navigation.html#up-vs-back
-            //
             appLogic.temporary_dataSet = null;
-            NavUtils.navigateUpTo(this, new Intent(this, WidgetListItemListActivity.class));
+            NavUtils.navigateUpTo(this, new Intent(this, ListActivity.class));
             return true;
         }
         else {
-            //Log.i(CLASS_NAME, "Action : " + widget.myTables.get(0).myActions.get(id).name +" has attribute size: " + widget.myTables.get(0).myActions.get(id).attributes.size());
-            //for(int i = 0; i < widget.myTables.get(0).myActions.get(id).attributes.size(); i++)
-                //Log.i(CLASS_NAME, "Attribute: " + widget.myTables.get(0).myActions.get(id).attributes.get(i).name);
-
-            //Log.i(CLASS_NAME, "-------------------------------");
-            //
-
             boolean is_simple = true;
-            for(int x = 0; x < widget.myTables.get(0).myActions.get(id).attributes.size(); x++)
-                if(actions.get(id).attribute_readonly.get(x) == false){
-                    is_simple = false;
-                    break;
+            // Found the coresponding action which have been selected
+            // Iterate through the attributes and see if readonly is available within
+            for(int x = 0; x < widget.myTables.get(0).myActions.size(); x++) {
+                if(widget.myTables.get(0).myActions.get(x) == actions.get(id))
+                {
+                    for(int y = 0; y < widget.myTables.get(0).myActions.get(x).attribute_readonly.size(); y++)
+                    {
+                        if(widget.myTables.get(0).myActions.get(x).attribute_readonly.get(y) == false) {
+                            is_simple = false;
+                            break;
+                        }
+                    }
                 }
+
+            }
 
             if(is_simple) {
                 appLogic.sendPost(appLogic.temporary_dataSet, widget.myTables.get(0).myActions.get(id), widget.myTables.get(0));
@@ -93,9 +87,8 @@ public class WidgetListItemDetailActivity extends AppCompatActivity {
             }
             else
             {
-
+                Log.i(CLASS_NAME, "Action selected: " + actions.get(id).name);
             }
-
 
         }
         return super.onOptionsItemSelected(item);
@@ -114,9 +107,9 @@ public class WidgetListItemDetailActivity extends AppCompatActivity {
         actions = new ArrayList<>();
 
         Intent intent = getIntent();
-        set = intent.getStringArrayListExtra(WidgetListItemDetailFragment.ARG_ITEM_ID);
+        set = intent.getStringArrayListExtra(ListDetailFragment.ARG_ITEM_ID);
 
-        setContentView(R.layout.activity_widgetlistitem_detail);
+        setContentView(R.layout.activity_list_detail);
         Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
         setSupportActionBar(toolbar);
 
@@ -166,12 +159,12 @@ public class WidgetListItemDetailActivity extends AppCompatActivity {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putStringArrayList(WidgetListItemDetailFragment.ARG_ITEM_ID,
-                    getIntent().getStringArrayListExtra(WidgetListItemDetailFragment.ARG_ITEM_ID));
-            WidgetListItemDetailFragment fragment = new WidgetListItemDetailFragment();
+            arguments.putStringArrayList(ListDetailFragment.ARG_ITEM_ID,
+                    getIntent().getStringArrayListExtra(ListDetailFragment.ARG_ITEM_ID));
+            ListDetailFragment fragment = new ListDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.widgetlistitem_detail_container, fragment)
+                    .add(R.id.list_detail_container, fragment)
                     .commit();
         }
     }

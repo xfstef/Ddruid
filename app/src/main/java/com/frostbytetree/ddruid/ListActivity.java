@@ -20,13 +20,13 @@ import java.util.ArrayList;
  * An activity representing a list of WidgetListItems. This activity
  * has different presentations for handset and tablet-size devices. On
  * handsets, the activity presents a list of items, which when touched,
- * lead to a {@link WidgetListItemDetailActivity} representing
+ * lead to a {@link ListDetailActivity} representing
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  */
-public class WidgetListItemListActivity extends AppCompatActivity implements IDataInflateListener{
+public class ListActivity extends AppCompatActivity implements IDataInflateListener{
 
-    private static final String CLASS_NAME = "Item List Activity";
+    private static final String CLASS_NAME = "List Activity";
 
     AppLogic appLogic;
     Widget myWidget;
@@ -63,7 +63,7 @@ public class WidgetListItemListActivity extends AppCompatActivity implements IDa
         uiBuilder = UIBuilder.getInstance();
         uiBuilder.setContext(this);
         uiBuilder.setCallback(this);
-        setContentView(R.layout.activity_tablewidgetitem_list);
+        setContentView(R.layout.activity_list);
 
         initListItems();
 
@@ -235,16 +235,16 @@ public class WidgetListItemListActivity extends AppCompatActivity implements IDa
                 public void onClick(View v) {
                     if (mTwoPane) {
                         Bundle arguments = new Bundle();
-                        arguments.putStringArrayList(WidgetListItemDetailFragment.ARG_ITEM_ID, holder.mItem);
-                        WidgetListItemDetailFragment fragment = new WidgetListItemDetailFragment();
+                        arguments.putStringArrayList(ListDetailFragment.ARG_ITEM_ID, holder.mItem);
+                        ListDetailFragment fragment = new ListDetailFragment();
                         fragment.setArguments(arguments);
                         getSupportFragmentManager().beginTransaction()
                                 .replace(R.id.tablewidgetitem_detail_container, fragment)
                                 .commit();
                     } else {
                         Context context = v.getContext();
-                        Intent intent = new Intent(context, WidgetListItemDetailActivity.class);
-                        intent.putExtra(WidgetListItemDetailFragment.ARG_ITEM_ID, holder.mItem);
+                        Intent intent = new Intent(context, ListDetailActivity.class);
+                        intent.putExtra(ListDetailFragment.ARG_ITEM_ID, holder.mItem);
                         appLogic.temporary_dataSet = holder.currentDataSet;
                         context.startActivity(intent);
                     }

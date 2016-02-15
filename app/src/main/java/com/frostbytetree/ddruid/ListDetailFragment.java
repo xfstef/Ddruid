@@ -6,14 +6,9 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toolbar;
 
 import java.util.ArrayList;
 
@@ -21,11 +16,11 @@ import java.util.ArrayList;
 
 /**
  * A fragment representing a single WidgetListItem detail screen.
- * This fragment is either contained in a {@link WidgetListItemListActivity}
- * in two-pane mode (on tablets) or a {@link WidgetListItemDetailActivity}
+ * This fragment is either contained in a {@link ListActivity}
+ * in two-pane mode (on tablets) or a {@link ListDetailActivity}
  * on handsets.
  */
-public class WidgetListItemDetailFragment extends Fragment {
+public class ListDetailFragment extends Fragment {
     /**
      * The fragment argument representing the item ID that this fragment
      * represents.
@@ -42,7 +37,7 @@ public class WidgetListItemDetailFragment extends Fragment {
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public WidgetListItemDetailFragment() {
+    public ListDetailFragment() {
 
     }
 
@@ -86,7 +81,7 @@ public class WidgetListItemDetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View rootView = inflater.inflate(R.layout.widgetlistitem_detail, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_list_detail, container, false);
         LinearLayout mainContent = (LinearLayout)rootView.findViewById(R.id.listItemContent);
         Log.i(CLASS_NAME, dataSet.toString());
 

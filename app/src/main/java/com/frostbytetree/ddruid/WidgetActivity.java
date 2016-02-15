@@ -236,7 +236,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
     void startWidgetListActivity()
     {
         Intent intent = getIntent();
-        intent.setClass(getApplicationContext(), WidgetListItemListActivity.class);
+        intent.setClass(getApplicationContext(), ListActivity.class);
         startActivityForResult(intent, LIST_ACTIVITY_START);
     }
 

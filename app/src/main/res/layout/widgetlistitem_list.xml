@@ -9,5 +9,5 @@
     android:layout_marginLeft="16dp"
     android:layout_marginRight="16dp"
     app:layoutManager="LinearLayoutManager"
-    tools:context="com.frostbytetree.ddruid.WidgetListItemListActivity"
+    tools:context=".ListActivity"
     tools:listitem="@layout/list_item" />

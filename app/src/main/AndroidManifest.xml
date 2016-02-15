@@ -44,17 +44,17 @@
             android:value="@integer/google_play_services_version" />
 
         <activity
-            android:name=".WidgetListItemListActivity"
+            android:name=".ListActivity"
             android:label="@string/title_widgetlistitem_list"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".WidgetListItemDetailActivity"
+            android:name=".ListDetailActivity"
             android:label="@string/title_widgetlistitem_detail"
-            android:parentActivityName=".WidgetListItemListActivity"
+            android:parentActivityName=".ListActivity"
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.frostbytetree.ddruid.WidgetListItemListActivity" />
+                android:value=".ListActivity" />
         </activity>
         <activity android:name=".WidgetActionActivity"></activity>
     </application>

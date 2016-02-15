@@ -9,7 +9,7 @@
     android:divider="?android:attr/dividerHorizontal"
     android:orientation="horizontal"
     android:showDividers="middle"
-    tools:context="com.frostbytetree.ddruid.WidgetListItemListActivity">
+    tools:context=".ListActivity">
 
     <!--
     This layout is a two-pane layout for the WidgetListItems
@@ -26,11 +26,11 @@
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         app:layoutManager="LinearLayoutManager"
-        tools:context="com.frostbytetree.ddruid.WidgetListItemListActivity"
+        tools:context=".ListActivity"
         tools:listitem="@layout/list_item" />
 
     <FrameLayout
-        android:id="@+id/widgetlistitem_detail_container"
+        android:id="@+id/list_detail_container"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="3" />
