@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.zip.Inflater;
 
@@ -64,7 +65,7 @@ class Widget extends LinearLayout{
                         // 31 - Code Scanner + GPS;
                         // ...
 
-    ArrayList<HashMap<Integer, ArrayList<Integer>>> list_view_columns; // This variable defines the
+    LinkedHashMap<Integer, ArrayList<Integer>> list_view_columns; // This variable defines the
     // attributes that should be visible in list widgets.
 
     public Widget(Context context) {

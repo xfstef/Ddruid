@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 /**
  * An activity representing a list of WidgetListItems. This activity
@@ -228,7 +229,16 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
             holder.mItem = dataSets.get(position).set;
-            holder.mTextView.setText(dataSets.get(position).set.toString());
+
+            String tuple = new String();
+            for(LinkedHashMap.Entry<Integer, ArrayList<Integer>> entry : myWidget.list_view_columns.entrySet())
+            {
+                String temp;
+                temp = dataSets.get(position).set.get(entry.getKey());
+                tuple = tuple + " " + temp;
+
+            }
+            holder.mTextView.setText(tuple);
             holder.currentDataSet = dataSets.get(position);
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override

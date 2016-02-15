@@ -10,6 +10,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -347,17 +348,19 @@ class SclableInterpreter {
                     JSONObject list_attributes = new JSONObject();
                     list_attributes = temp_obj.getJSONObject("attributes");
                     Iterator<String> keys = list_attributes.keys();
-                    new_widget.list_view_columns = new ArrayList<>(list_attributes.length());
+                    new_widget.list_view_columns = new LinkedHashMap<>(list_attributes.length());
                     for(int r = 0; r < list_attributes.length(); r++){
-                        HashMap<Integer, ArrayList<Integer>> new_pair = new HashMap<>();
+                        //LinkedHashMap.Entry<Integer, ArrayList<Integer>> new_pair = null;
                         String key = keys.next();
+                        System.out.println("Key: " + key);
                         JSONArray values = list_attributes.getJSONArray(key);
                         ArrayList<Integer> short_values = new ArrayList<>(values.length());
                         for(int b = 0; b < values.length(); b++)
                             short_values.add((Integer) values.get(b));
-                        new_pair.put(Integer.valueOf(key), short_values);
-                        new_widget.list_view_columns.add(new_pair);
+                        //new_pair.setValue(Integer.valueOf(key), short_values));
+                        new_widget.list_view_columns.put(Integer.valueOf(key), short_values);
                     }
+                    System.out.println("entries: " + new_widget.list_view_columns.toString());
                 }
 
             } catch (JSONException e) {
