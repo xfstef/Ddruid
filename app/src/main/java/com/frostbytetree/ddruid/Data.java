@@ -5,6 +5,7 @@ import android.util.Pair;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by XfStef on 11/27/2015.
@@ -57,7 +58,6 @@ class Table{
     ArrayList<Widget> usedBy;
     ArrayList<Action> myActions;
     ArrayList<Table> children = new ArrayList<>(1);
-    ArrayList<Pair<Short, ArrayList<Short>>> list_view_columns; // AAAAaaaahhhhhhhhhhhhhhhhh !
     ArrayList<String> sclable_states;
 }
 

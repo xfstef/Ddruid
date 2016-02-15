@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by XfStef on 1/16/2016.
@@ -342,11 +343,20 @@ class SclableInterpreter {
                     new_widget.myTableActions.add(new Pair<String, String>(temp_key, temp_action_obj.getString(temp_key)));
                     System.out.println("Actions: " + temp_key + ", " + temp_action_obj.getString(temp_key));
                 }
-                if(new_widget.widgetType == 0) {
-                    action_list = new JSONArray();
-                    action_list = temp_obj.getJSONArray("attributes");
-                    for(int r = 0; r < action_list.length(); r++){
-
+                if(new_widget.widgetType == 4) {
+                    JSONObject list_attributes = new JSONObject();
+                    list_attributes = temp_obj.getJSONObject("attributes");
+                    Iterator<String> keys = list_attributes.keys();
+                    new_widget.list_view_columns = new ArrayList<>(list_attributes.length());
+                    for(int r = 0; r < list_attributes.length(); r++){
+                        HashMap<Integer, ArrayList<Integer>> new_pair = new HashMap<>();
+                        String key = keys.next();
+                        JSONArray values = list_attributes.getJSONArray(key);
+                        ArrayList<Integer> short_values = new ArrayList<>(values.length());
+                        for(int b = 0; b < values.length(); b++)
+                            short_values.add((Integer) values.get(b));
+                        new_pair.put(Integer.valueOf(key), short_values);
+                        new_widget.list_view_columns.add(new_pair);
                     }
                 }
 
