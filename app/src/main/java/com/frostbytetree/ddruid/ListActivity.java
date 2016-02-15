@@ -34,6 +34,7 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
     UIBuilder uiBuilder;
     TableListItemRecyclerViewAdapter tableAdapter;
     FloatingActionButton floatingAction;
+    Data data;
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
@@ -58,7 +59,7 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-
+        data = Data.getInstance();
         appLogic = AppLogic.getInstance();
         setTheme(appLogic.configFile.custom_color);
         uiBuilder = UIBuilder.getInstance();
@@ -101,6 +102,7 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
 
         RecyclerView recList = (RecyclerView) findViewById(R.id.tablewidgetitem_list);
         tableAdapter = new TableListItemRecyclerViewAdapter(myTable.dataSets);
+        tableAdapter.father = this;
         recList.setAdapter(tableAdapter);
 
         final SwipeRefreshLayout swipe_content = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
@@ -171,7 +173,7 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
     INTERFACE METHOD IMPLEMENTATIONS
      */
     @Override
-    public void signalDataArrived(final Table my_table) {
+    public void signalDataArrived(Table my_table) {
         Log.d(CLASS_NAME, "DATA HAS ARRIVED FOR: " + my_table.table_name);
         Log.d(CLASS_NAME, "Widget type: " + myWidget.widgetType);
 
@@ -182,19 +184,21 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
         // 4 - List with datasets
         // 31 - Code Scanner + GPS;
 
-        switch(myWidget.widgetType)
-        {
+        if(my_table != myWidget.myTables.get(0))
+            my_table = myWidget.myTables.get(0);
+
+        switch (myWidget.widgetType) {
             case 4:
+                final Table finalMy_table = my_table;
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        tableAdapter.updateDataSetList(my_table.dataSets);
+                        tableAdapter.updateDataSetList(finalMy_table);
                     }
                 });
                 break;
 
         }
-
 
     }
 
@@ -214,6 +218,8 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
             extends RecyclerView.Adapter<TableListItemRecyclerViewAdapter.ViewHolder> {
 
         private ArrayList<DataSet> dataSets;
+        Table table;
+        ListActivity father = null;
 
         public TableListItemRecyclerViewAdapter(ArrayList<DataSet> dataSets) {
             this.dataSets = dataSets;
@@ -233,8 +239,19 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
             String tuple = new String();
             for(LinkedHashMap.Entry<Integer, ArrayList<Integer>> entry : myWidget.list_view_columns.entrySet())
             {
-                String temp;
-                temp = dataSets.get(position).set.get(entry.getKey());
+                String temp = new String();
+                if(entry.getValue().size() > 0 && myWidget.myTables.get(0).attributes.get(entry.getKey()).attribute_type == 2) {
+                    if (!myWidget.myTables.get(0).attributes.get(entry.getKey()).items.referenced_table.dataSets.isEmpty()) {
+                        for (int l = 0; l < entry.getValue().size(); l++)
+                            temp = temp + " " + getReferencedItem(Integer.valueOf(dataSets.get(position).set.get(entry.getKey())),
+                                    entry.getValue().get(l), myWidget.myTables.get(0).attributes.get(entry.getKey()));
+                    } else {
+                        temp = dataSets.get(position).set.get(entry.getKey());
+                        appLogic.getTableData(myWidget.myTables.get(0).attributes.get(entry.getKey()).items.referenced_table, father);
+                    }
+                }else {
+                    temp = dataSets.get(position).set.get(entry.getKey());
+                }
                 tuple = tuple + " " + temp;
 
             }
@@ -264,10 +281,11 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
             });
         }
 
-        public void updateDataSetList(ArrayList<DataSet> data_sets)
+        public void updateDataSetList(Table data_sets)
         {
-            this.dataSets = data_sets;
+            this.dataSets = data_sets.dataSets;
             this.notifyDataSetChanged();
+            table = data_sets;
         }
 
         @Override
@@ -290,5 +308,16 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
              }
 
         }
+    }
+
+    private String getReferencedItem(Integer source_data, Integer target_pos, Attribute attribute) {
+        String item = null;
+
+        for(int y = 0; y < attribute.items.referenced_table.dataSets.size(); y++)
+            if(Integer.valueOf(attribute.items.referenced_table.dataSets.get(y).set.get(attribute.items.source_column)) == source_data) {
+                item = attribute.items.referenced_table.dataSets.get(y).set.get(target_pos);
+                return item;
+            }
+        return item;
     }
 }

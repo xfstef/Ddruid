@@ -298,6 +298,7 @@ class SclableInterpreter {
 
         try {
             widgets = configFile.json_form.getJSONArray("widgets");
+            System.out.println("The widget: " + widgets.toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -346,19 +347,21 @@ class SclableInterpreter {
                 }
                 if(new_widget.widgetType == 4) {
                     JSONObject list_attributes = new JSONObject();
+                    System.out.println("object " + temp_obj.toString());
                     list_attributes = temp_obj.getJSONObject("attributes");
-                    Iterator<String> keys = list_attributes.keys();
+                    System.out.println("keys " + list_attributes.toString());
+                    JSONArray keys = list_attributes.names();
+                    System.out.println("keys " + keys.toString());
                     new_widget.list_view_columns = new LinkedHashMap<>(list_attributes.length());
-                    for(int r = 0; r < list_attributes.length(); r++){
-                        //LinkedHashMap.Entry<Integer, ArrayList<Integer>> new_pair = null;
-                        String key = keys.next();
-                        System.out.println("Key: " + key);
-                        JSONArray values = list_attributes.getJSONArray(key);
+                    //for(int r = 0; r < list_attributes.length(); r++){
+                    for(int i = 0; i < keys.length(); i++){
+
+                        System.out.println("Key: " + keys.get(i));
+                        JSONArray values = list_attributes.getJSONArray(keys.getString(i));
                         ArrayList<Integer> short_values = new ArrayList<>(values.length());
                         for(int b = 0; b < values.length(); b++)
                             short_values.add((Integer) values.get(b));
-                        //new_pair.setValue(Integer.valueOf(key), short_values));
-                        new_widget.list_view_columns.put(Integer.valueOf(key), short_values);
+                        new_widget.list_view_columns.put(Integer.valueOf(keys.getString(i)), short_values);
                     }
                     System.out.println("entries: " + new_widget.list_view_columns.toString());
                 }

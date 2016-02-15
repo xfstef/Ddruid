@@ -54,10 +54,10 @@ class Table{
     Boolean cached_only;
     int attribute_count;
     ArrayList<Attribute> attributes;
-    ArrayList<DataSet> dataSets = new ArrayList<>(1);
+    ArrayList<DataSet> dataSets = new ArrayList<>();
     ArrayList<Widget> usedBy;
     ArrayList<Action> myActions;
-    ArrayList<Table> children = new ArrayList<>(1);
+    ArrayList<Table> children = new ArrayList<>();
     ArrayList<String> sclable_states;
 }
 
