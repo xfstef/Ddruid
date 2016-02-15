@@ -302,18 +302,14 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
             @Override
             public void onClick(View v) {
 
-                // Functional but second instance
+                // Functional but second instance built
                 Intent mStartActivity = new Intent(getApplicationContext(), MainActivity.class);
                 int mPendingIntentId = 123456;
-                PendingIntent mPendingIntent = PendingIntent.getActivity(getApplicationContext(), mPendingIntentId, mStartActivity, PendingIntent.FLAG_CANCEL_CURRENT);
+                PendingIntent mPendingIntent = PendingIntent.getActivity(getApplicationContext(), mPendingIntentId, mStartActivity, PendingIntent.FLAG_NO_CREATE);
                 AlarmManager mgr = (AlarmManager) getApplicationContext().getSystemService(getApplicationContext().ALARM_SERVICE);
                 mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);
                 System.exit(0);
 
-
-
-                // appLogic.currentWidget = null;
-                // finish();
             }
         });
 
