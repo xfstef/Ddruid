@@ -26,7 +26,9 @@ public class ListDetailActivity extends AppCompatActivity {
     Widget widget;
     UIBuilder uiBuilder;
     ArrayList<String> set;
+    String title;
     ArrayList<Action> actions;
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -108,36 +110,13 @@ public class ListDetailActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         set = intent.getStringArrayListExtra(ListDetailFragment.ARG_ITEM_ID);
-
+        title = intent.getStringExtra(ListDetailFragment.ARG_TITLE_ID);
         setContentView(R.layout.activity_list_detail);
         Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
         setSupportActionBar(toolbar);
 
-        //TODO: find out which attribute will be set as title
-        getSupportActionBar().setTitle(set.toString());
-
-        for(int i  = 0; i < widget.myTables.get(0).myActions.size(); i++)
-            Log.i(CLASS_NAME, " the widget Table Action : " + widget.myTables.get(0).myActions.get(i).name);
-
-
-
-        /*
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar snackbar = Snackbar
-                        .make(view, "Replace with your own detail action", Snackbar.LENGTH_LONG);
-
-                for(int i  = 0; i < widget.myTables.get(0).myActions.size(); i++)
-                {
-                    snackbar.setAction(widget.myTables.get(0).myActions.get(i).name, null);
-                }
-
-                snackbar.show();
-            }
-        });
-        */
+        Log.i(CLASS_NAME, "title: " + title);
+        getSupportActionBar().setTitle(title);
 
 
         // Show the Up button in the action bar.
@@ -161,6 +140,8 @@ public class ListDetailActivity extends AppCompatActivity {
             Bundle arguments = new Bundle();
             arguments.putStringArrayList(ListDetailFragment.ARG_ITEM_ID,
                     getIntent().getStringArrayListExtra(ListDetailFragment.ARG_ITEM_ID));
+            arguments.putString(ListDetailFragment.ARG_TITLE_ID,
+                    getIntent().getStringExtra(ListDetailFragment.ARG_TITLE_ID));
             ListDetailFragment fragment = new ListDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()

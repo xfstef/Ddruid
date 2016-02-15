@@ -26,9 +26,11 @@ public class ListDetailFragment extends Fragment {
      * represents.
      */
     public static final String ARG_ITEM_ID = "item_id";
+    public static final String ARG_TITLE_ID = "title_id";
     private static final String CLASS_NAME = "ITEM DETAIL FRAGMENT";
 
     ArrayList<String> dataSet;
+    String title;
     AppLogic appLogic;
     Widget widget;
     UIBuilder uiBuilder;
@@ -50,16 +52,17 @@ public class ListDetailFragment extends Fragment {
         uiBuilder = UIBuilder.getInstance();
         uiBuilder.setContext(this.getActivity());
 
-        if (getArguments().containsKey(ARG_ITEM_ID)) {
+        if (getArguments().containsKey(ARG_TITLE_ID) && getArguments().containsKey(ARG_ITEM_ID)) {
             // Load the dummy content specified by the fragment
             // arguments. In a real-world scenario, use a Loader
             // to load content from a content provider.
             dataSet = getArguments().getStringArrayList(ARG_ITEM_ID);
+            title = getArguments().getString(ARG_TITLE_ID);
 
             Activity activity = this.getActivity();
             CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
             if (appBarLayout != null) {
-               appBarLayout.setTitle(dataSet.toString());
+               appBarLayout.setTitle(title);
             }
 
         }

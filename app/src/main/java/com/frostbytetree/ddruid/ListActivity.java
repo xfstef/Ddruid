@@ -246,6 +246,7 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
                     if (mTwoPane) {
                         Bundle arguments = new Bundle();
                         arguments.putStringArrayList(ListDetailFragment.ARG_ITEM_ID, holder.mItem);
+                        arguments.putString(ListDetailFragment.ARG_TITLE_ID, holder.mTextView.getText().toString());
                         ListDetailFragment fragment = new ListDetailFragment();
                         fragment.setArguments(arguments);
                         getSupportFragmentManager().beginTransaction()
@@ -255,6 +256,7 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
                         Context context = v.getContext();
                         Intent intent = new Intent(context, ListDetailActivity.class);
                         intent.putExtra(ListDetailFragment.ARG_ITEM_ID, holder.mItem);
+                        intent.putExtra(ListDetailFragment.ARG_TITLE_ID, holder.mTextView.getText().toString());
                         appLogic.temporary_dataSet = holder.currentDataSet;
                         context.startActivity(intent);
                     }
