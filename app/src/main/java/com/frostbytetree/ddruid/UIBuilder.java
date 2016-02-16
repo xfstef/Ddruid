@@ -55,7 +55,7 @@ public class UIBuilder {
 
     Data data;
     Context context;
-    AppLogic appLogic;
+    AppLogic appLogic = null;
     IDataInflateListener mCallback;
 
     //TEMP solution the views will be created in seperated classes
