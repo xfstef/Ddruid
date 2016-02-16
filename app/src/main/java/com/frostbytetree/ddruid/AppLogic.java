@@ -144,7 +144,7 @@ public class AppLogic extends Thread{
                 switch(finished_operation.requested_operation.type) {
                     case 0:
                         /*
-                        If no config file download it and interpret it
+                        If no config file, download it and interpret it
                         if it is so then just switch to widget
                         */
                         if(configFile.json_form != null) {
@@ -270,16 +270,37 @@ public class AppLogic extends Thread{
         }catch (Exception e){
             e.printStackTrace();
         }
-
+        boolean change_list;
         switch(action.type){
+
             case 0: // Create.
                 // TODO: Implement logic for creating a new tuple successfully.
                 break;
             case 1: // Simple Edit.
                 // TODO: Implement logic for handling this change in the app.
+                change_list = true;
+                for(int j = 0; j < table.sclable_states.size(); j++)
+                    if(action.sclablePostState.matches(table.sclable_states.get(j))) {
+                        change_list = false;
+                        break;
+                    }
+                if(change_list) {
+                    table.dataSets.remove(dataSet);
+                    iDataInflateListener.signalDataArrived(table);
+                }
                 break;
             case 2: // Edit with form.
                 // TODO: Implement logic for handling this change in the app.
+                change_list = true;
+                for(int j = 0; j < table.sclable_states.size(); j++)
+                    if(action.sclablePostState.matches(table.sclable_states.get(j))) {
+                        change_list = false;
+                        break;
+                    }
+                if(change_list) {
+                    table.dataSets.remove(dataSet);
+                    iDataInflateListener.signalDataArrived(table);
+                }
                 break;
             case 3: // Delete.
                 // TODO: Implement logic for handling this change in the app.

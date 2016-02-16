@@ -163,6 +163,7 @@ public class CommunicationDaemon extends Thread{
                     appLogic.notify();
                 }
                 e.printStackTrace();
+                return;
             }
         }catch (Exception e) {
             message.requested_operation.status = 5;
@@ -170,6 +171,7 @@ public class CommunicationDaemon extends Thread{
                 appLogic.notify();
             }
             e.printStackTrace();
+            return;
         }
 
         // TODO: Build switch case so that you can see what type of server this is.
