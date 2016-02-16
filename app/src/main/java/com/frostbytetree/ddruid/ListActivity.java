@@ -243,9 +243,10 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
                 // Atrritubte type 2 = spinner
                 if(entry.getValue().size() > 0 && myWidget.myTables.get(0).attributes.get(entry.getKey()).attribute_type == 2) {
                     if (!myWidget.myTables.get(0).attributes.get(entry.getKey()).items.referenced_table.dataSets.isEmpty()) {
-                        for (int l = 0; l < entry.getValue().size(); l++)
+                        for (int l = 0; l < entry.getValue().size(); l++) {
                             temp = temp + " " + getReferencedItem(Integer.valueOf(dataSets.get(position).set.get(entry.getKey())),
                                     entry.getValue().get(l), myWidget.myTables.get(0).attributes.get(entry.getKey()));
+                        }
                     } else {
                         temp = dataSets.get(position).set.get(entry.getKey());
                         appLogic.getTableData(myWidget.myTables.get(0).attributes.get(entry.getKey()).items.referenced_table, father);

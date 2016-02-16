@@ -165,15 +165,19 @@ public class AppLogic extends Thread{
                 switch (finished_operation.requested_operation.type){
                     case 0: // Could not get session token.
                         mainActivity.loginFailed((short) 0); // TODO: Add failure code.
+                        finished_operation.requested_operation.status = 6;
                         break;
                     case 110:   // Did not get the Config File successfully.
                         mainActivity.loginFailed((short) 0); // TODO: Add failure code.
+                        finished_operation.requested_operation.status = 6;
                         break;
                     case 111:   // Did not get a server table succesfully.
                         System.out.println("Got table data: " + data.temp_object.toString());
+                        finished_operation.requested_operation.status = 6;
                         break;
                     case 212:   // Could not post to server error.
                         System.out.println("Got error from server.");
+                        finished_operation.requested_operation.status = 6;
                         break;
                     // TODO: Implement the rest of possible post failed operation calls
                 }
@@ -182,6 +186,10 @@ public class AppLogic extends Thread{
     }
 
     public void getTableData(Table the_table, AppCompatActivity caller){
+
+        if(checkRequestAlreadyExists((short) 111, the_table))
+            return;
+
         // TODO: Check if the data exists locally. If not then download it.
 
         String table_address = the_table.table_name.replace(".","/");
@@ -210,6 +218,14 @@ public class AppLogic extends Thread{
         synchronized (communicationDaemon) {    // Waking up communicationDaemon
             communicationDaemon.notify();
         }
+    }
+
+    private boolean checkRequestAlreadyExists(short type, Table the_table) {
+        for(int k = 0; k < local_pile.size(); k++)
+            if(local_pile.get(k).requested_operation.type == type && local_pile.get(k).requested_operation.the_table == the_table
+                    && local_pile.get(k).requested_operation.status < 5)
+                return true;
+        return false;
     }
 
     public void login() {
