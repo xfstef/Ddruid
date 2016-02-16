@@ -89,12 +89,41 @@ public class ListDetailActivity extends AppCompatActivity {
             }
             else
             {
+
                 Log.i(CLASS_NAME, "Action selected: " + actions.get(id).name);
+                // set child widget as current
+                for(int i = 0; i < widget.myChildren.size(); i++) {
+                    for (int j = 0; j < widget.myChildren.get(i).myActions.size(); j++)
+                        if (widget.myChildren.get(i).myActions.get(j) == actions.get(id)) {
+
+                            // set child widget as current
+                            Widget current_widget = widget.myChildren.get(i);
+                            appLogic.setCurrentWidget(current_widget);
+
+                            // set this widget as parent widget
+                            appLogic.currentWidget.myParent = widget;
+
+                            Intent intent = new Intent(getApplicationContext(), WidgetActionActivity.class);
+                            // Started from floating button
+                            startActivityForResult(intent, 5);
+                            break;
+                        }
+                }
+
             }
 
         }
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        // go back to list if action was made
+        appLogic.temporary_dataSet = null;
+        NavUtils.navigateUpTo(this, new Intent(this, ListActivity.class));
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

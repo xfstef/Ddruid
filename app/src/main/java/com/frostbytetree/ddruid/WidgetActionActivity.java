@@ -82,16 +82,7 @@ public class WidgetActionActivity extends AppCompatActivity implements IDataInfl
         toolbar = (Toolbar) findViewById(R.id.widget_toolbar);
         my_widget = appLogic.currentWidget;
         setSupportActionBar(toolbar);
-        try
-        {
-            getSupportActionBar().setTitle(my_widget.titleBar);
-        }
-        catch(Exception exception)
-        {
-            Log.e(CLASS_NAME, "Could not find action bar", exception);
-        }
-
-
+        getSupportActionBar().setTitle(my_widget.titleBar);
 
         // if that is not the root widget then, the back arrow should be displayed
         // else the main should show the hamburger menu
@@ -168,8 +159,10 @@ public class WidgetActionActivity extends AppCompatActivity implements IDataInfl
                                 return;
                                 //Log.i(CLASS_NAME, "Field " + i + " is required!");
                             }
-
-                            setPost.set.add(selected_source_columns.get(current_spinner.getSelectedItemPosition() - 1));
+                            if(current_spinner.getSelectedItemPosition() > 0)
+                                setPost.set.add(selected_source_columns.get(current_spinner.getSelectedItemPosition() - 1));
+                            else
+                                setPost.set.add("");
                             break;
                         case 5: // Date Input
                             String tag2 = (String) uiBuilder.all_view_elements.get(i).second.getTag();
@@ -192,10 +185,10 @@ public class WidgetActionActivity extends AppCompatActivity implements IDataInfl
 
                 for (int i = 0; i < my_widget.myActions.size(); i++) {
                     // Only create statement in this case
-                    if (my_widget.myActions.get(i).type == 0) {
+                    //if (my_widget.myActions.get(i).type == 0) {
                         appLogic.sendPost(setPost, uiBuilder.current_action, my_widget.myTables.get(0));
                         break;
-                    }
+                    //}
 
                 }
 

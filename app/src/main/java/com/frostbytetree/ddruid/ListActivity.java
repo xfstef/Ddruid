@@ -240,6 +240,7 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
             for(LinkedHashMap.Entry<Integer, ArrayList<Integer>> entry : myWidget.list_view_columns.entrySet())
             {
                 String temp = new String();
+                // Atrritubte type 2 = spinner
                 if(entry.getValue().size() > 0 && myWidget.myTables.get(0).attributes.get(entry.getKey()).attribute_type == 2) {
                     if (!myWidget.myTables.get(0).attributes.get(entry.getKey()).items.referenced_table.dataSets.isEmpty()) {
                         for (int l = 0; l < entry.getValue().size(); l++)

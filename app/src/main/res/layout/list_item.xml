@@ -17,6 +17,8 @@
         android:layout_margin="@dimen/text_margin"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Medium Text"
+        android:ellipsize="end"
+        android:singleLine="true"
         android:id="@+id/txtListAttr" />
 </android.support.v7.widget.CardView>
 

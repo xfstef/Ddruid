@@ -242,9 +242,21 @@ public class UIBuilder {
             input_item.setHint(attribute.name);
 
         if(read_only)
-            input_item.setEnabled(false);
+            input_text.setEnabled(false);
 
         all_view_elements.add(new Pair<Short, View>(IS_INPUT_TEXT, input_text));
+
+        // Distinguate if called from WidgetActionActivity
+        if(appLogic.temporary_dataSet == null)
+            return input_item;
+        else {
+            for(int i = 0; i < appLogic.currentWidget.myTables.get(0).attributes.size(); i++)
+                if(attribute.name.matches(appLogic.currentWidget.myTables.get(0).attributes.get(i).name)) {
+                    input_text.setText(appLogic.temporary_dataSet.set.get(i));
+                    break;
+                }
+        }
+
         return input_item;
     }
 
