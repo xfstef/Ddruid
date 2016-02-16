@@ -17,6 +17,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.os.Bundle;
 import android.transition.Slide;
 import android.transition.TransitionInflater;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -44,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     CommunicationDaemon communicationDaemon;
     SharedPreferences sharedPreferences;
     SclableURIS sclableURIS;
+    private static final String CLASS_NAME = "MainActivity";
 
     Toolbar toolbar;
 
@@ -221,7 +223,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void loginFailed(short i) {
 
-        System.out.println("Login failed because: " + i);
+        Log.i(CLASS_NAME,"Login failed because: " + i);
         final short code = i;
         // failurecode 0 : URI fail
         runOnUiThread(new Runnable() {

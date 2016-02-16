@@ -193,6 +193,7 @@ public class WidgetActionActivity extends AppCompatActivity implements IDataInfl
                 }
 
                 Toast.makeText(getApplicationContext(), "POST: " + uiBuilder.current_action.name, Toast.LENGTH_LONG).show();
+                appLogic.temporary_dataSet = null;
                 appLogic.setCurrentWidget(my_widget.myParent);
                 finish();
 
