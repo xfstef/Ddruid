@@ -117,6 +117,13 @@ public class ListDetailActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onBackPressed()
+    {
+        super.onBackPressed();
+        appLogic.temporary_dataSet = null;
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         // go back to list if action was made

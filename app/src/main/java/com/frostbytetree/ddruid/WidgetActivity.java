@@ -348,7 +348,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d(CLASS_NAME, "OnActivityResult called resultCode " + requestCode);
         Log.d(CLASS_NAME, "Widget " + my_widget.titleBar);
-
+        appLogic.temporary_dataSet = null;
         if(requestCode == LIST_ACTIVITY_START)
         {
             Log.d(CLASS_NAME, "Init Screen Items invoked");

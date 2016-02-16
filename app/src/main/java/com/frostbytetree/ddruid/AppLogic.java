@@ -35,7 +35,7 @@ public class AppLogic extends Thread{
 
     // This approach is used when selecting a object within a list, because passing objects via
     // activity less efficient
-    DataSet temporary_dataSet;
+    DataSet temporary_dataSet = null;
     short thread_throttling = 5000; // This option is used to determine how much the Thread sleeps.
                                     // 5000 - Idle mode: the app is minimized with no bkg operation.
                                     // 1000 - Passive mode: app is sending / getting data.

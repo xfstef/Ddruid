@@ -88,6 +88,7 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
 
         appLogic.iDataInflateListener = this;
 
+        appLogic.temporary_dataSet = null;
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -143,7 +144,7 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
+        appLogic.temporary_dataSet = null;
         initListItems();
     }
 
