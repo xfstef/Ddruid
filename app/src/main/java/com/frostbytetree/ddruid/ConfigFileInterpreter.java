@@ -279,7 +279,9 @@ class SclableInterpreter {
                     reference_childs = ref.getJSONArray("reference_lookup");
                     new_attribute.items.target_columns = new ArrayList<Integer>(reference_childs.length());
                     for(int g = 0; g < reference_childs.length(); g++){
-                        new_attribute.items.target_columns.add(Integer.valueOf(reference_childs.getString(g)));
+                        JSONObject the_ref = new JSONObject();
+                        the_ref = reference_childs.getJSONObject(g);
+                        new_attribute.items.target_columns.add(Integer.valueOf(the_ref.keys().next()));
                     }
                 }
             } catch (JSONException e) {
@@ -346,22 +348,23 @@ class SclableInterpreter {
                     System.out.println("Actions: " + temp_key + ", " + temp_action_obj.getString(temp_key));
                 }
                 if(new_widget.widgetType == 4) {
-                    JSONObject list_attributes = new JSONObject();
+                    JSONArray list_attributes = new JSONArray();
                     System.out.println("object " + temp_obj.toString());
-                    list_attributes = temp_obj.getJSONObject("attributes");
+                    list_attributes = temp_obj.getJSONArray("attributes");
                     System.out.println("keys " + list_attributes.toString());
-                    JSONArray keys = list_attributes.names();
-                    System.out.println("keys " + keys.toString());
+                    JSONObject keys = new JSONObject();
                     new_widget.list_view_columns = new LinkedHashMap<>(list_attributes.length());
                     //for(int r = 0; r < list_attributes.length(); r++){
-                    for(int i = 0; i < keys.length(); i++){
+                    for(int i = 0; i < list_attributes.length(); i++){
 
-                        System.out.println("Key: " + keys.get(i));
-                        JSONArray values = list_attributes.getJSONArray(keys.getString(i));
+                        System.out.println("Key: " + list_attributes.get(i));
+                        keys = list_attributes.getJSONObject(i);
+                        String next_key = keys.keys().next();
+                        JSONArray values = keys.getJSONArray(next_key);
                         ArrayList<Integer> short_values = new ArrayList<>(values.length());
                         for(int b = 0; b < values.length(); b++)
                             short_values.add((Integer) values.get(b));
-                        new_widget.list_view_columns.put(Integer.valueOf(keys.getString(i)), short_values);
+                        new_widget.list_view_columns.put(Integer.valueOf(next_key), short_values);
                     }
                     System.out.println("entries: " + new_widget.list_view_columns.toString());
                 }
