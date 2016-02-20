@@ -84,7 +84,7 @@ public class ListDetailActivity extends AppCompatActivity {
             }
 
             if(is_simple) {
-                Log.i(CLASS_NAME, "Action selected: " + actions.get(id).name);
+
                 appLogic.sendPost(appLogic.temporary_dataSet, actions.get(id), widget.myTables.get(0));
                 onBackPressed();
             }
