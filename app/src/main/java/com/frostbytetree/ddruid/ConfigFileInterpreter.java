@@ -198,7 +198,7 @@ class SclableInterpreter {
                 new_action.sclablePreState = sclable_transition.getString("pre_state");
                 new_action.sclablePostState = sclable_transition.getString("post_state");
 
-                System.out.println(new_action.sclablePreState + ", " + new_action.sclablePostState);
+                //System.out.println(new_action.sclablePreState + ", " + new_action.sclablePostState);
 
                 JSONArray act_attr = the_action.getJSONArray("action_attributes");
                 new_action.attributes = new ArrayList<Attribute>(act_attr.length());
@@ -300,7 +300,7 @@ class SclableInterpreter {
 
         try {
             widgets = configFile.json_form.getJSONArray("widgets");
-            System.out.println("The widget: " + widgets.toString());
+            //System.out.println("The widget: " + widgets.toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -345,19 +345,19 @@ class SclableInterpreter {
                     //new_widget.myTableNames.add(temp_key);
                     //new_widget.myActionNames.add(temp_action_obj.getString(temp_key));
                     new_widget.myTableActions.add(new Pair<String, String>(temp_key, temp_action_obj.getString(temp_key)));
-                    System.out.println("Actions: " + temp_key + ", " + temp_action_obj.getString(temp_key));
+                    //System.out.println("Actions: " + temp_key + ", " + temp_action_obj.getString(temp_key));
                 }
                 if(new_widget.widgetType == 4) {
                     JSONArray list_attributes = new JSONArray();
-                    System.out.println("object " + temp_obj.toString());
+                    //System.out.println("object " + temp_obj.toString());
                     list_attributes = temp_obj.getJSONArray("attributes");
-                    System.out.println("keys " + list_attributes.toString());
+                    //System.out.println("keys " + list_attributes.toString());
                     JSONObject keys = new JSONObject();
                     new_widget.list_view_columns = new LinkedHashMap<>(list_attributes.length());
                     //for(int r = 0; r < list_attributes.length(); r++){
                     for(int i = 0; i < list_attributes.length(); i++){
 
-                        System.out.println("Key: " + list_attributes.get(i));
+                        //System.out.println("Key: " + list_attributes.get(i));
                         keys = list_attributes.getJSONObject(i);
                         String next_key = keys.keys().next();
                         JSONArray values = keys.getJSONArray(next_key);
@@ -366,7 +366,7 @@ class SclableInterpreter {
                             short_values.add((Integer) values.get(b));
                         new_widget.list_view_columns.put(Integer.valueOf(next_key), short_values);
                     }
-                    System.out.println("entries: " + new_widget.list_view_columns.toString());
+                    //System.out.println("entries: " + new_widget.list_view_columns.toString());
                 }
 
             } catch (JSONException e) {

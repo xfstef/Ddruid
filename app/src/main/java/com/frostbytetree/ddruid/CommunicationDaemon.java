@@ -240,8 +240,11 @@ public class CommunicationDaemon extends Thread{
         try {
             representation = online_resource.post(message.requested_operation.sclable_object.toString());
             try {
+                String response_type = String.valueOf(representation.getTag());
+                System.out.println("Response type: " + response_type);
                 response = new JSONObject(representation.getText());
                 System.out.println("Response: " + response.toString());
+
                 JSONArray answer = response.getJSONArray(message.requested_operation.table_action);
                 JSONObject data = answer.getJSONObject(0);
                 data = data.getJSONObject("data");
