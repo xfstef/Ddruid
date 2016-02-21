@@ -33,8 +33,9 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
     Widget myWidget;
     UIBuilder uiBuilder;
     TableListItemRecyclerViewAdapter tableAdapter;
-    FloatingActionButton floatingAction;
+    FrameLayout mainContent, loadingScreen;
     Data data;
+
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
@@ -93,6 +94,9 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        mainContent = (FrameLayout)findViewById(R.id.frameLayout);
+        loadingScreen = (FrameLayout)findViewById(R.id.loading_circle);
+
         assert myWidget != null;
         getSupportActionBar().setTitle(myWidget.titleBar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -109,11 +113,20 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
         final SwipeRefreshLayout swipe_content = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
         SwipeDataRefreshListener swipe_listener = new SwipeDataRefreshListener(this,swipe_content,myTable);
 
+        /*
+        swipe_content.post(new Runnable() {
+            @Override
+            public void run() {
+                //while(myTable.attributes.size() == 0)
+                    swipe_content.setRefreshing(true);
+            }
+        });
+        */
 
         final Action defaultAction = findDefaultActionWithinWidget(myWidget);
         if(defaultAction != null)
         {
-            floatingAction = (FloatingActionButton)findViewById(R.id.fabAction);
+            FloatingActionButton floatingAction = (FloatingActionButton)findViewById(R.id.fabAction);
             floatingAction.setVisibility(View.VISIBLE);
             floatingAction.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -139,7 +152,12 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
                 }
             });
         }
-        
+
+        if(myTable.dataSets.size() == 0) {
+            Log.d(CLASS_NAME, "Time to call the data!");
+            mainContent.setVisibility(View.GONE);
+            loadingScreen.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -194,6 +212,8 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        mainContent.setVisibility(View.VISIBLE);
+                        loadingScreen.setVisibility(View.GONE);
                         tableAdapter.updateDataSetList(finalMy_table);
                     }
                 });

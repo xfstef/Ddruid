@@ -23,6 +23,7 @@
 
     <FrameLayout
         android:id="@+id/frameLayout"
+        android:visibility="visible"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
@@ -42,6 +43,19 @@
             android:src="@mipmap/plus_icon"
             app:layout_anchor="@+id/frameLayout"
             app:layout_anchorGravity="top|end" />
+    </FrameLayout>
+    <FrameLayout
+        android:id="@+id/loading_circle"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <ProgressBar
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/progressBar"
+            android:layout_gravity="center" />
     </FrameLayout>
 
     <!--

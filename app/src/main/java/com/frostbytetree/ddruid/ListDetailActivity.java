@@ -67,7 +67,7 @@ public class ListDetailActivity extends AppCompatActivity {
         }
         else {
             boolean is_simple = true;
-            // Found the coresponding action which have been selected
+            // Found the corresponding action which have been selected
             // Iterate through the attributes and see if readonly is available within
             for(int x = 0; x < widget.myTables.get(0).myActions.size(); x++) {
                 if(widget.myTables.get(0).myActions.get(x) == actions.get(id))
@@ -80,7 +80,6 @@ public class ListDetailActivity extends AppCompatActivity {
                         }
                     }
                 }
-
             }
 
             if(is_simple) {
