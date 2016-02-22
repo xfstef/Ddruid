@@ -1,24 +1,18 @@
 package com.frostbytetree.ddruid;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
-import android.app.ActivityOptions;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Build;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.os.Bundle;
 import android.transition.Slide;
-import android.transition.TransitionInflater;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -26,12 +20,10 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     AppLogic appLogic;
-    SQLiteController sqldaemon;
+    SQLDaemon sqldaemon;
     Data data;
     DataInterpreter dataInterpreter;
     ConfigFile configFile;
@@ -94,12 +86,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if(!appLogic.isAlive())
             appLogic.start();
 
-        sqldaemon = SQLiteController.getInstance();
+        sqldaemon = SQLDaemon.getInstance();
         if(!sqldaemon.isAlive())
             sqldaemon.start();
 
+        sqldaemon.preferences = sharedPreferences;
+        sqldaemon.prepare_dbs();
+
+        appLogic.sqlDaemon = sqldaemon;
+
         startService(new Intent(this, DataTransferController.class));
         communicationDaemon = CommunicationDaemon.getInstance();
+        communicationDaemon.sqlDaemon = sqldaemon;
         appLogic.communicationDaemon = communicationDaemon;
         sqldaemon.communicationDaemon = communicationDaemon;
 

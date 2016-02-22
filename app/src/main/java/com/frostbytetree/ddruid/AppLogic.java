@@ -32,6 +32,7 @@ public class AppLogic extends Thread{
     CommunicationDaemon communicationDaemon;
     SclableURIS sclableURIS;
     IDataInflateListener iDataInflateListener;
+    SQLDaemon sqlDaemon;
 
     // This approach is used when selecting a object within a list, because passing objects via
     // activity less efficient
@@ -47,6 +48,8 @@ public class AppLogic extends Thread{
                     //"http://82.223.15.251";
                     //"https://demo23.sclable.me/mobile/sclable-mobile-service";
     ArrayList<Message> local_pile = new ArrayList<Message>();
+
+    short login_strikes = 0;
 
     public static AppLogic getInstance() {
         return ourInstance;
@@ -118,7 +121,11 @@ public class AppLogic extends Thread{
                 switch(finished_operation.requested_operation.type){
                     case 0: // Got session token.
                         finished_operation.requested_operation.status = 6;
-                        getConfig();
+                        if(finished_operation.target_id == 2)
+                            getConfig((short)2, (short)110);
+                        else
+                            getConfig((short)3, (short)100);
+                        login_strikes = 0;
                         break;
                     case 110:   // Got Config File successfully. Trying to interpret it now.
                         configFileInterpreter.startStartupProcess();
@@ -169,7 +176,9 @@ public class AppLogic extends Thread{
             case 5: // Operation Error.
                 switch (finished_operation.requested_operation.type){
                     case 0: // Could not get session token.
-                        mainActivity.loginFailed((short) 0); // TODO: Add failure code.
+                        login_strikes++;
+                        if(login_strikes == 2)
+                            mainActivity.loginFailed((short) 0); // TODO: Add failure code.
                         finished_operation.requested_operation.status = 6;
                         break;
                     case 110:   // Did not get the Config File successfully.
@@ -239,39 +248,61 @@ public class AppLogic extends Thread{
 
     public void login() {
         // TODO: ------------------------- Automate this whole procedure !!! -----------------------
-        Message login_procedure = new Message();
-        login_procedure.caller_id = my_id;
-        login_procedure.target_id = 2;  // TODO: set the target ID with a variable.
-        login_procedure.current_rowstamp = commInterface.rowstamp;
+        Message server_login = new Message();
+        server_login.caller_id = my_id;
+        server_login.target_id = 2;  // TODO: set the target ID with a variable.
+        server_login.current_rowstamp = commInterface.rowstamp;
         commInterface.rowstamp++;
-        login_procedure.priority = 0;   // TODO: set priority with a variable.
-        login_procedure.requested_operation = new Operation();
-        login_procedure.requested_operation.type = 0;   // TODO: use a variable.
-        login_procedure.requested_operation.REST_command = configFile.server_uri;
-        login_procedure.requested_operation.the_table = null;
-        login_procedure.requested_operation.status = 0;
+        server_login.priority = 0;   // TODO: set priority with a variable.
+        server_login.requested_operation = new Operation();
+        server_login.requested_operation.type = 0;   // TODO: use a variable.
+        server_login.requested_operation.REST_command = configFile.server_uri;
+        server_login.requested_operation.the_table = null;
+        server_login.requested_operation.status = 0;
         // -----------------------------------------------------------------------------------------
 
         synchronized (commInterface.message_buffer_lock) {
-            commInterface.message_buffer.add(login_procedure);
+            commInterface.message_buffer.add(server_login);
             local_pile.add(commInterface.message_buffer.get(commInterface.message_buffer.size()-1));
         }
         synchronized (communicationDaemon){
             communicationDaemon.notify();
         }
 
+        // TODO: ------------------------- Automate this whole procedure !!! -----------------------
+        Message local_login = new Message();
+        local_login.caller_id = my_id;
+        local_login.target_id = 3;  // TODO: set the target ID with a variable.
+        local_login.current_rowstamp = commInterface.rowstamp;
+        commInterface.rowstamp++;
+        local_login.priority = 0;   // TODO: set priority with a variable.
+        local_login.requested_operation = new Operation();
+        local_login.requested_operation.type = 0;   // TODO: use a variable.
+        local_login.requested_operation.REST_command = configFile.server_uri;
+        local_login.requested_operation.the_table = null;
+        local_login.requested_operation.status = 0;
+        // -----------------------------------------------------------------------------------------
+
+        synchronized (commInterface.message_buffer_lock) {
+            commInterface.message_buffer.add(local_login);
+            local_pile.add(commInterface.message_buffer.get(commInterface.message_buffer.size()-1));
+        }
+        synchronized (sqlDaemon) {    // Waking up SQLDaemon
+            sqlDaemon.notify();
+        }
+
     }
 
-    public void getConfig() {
+    public void getConfig(short target, short type_code) {
         // TODO: ------------------------- Automate this whole procedure !!! -----------------------
         Message get_config = new Message();
         get_config.caller_id = my_id;
-        get_config.target_id = 2;  // TODO: set the target ID with a variable.
+        get_config.target_id = target;
         get_config.current_rowstamp = commInterface.rowstamp;
         commInterface.rowstamp++;
         get_config.priority = 0;   // TODO: set priority with a variable.
         get_config.requested_operation = new Operation();
-        get_config.requested_operation.type = 110;   // TODO: use a variable.
+        get_config.requested_operation.type = type_code;
         get_config.requested_operation.REST_command = sclableURIS.config;
         get_config.requested_operation.the_table = null;
         get_config.requested_operation.status = 0;
@@ -279,11 +310,21 @@ public class AppLogic extends Thread{
 
         synchronized (commInterface.message_buffer_lock) {
             commInterface.message_buffer.add(get_config);
-            local_pile.add(commInterface.message_buffer.get(commInterface.message_buffer.size()-1));
+            local_pile.add(commInterface.message_buffer.get(commInterface.message_buffer.size() - 1));
         }
-        synchronized (communicationDaemon) {    // Waking up communicationDaemon
-            communicationDaemon.notify();
+        switch(target){
+            case 2:
+                synchronized (communicationDaemon) {    // Waking up communicationDaemon
+                    communicationDaemon.notify();
+                }
+                break;
+            case 3:
+                synchronized (sqlDaemon) {    // Waking up SQLDaemon
+                    sqlDaemon.notify();
+                }
+                break;
         }
+
     }
 
     // This Function is called when the App wants to send a POST / DELETE message to the server.

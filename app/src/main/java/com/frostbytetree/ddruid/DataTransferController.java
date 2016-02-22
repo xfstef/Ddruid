@@ -17,7 +17,7 @@ import android.support.annotation.Nullable;
     //TODO Download / Open and Update the Raw Data
     //TODO Signal the DataModelInterpreter when there are updates
     //TODO Signal the TemporaryWidget when there are updates
-    //TODO Signal the SQLiteController when there are updates
+    //TODO Signal the SQLDaemon when there are updates
 
 public class DataTransferController extends Service{
     private static DataTransferController ourInstance = new DataTransferController();
