@@ -192,7 +192,7 @@ class SclableInterpreter {
                         new_action.type = 1;
                         break;
                     case "delete":
-                        new_action.type = 2;
+                        new_action.type = 3;
                         break;
                 }
                 new_action.sclablePreState = sclable_transition.getString("pre_state");
@@ -201,6 +201,8 @@ class SclableInterpreter {
                 //System.out.println(new_action.sclablePreState + ", " + new_action.sclablePostState);
 
                 JSONArray act_attr = the_action.getJSONArray("action_attributes");
+                if(act_attr.length() > 1 && new_action.type == 1)
+                    new_action.type = 2;
                 new_action.attributes = new ArrayList<Attribute>(act_attr.length());
                 new_action.attribute_readonly = new ArrayList<Boolean>(act_attr.length());
                 new_action.attribute_required = new ArrayList<Boolean>(act_attr.length());

@@ -137,6 +137,9 @@ public class CommunicationDaemon extends Thread{
             case 212:
                 postToServer(message);
                 break;
+            case 213:
+                postToServer(message);
+                break;
             // TODO: Define behaviour for the other operation types.
         }
     }
@@ -240,23 +243,31 @@ public class CommunicationDaemon extends Thread{
         try {
             representation = online_resource.post(message.requested_operation.sclable_object.toString());
             try {
-                String response_type = String.valueOf(representation.getTag());
-                System.out.println("Response type: " + response_type);
+
                 response = new JSONObject(representation.getText());
                 System.out.println("Response: " + response.toString());
-
                 JSONArray answer = response.getJSONArray(message.requested_operation.table_action);
                 JSONObject data = answer.getJSONObject(0);
-                data = data.getJSONObject("data");
-                DataSet post_set = new DataSet();
-                for(int z = 0; z < message.requested_operation.the_table.attribute_count; z++){
-                    post_set.set.add(String.valueOf(data.get(message.requested_operation.the_table.attributes.get(z).name)));
+                if(data.has("data")) {
+                    JSONObject the_data = data.getJSONObject("data");
+                    DataSet post_set = new DataSet();
+                    for (int z = 0; z < message.requested_operation.the_table.attribute_count; z++) {
+                        post_set.set.add(String.valueOf(the_data.get(message.requested_operation.the_table.attributes.get(z).name)));
+                    }
+                    message.requested_operation.new_post_set = post_set;
                 }
-                message.requested_operation.new_post_set = post_set;
-                message.requested_operation.status = 3;
-                synchronized (appLogic){
-                    appLogic.notify();
+                if(Integer.valueOf(data.getString("transaction")) == message.current_rowstamp) {
+                    message.requested_operation.status = 3;
+                    synchronized (appLogic) {
+                        appLogic.notify();
+                    }
+                }else{
+                    message.requested_operation.status = 5;
+                    synchronized (appLogic){
+                        appLogic.notify();
+                    }
                 }
+
             } catch (JSONException e) {
                 e.printStackTrace();
                 message.requested_operation.status = 5;
