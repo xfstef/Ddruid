@@ -137,6 +137,11 @@ public class AppLogic extends Thread{
                         if(iDataInflateListener == finished_operation.iDataInflateListener)
                             iDataInflateListener.signalDataArrived(finished_operation.requested_operation.the_table);
                         break;
+                    case 213:   // Got POST Edit Operation finished successfully.
+                        System.out.println("Post Edit operation finished successfully !");
+                        finished_operation.requested_operation.status = 6;
+                        // TODO: Remove the successfully modified Data Set
+                        break;
                     // TODO: Implement the rest of possible post successful operation calls
                 }
                 break;
@@ -176,6 +181,10 @@ public class AppLogic extends Thread{
                         finished_operation.requested_operation.status = 6;
                         break;
                     case 212:   // Could not post to server error.
+                        System.out.println("Got error from server.");
+                        finished_operation.requested_operation.status = 6;
+                        break;
+                    case 213:   // Could not post edit to server.
                         System.out.println("Got error from server.");
                         finished_operation.requested_operation.status = 6;
                         break;
@@ -287,6 +296,7 @@ public class AppLogic extends Thread{
             e.printStackTrace();
         }
         boolean change_list;
+        System.out.println("Type: " + action.type);
         switch(action.type){
 
             case 0: // Create.
@@ -294,29 +304,35 @@ public class AppLogic extends Thread{
                 break;
             case 1: // Simple Edit.
                 // TODO: Implement logic for handling this change in the app.
+                System.out.println("Action requested: " + action.sclablePostState);
                 change_list = true;
                 for(int j = 0; j < table.sclable_states.size(); j++)
                     if(action.sclablePostState.matches(table.sclable_states.get(j))) {
                         change_list = false;
                         break;
                     }
+                System.out.println("Changes: " + table.dataSets.size());
                 if(change_list) {
                     table.dataSets.remove(dataSet);
                     iDataInflateListener.signalDataArrived(table);
                 }
+                System.out.println("Changes: " + table.dataSets.size());
                 break;
             case 2: // Edit with form.
                 // TODO: Implement logic for handling this change in the app.
+                System.out.println("Action requested: " + action.sclablePostState);
                 change_list = true;
                 for(int j = 0; j < table.sclable_states.size(); j++)
                     if(action.sclablePostState.matches(table.sclable_states.get(j))) {
                         change_list = false;
                         break;
                     }
+                System.out.println("Changes: " + table.dataSets.size());
                 if(change_list) {
-                    table.dataSets.remove(dataSet);
+                    table.dataSets.remove(temporary_dataSet);   // Hard coded solution to identifying modified dataset.
                     iDataInflateListener.signalDataArrived(table);
                 }
+                System.out.println("Changes: " + table.dataSets.size());
                 break;
             case 3: // Delete.
                 // TODO: Implement logic for handling this change in the app.
@@ -339,11 +355,27 @@ public class AppLogic extends Thread{
         commInterface.rowstamp++;
         post_procedure.priority = 0;   // TODO: set priority with a variable.
         post_procedure.requested_operation = new Operation();
-        post_procedure.requested_operation.type = 212;   // TODO: use a variable.
+        //post_procedure.requested_operation.type = 212;   // TODO: use a variable.
         post_procedure.requested_operation.REST_command = sclableURIS.data;
         post_procedure.requested_operation.the_table = table;
         post_procedure.requested_operation.status = 0;
         // -----------------------------------------------------------------------------------------
+
+        switch(action.type){
+            case 0:
+                post_procedure.requested_operation.type = 212;
+                break;
+            case 1:
+                post_procedure.requested_operation.type = 213;
+                break;
+            case 2:
+                post_procedure.requested_operation.type = 213;
+                break;
+            case 3:
+                post_procedure.requested_operation.type = 213;
+                break;
+        }
+
 
         post_procedure.requested_operation.new_post_set = dataSet;
         post_procedure.iDataInflateListener = iDataInflateListener;

@@ -65,6 +65,73 @@ public class SQLiteController extends Thread{
     }
 
     private void callerMarshalling(Message message) {
+        if(message.caller_id == my_id) {
+            postExecutionForwarder(message);
+            return;
+        }
+        if(message.target_id == my_id){
+            statusMarshalling(message);
+            return;
+        }
+    }
 
+    private void statusMarshalling(Message message) {   // Calls the appropriate message processing
+        // procedure according to its status type.
+        // TODO: Enable background processing of bigger requests so that the app communicates async.
+        switch(message.requested_operation.status){
+            case 1:
+                message.requested_operation.status = 2;
+                typeMarshalling(message);
+                break;
+            // TODO: Define behaviour for the other operation statuses.
+        }
+    }
+
+    private void typeMarshalling(Message message) { // Calls the appropriate message processing
+        // procedure according to its type.
+        switch(message.requested_operation.type){
+            case 0:
+                // Got login procedure call.
+                break;
+            case 100:
+                // Got get config file call;
+                break;
+            case 101:
+                // Got get table call;
+                break;
+            case 104:
+                // Got get Operations from store;
+                break;
+            case 200:
+                // Got post config file;
+                break;
+            case 201:
+                // Got post table call;
+                break;
+            case 202:
+                // Got post create data set call;
+                break;
+            case 203:
+                // Got post update data set call;
+                break;
+            case 204:
+                // Got post Operations to store;
+                break;
+            // TODO: Define behaviour for the other operation types.
+        }
+    }
+
+    private void postExecutionForwarder(Message finished_operation) {  // This function determines what to do
+        // after getting an answer for your message.
+        switch(finished_operation.requested_operation.status){
+            case 2: // This means that the app is either in offline mode or the server is not reachable.
+                break;
+            case 3: // Operation Successful.
+                finished_operation.requested_operation.status = 6;
+                break;
+            case 5: // Operation Error.
+                // TODO: Decide what happens now.
+                break;
+        }
     }
 }

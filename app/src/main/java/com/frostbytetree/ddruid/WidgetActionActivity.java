@@ -134,7 +134,9 @@ public class WidgetActionActivity extends AppCompatActivity implements IDataInfl
         action.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DataSet setPost = new DataSet();
+                DataSet setPost = new DataSet();    // TODO: Change this to the Original data set
+                // which can be found in AppLogic.temporary_dataset and modify the original one with
+                // the user given input !!!
                 setPost.set = new ArrayList<>();
                 // first check if all fields are filled correctly
                 for (int i = 0; i < uiBuilder.all_view_elements.size(); i++) {
