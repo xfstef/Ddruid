@@ -1,22 +1,15 @@
 package com.frostbytetree.ddruid;
 
-import android.util.JsonWriter;
-import android.util.Log;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.restlet.data.Form;
 import org.restlet.data.Header;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
 import org.restlet.util.Series;
 
-import java.io.IOException;
-import java.sql.SQLClientInfoException;
 import java.util.ArrayList;
 
 /**
@@ -32,7 +25,7 @@ public class CommunicationDaemon extends Thread{
     ConfigFile cfgFile = ConfigFile.getInstance();
     AppLogic appLogic = AppLogic.getInstance();
     SclableURIS sclableURIS = SclableURIS.getInstance();
-    SQLiteController sqLiteController = SQLiteController.getInstance();
+    SQLDaemon sqlDaemon;
     DataInterpreter dataInterpreter = DataInterpreter.getInstance();
     String User = null;
     String Pass = null;
