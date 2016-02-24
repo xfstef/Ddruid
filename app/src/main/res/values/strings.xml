@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Ddruid</string>
+    <string name="app_name">DDruid</string>
     <string name="hint_username">Username</string>
     <string name="hint_password">Password</string>
     <string name="hint_uri">URI Address</string>
@@ -13,4 +13,6 @@
     <string name="title_widgetlistitem_detail">WidgetListItem Detail</string>
     <string name="about_string">Impressum</string>
     <string name="logout_string">Logout</string>
+    <string name="search">Search</string>
+    <string name="ddrudid"></string>
 </resources>

@@ -7,6 +7,7 @@
     <string name="openDrawer">Einstellungen öffnen</string>
     <string name="closeDrawer">Einstellungen schließen</string>
     <string name="Einstellungen">Einstellungen</string>
-    <string name="about_string">About</string>
+    <string name="about_string">About DDruid</string>
     <string name="logout_string">Logout</string>
+    <string name="search">Suche</string>
 </resources>

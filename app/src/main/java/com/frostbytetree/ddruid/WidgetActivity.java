@@ -13,6 +13,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.Pair;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -290,6 +291,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
     private void initNavigationDrawer()
     {
         TextView username = (TextView)findViewById(R.id.txtUserName);
+        Button about = (Button)findViewById(R.id.bAbout);
         Button logout = (Button)findViewById(R.id.bLogout);
 
         if(appLogic.configFile.username == null)
@@ -310,6 +312,15 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
                 mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);
                 System.exit(0);
 
+            }
+        });
+
+        about.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Drawer.closeDrawer(Gravity.LEFT);
+                Intent intent = new Intent(getApplicationContext(), About.class);
+                startActivity(intent);
             }
         });
 
