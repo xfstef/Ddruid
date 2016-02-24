@@ -277,7 +277,6 @@ public class UIBuilder {
         else
             input_item.setHint(attribute.name);
 
-
         if(read_only)
             selectDate.setEnabled(false);
 

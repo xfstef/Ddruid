@@ -180,9 +180,21 @@ public class WidgetActionActivity extends AppCompatActivity implements IDataInfl
                     }
                 }
 
-                appLogic.sendPost(setPost, uiBuilder.current_action, my_widget.myTables.get(0));
 
-                //Toast.makeText(getApplicationContext(), "POST: " + uiBuilder.current_action.name, Toast.LENGTH_LONG).show();
+                // Print the whole dataset
+                for (int i = 0; i < setPost.set.size(); i++)
+                    Log.i(CLASS_NAME, "SET POST : " + setPost.set.get(i));
+
+                for (int i = 0; i < my_widget.myActions.size(); i++) {
+                    // Only create statement in this case
+                    //if (my_widget.myActions.get(i).type == 0) {
+                        appLogic.sendPost(setPost, uiBuilder.current_action, my_widget.myTables.get(0));
+                        break;
+                    //}
+
+                }
+
+                Toast.makeText(getApplicationContext(), "POST: " + uiBuilder.current_action.name, Toast.LENGTH_LONG).show();
                 appLogic.temporary_dataSet = null;
                 appLogic.setCurrentWidget(my_widget.myParent);
                 finish();
@@ -215,7 +227,7 @@ public class WidgetActionActivity extends AppCompatActivity implements IDataInfl
 
     @Override
     public void signalDataArrived(final Table my_table) {
-        Log.i(CLASS_NAME, "DATA HAS ARRIVED!");
+        System.out.println("DATA HAS ARRIVED!");
 
         // 0 - Widget-List;
         // 1 - Form;

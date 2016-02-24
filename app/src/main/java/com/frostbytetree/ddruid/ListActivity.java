@@ -4,28 +4,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Filter;
-import android.widget.Filterable;
-import android.widget.FrameLayout;
-import android.widget.TextView;
-
+import android.widget.*;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * An activity representing a list of WidgetListItems. This activity
@@ -43,8 +33,6 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
     Widget myWidget;
     UIBuilder uiBuilder;
     TableListItemRecyclerViewAdapter tableAdapter;
-    Table myTable = null;
-    RecyclerView recList;
     FrameLayout mainContent, loadingScreen;
     Data data;
 
@@ -54,53 +42,6 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
      * device.
      */
     private boolean mTwoPane;
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.toolbar_search, menu);
-
-        SearchView searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.action_search));
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String query) {
-
-
-                if (myTable != null) {
-                    Log.i(CLASS_NAME, "Text searched: " + query);
-                    // final ArrayList<DataSet> filteredModelList = filter(myTable.dataSets, newText);
-                    // tableAdapter.animateTo(filteredModelList);
-                    // recList.scrollToPosition(0);
-                    tableAdapter.getFilter().filter(query);
-                    return true;
-                } else
-                    return false;
-
-            }
-        });
-
-        return super.onCreateOptionsMenu(menu);
-    }
-
-
-    private ArrayList<DataSet> filter(ArrayList<DataSet> dataSets, String query) {
-        query = query.toLowerCase();
-
-        final ArrayList<DataSet> filteredDataSetList = new ArrayList<>();
-        for (DataSet dataSet : dataSets) {
-            final String text = dataSet.set.toString().toLowerCase();
-            if (text.contains(query)) {
-                filteredDataSetList.add(dataSet);
-            }
-        }
-        return filteredDataSetList;
-    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
@@ -160,15 +101,11 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
         getSupportActionBar().setTitle(myWidget.titleBar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        Table myTable = findTableWithinWidget(myWidget);
-        if(myTable.dataSets.size() == 0) {
-            this.myTable = myTable;
+        final Table myTable = findTableWithinWidget(myWidget);
+        if(myTable.dataSets.size() == 0)
             appLogic.getTableData(myTable, this);
-        }
 
-
-
-        recList = (RecyclerView) findViewById(R.id.tablewidgetitem_list);
+        RecyclerView recList = (RecyclerView) findViewById(R.id.tablewidgetitem_list);
         tableAdapter = new TableListItemRecyclerViewAdapter(myTable.dataSets);
         tableAdapter.father = this;
         recList.setAdapter(tableAdapter);
@@ -299,134 +236,15 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
 
 
     public class TableListItemRecyclerViewAdapter
-            extends RecyclerView.Adapter<TableListItemRecyclerViewAdapter.ViewHolder> implements Filterable {
+            extends RecyclerView.Adapter<TableListItemRecyclerViewAdapter.ViewHolder> {
 
-
-        private List<DataSet> dataSets;
-        private List<String> data;
-        private List<String> filteredData;
+        private ArrayList<DataSet> dataSets;
         Table table;
         ListActivity father = null;
 
         public TableListItemRecyclerViewAdapter(ArrayList<DataSet> dataSets) {
             this.dataSets = dataSets;
-            this.data = new ArrayList<>();
-            this.filteredData = new ArrayList<>();
         }
-
-        @Override
-        public Filter getFilter() {
-            return new ListFilter(this, data);
-        }
-
-        private class ListFilter extends Filter {
-
-            private final TableListItemRecyclerViewAdapter adapter;
-
-            private final List<String> originalList;
-
-            private final List<String> filteredList;
-
-            private ListFilter(TableListItemRecyclerViewAdapter adapter, List<String> originalList)
-            {
-                super();
-                this.adapter = adapter;
-                this.originalList = new LinkedList<>(originalList);
-                Log.i(CLASS_NAME, "Original List size: " + originalList.size());
-                this.filteredList = new ArrayList<>();
-            }
-
-            @Override
-            protected FilterResults performFiltering(CharSequence constraint) {
-                filteredList.clear();
-                Log.i(CLASS_NAME, "Filter performing ...");
-                final FilterResults results = new FilterResults();
-
-                if (constraint.length() == 0) {
-                    Log.i(CLASS_NAME, "Constraint empty, adding all List ...");
-                    filteredList.addAll(originalList);
-                } else {
-                    Log.i(CLASS_NAME, "Filter constraint: " + constraint);
-                    final String filterPattern = constraint.toString().toLowerCase().trim();
-
-                    for (final String set : originalList) {
-                        if (set.contains(filterPattern)) {
-                            Log.i(CLASS_NAME, "Filtered Element: " + set.toString());
-                            filteredList.add(set);
-                        }
-                    }
-                }
-                results.values = filteredList;
-                results.count = filteredList.size();
-                return results;
-            }
-
-            @Override
-            protected void publishResults(CharSequence constraint, FilterResults results) {
-                adapter.filteredData.clear();
-                adapter.filteredData.addAll((ArrayList<String>) results.values);
-                adapter.notifyDataSetChanged();
-            }
-
-        }
-
-        /*
-
-        public void setModels(ArrayList<DataSet> dataSet) {
-            dataSets = new ArrayList<>(dataSet);
-        }
-
-        public DataSet removeItem(int position) {
-            final DataSet model = dataSets.remove(position);
-            notifyItemRemoved(position);
-            return model;
-        }
-
-        public void addItem(int position, DataSet model) {
-            dataSets.add(position, model);
-            notifyItemInserted(position);
-        }
-
-        public void moveItem(int fromPosition, int toPosition) {
-            final DataSet model = dataSets.remove(fromPosition);
-            dataSets.add(toPosition, model);
-            notifyItemMoved(fromPosition, toPosition);
-        }
-
-        public void animateTo(ArrayList<DataSet> datasets) {
-            applyAndAnimateRemovals(datasets);
-            applyAndAnimateAdditions(datasets);
-            applyAndAnimateMovedItems(datasets);
-        }
-
-        private void applyAndAnimateRemovals(ArrayList<DataSet> datasets) {
-            for (int i = datasets.size() - 1; i >= 0; i--) {
-                final DataSet dataSet = datasets.get(i);
-                if (!datasets.contains(dataSet)) {
-                    removeItem(i);
-                }
-            }
-        }
-
-        private void applyAndAnimateAdditions(ArrayList<DataSet> datasets) {
-            for (int i = 0, count = datasets.size(); i < count; i++) {
-                final DataSet dataSet = datasets.get(i);
-                if (!datasets.contains(dataSet)) {
-                    addItem(i, dataSet);
-                }
-            }
-        }
-
-        private void applyAndAnimateMovedItems(ArrayList<DataSet> datasets) {
-            for (int toPosition = datasets.size() - 1; toPosition >= 0; toPosition--) {
-                final DataSet dataSet = datasets.get(toPosition);
-                final int fromPosition = dataSets.indexOf(dataSet);
-                if (fromPosition >= 0 && fromPosition != toPosition) {
-                    moveItem(fromPosition, toPosition);
-                }
-            }
-        }
-        */
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -437,18 +255,16 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
-
+            holder.mItem = dataSets.get(position).set;
 
             String tuple = new String();
             for(LinkedHashMap.Entry<Integer, ArrayList<Integer>> entry : myWidget.list_view_columns.entrySet())
             {
                 String temp = new String();
                 // Atrritubte type 2 = spinner
-                // needed for referenced attribute names
                 if(entry.getValue().size() > 0 && myWidget.myTables.get(0).attributes.get(entry.getKey()).attribute_type == 2) {
                     if (!myWidget.myTables.get(0).attributes.get(entry.getKey()).items.referenced_table.dataSets.isEmpty()) {
                         for (int l = 0; l < entry.getValue().size(); l++) {
-                            // this adds every referenced attribute for this element
                             temp = temp + " " + getReferencedItem(Integer.valueOf(dataSets.get(position).set.get(entry.getKey())),
                                     entry.getValue().get(l), myWidget.myTables.get(0).attributes.get(entry.getKey()));
                         }
@@ -461,10 +277,7 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
                 }
                 tuple = tuple + " " + temp;
 
-
             }
-            data.add(position, tuple);
-            holder.mItem = dataSets.get(position).set;
             holder.mTextView.setText(tuple);
             holder.currentDataSet = dataSets.get(position);
             holder.mView.setOnClickListener(new View.OnClickListener() {
@@ -520,7 +333,6 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
         }
     }
 
-    // helper function for onBind
     private String getReferencedItem(Integer source_data, Integer target_pos, Attribute attribute) {
         String item = null;
 
