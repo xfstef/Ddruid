@@ -56,9 +56,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ListActivity" />
         </activity>
-        <activity android:name=".WidgetActionActivity" />
-        <activity android:name=".About" />
-
+        <activity android:name=".WidgetActionActivity"></activity>
     </application>
 
 </manifest>
