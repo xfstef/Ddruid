@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -13,6 +14,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.os.Bundle;
 import android.transition.Slide;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -54,13 +56,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         sharedPreferences = getSharedPreferences("com.frostbytetree.ddruid", Context.MODE_PRIVATE);
 
-        if (Build.VERSION.SDK_INT > 21){
+        if (Build.VERSION.SDK_INT > 21) {
             setupWindowAnimations();
         }
         initViewItems();
 
 
-        LinearLayout lin_test = (LinearLayout)findViewById(R.id.test_layout);
+        LinearLayout lin_test = (LinearLayout) findViewById(R.id.test_layout);
         lin_test.setOnClickListener(this);
         commInterface = IACInterface.getInstance();
 
@@ -83,11 +85,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         appLogic = AppLogic.getInstance();
         appLogic.mainActivity = this;
-        if(!appLogic.isAlive())
+        if (!appLogic.isAlive())
             appLogic.start();
 
         sqldaemon = SQLDaemon.getInstance();
-        if(!sqldaemon.isAlive())
+        if (!sqldaemon.isAlive())
             sqldaemon.start();
 
         sqldaemon.preferences = sharedPreferences;
@@ -106,26 +108,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @TargetApi(21)
-    private void setupWindowAnimations(){
+    private void setupWindowAnimations() {
         Slide slide = new Slide();
         slide.setDuration(1000);
         getWindow().setExitTransition(slide);
     }
 
-    private void initViewItems()
-    {
+    private void initViewItems() {
         setContentView(R.layout.activity_main);
-        username = (EditText)findViewById(R.id.etUsername);
-        password = (EditText)findViewById(R.id.etPassword);
-        uri = (EditText)findViewById(R.id.etUri);
-        login = (Button)findViewById(R.id.bLogin);
+        username = (EditText) findViewById(R.id.etUsername);
+        password = (EditText) findViewById(R.id.etPassword);
+        uri = (EditText) findViewById(R.id.etUri);
+        login = (Button) findViewById(R.id.bLogin);
         login.setOnClickListener(this);
-        statusText = (TextView)findViewById(R.id.txtStatusError);
-        toolbar = (Toolbar)findViewById(R.id.login_toolbar);
+        statusText = (TextView) findViewById(R.id.txtStatusError);
+        toolbar = (Toolbar) findViewById(R.id.login_toolbar);
         setSupportActionBar(toolbar);
 
-        drawer = (DrawerLayout) findViewById(R.id.DrawerLayout);        // Drawer object Assigned to the view
-        mDrawerToggle = new ActionBarDrawerToggle(this,drawer,toolbar,R.string.openDrawer,R.string.closeDrawer){
+        drawer = (DrawerLayout) findViewById(R.id.DrawerLayout);        // drawer object Assigned to the view
+        mDrawerToggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.openDrawer, R.string.closeDrawer) {
 
             @Override
             public void onDrawerOpened(View drawerView) {
@@ -139,28 +140,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 super.onDrawerClosed(drawerView);
                 // Code here will execute once drawer is closed
             }
-        }; // Drawer Toggle Object Made
-        drawer.setDrawerListener(mDrawerToggle); // Drawer Listener set to the Drawer toggle
+        }; // drawer Toggle Object Made
+        drawer.setDrawerListener(mDrawerToggle); // drawer Listener set to the drawer toggle
         mDrawerToggle.syncState();
 
-        try{
+        try {
             uri.setText(sharedPreferences.getString("last_uri", ""));
 
             //TODO: remove this when done
             username.setText("frostbyte");
             password.setText("fr0st");
             uri.setText("https://demo23.sclable.me/mobile/mobile-api");
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
 
-    public void startWidgetActivity(){
+    public void startWidgetActivity() {
 
         Intent i = new Intent(getApplicationContext(), WidgetActivity.class);
         //i.putExtra("widget", new_widget.id);
-        i.putExtra("username",username.getText().toString());
+        i.putExtra("username", username.getText().toString());
         startActivityForResult(i, 0);
     }
 
@@ -174,23 +175,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
-    protected void onResume(){
+    protected void onResume() {
         super.onResume();
 
     }
 
     @Override
-    protected void onDestroy(){
+    protected void onDestroy() {
         super.onDestroy();
     }
 
     @Override
-    public void onClick(View view){
+    public void onClick(View view) {
         // TODO: This is a temporary login protocol. Please fix me.
         //System.out.println("OnClick Funktion called!");
-        switch(view.getId()){
+        switch (view.getId()) {
             case R.id.bLogin:
-                if(!uri.getText().toString().isEmpty() && !username.getText().toString().isEmpty()
+                if (!uri.getText().toString().isEmpty() && !username.getText().toString().isEmpty()
                         && !password.getText().toString().isEmpty()) {
                     hideKeyboard();
                     statusText.setVisibility(View.GONE);
@@ -203,11 +204,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     communicationDaemon.User = username.getText().toString();
                     communicationDaemon.Pass = password.getText().toString();
                     appLogic.login();
-                }else{
+                } else {
                     // TODO: Tell the user that the URI field is empty.
                 }
                 break;
 
+        }
+    }
+
+    public void onBackPressed()
+    {
+        if (this.drawer.isDrawerOpen(GravityCompat.START)) {
+            this.drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
         }
     }
 

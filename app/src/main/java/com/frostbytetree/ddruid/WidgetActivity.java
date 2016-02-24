@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -46,7 +47,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
 
     FrameLayout widgetScreen;
     Toolbar toolbar;
-    DrawerLayout Drawer;
+    DrawerLayout drawer;
     ActionBarDrawerToggle mDrawerToggle;
 
     AppLogic appLogic;
@@ -262,8 +263,8 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         else {
             initNavigationDrawer();
-            Drawer = (DrawerLayout) findViewById(R.id.DrawerLayout);        // Drawer object Assigned to the view
-            mDrawerToggle = new ActionBarDrawerToggle(this, Drawer, toolbar, R.string.openDrawer, R.string.closeDrawer) {
+            drawer = (DrawerLayout) findViewById(R.id.DrawerLayout);        // drawer object Assigned to the view
+            mDrawerToggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.openDrawer, R.string.closeDrawer) {
 
                 @Override
                 public void onDrawerOpened(View drawerView) {
@@ -279,8 +280,8 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
                 }
 
 
-            }; // Drawer Toggle Object Made
-            Drawer.setDrawerListener(mDrawerToggle); // Drawer Listener set to the Drawer toggle
+            }; // drawer Toggle Object Made
+            drawer.setDrawerListener(mDrawerToggle); // drawer Listener set to the drawer toggle
             mDrawerToggle.syncState();
         }
         widgetScreen.removeAllViews();
@@ -318,7 +319,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
         about.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Drawer.closeDrawer(Gravity.LEFT);
+                drawer.closeDrawer(Gravity.LEFT);
                 Intent intent = new Intent(getApplicationContext(), About.class);
                 startActivity(intent);
             }
@@ -334,6 +335,13 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
 
     @Override
     public void onBackPressed() {
+
+        if (this.drawer.isDrawerOpen(GravityCompat.START))
+        {
+            this.drawer.closeDrawer(GravityCompat.START);
+            return;
+        }
+
         super.onBackPressed();
 
         // when adding dynamically views then they should be destroyed when going back
