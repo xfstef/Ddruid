@@ -6,8 +6,13 @@
     <string name="bt_login">Login</string>
     <string name="openDrawer">Einstellungen öffnen</string>
     <string name="closeDrawer">Einstellungen schließen</string>
-    <string name="Einstellungen">Einstellungen</string>
+    <string name="settings">Einstellungen</string>
+    <string name="title_tablewidgetitem_list">TableWidgetItems</string>
+    <string name="title_tablewidgetitem_detail">TableWidgetItem Detail</string>
+    <string name="title_widgetlistitem_list">WidgetListItems</string>
+    <string name="title_widgetlistitem_detail">WidgetListItem Detail</string>
     <string name="about_string">About DDruid</string>
     <string name="logout_string">Logout</string>
     <string name="search">Suche</string>
+    <string name="ddrudid"></string>
 </resources>
