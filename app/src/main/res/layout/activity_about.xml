@@ -48,23 +48,6 @@
             android:layout_below="@+id/imageView"
             android:layout_centerHorizontal="true" />
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/imageView2"
-            android:src="@mipmap/sclable_logo"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Powered by Sclable"
-            android:id="@+id/textView4"
-            android:layout_below="@+id/imageView2"
-            android:layout_centerHorizontal="true" />
-
         <!--
         <TextView
             android:layout_width="wrap_content"
