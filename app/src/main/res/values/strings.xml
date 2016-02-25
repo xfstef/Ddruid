@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">DDruid</string>
+    <string name="app_name">Ddruid</string>
     <string name="hint_username">Username</string>
     <string name="hint_password">Password</string>
     <string name="hint_uri">URI Address</string>
