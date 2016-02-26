@@ -30,6 +30,8 @@ public class WidgetViews {
     Context context;
     Data data_model;
     ArrayList<Widget> the_widgets;
+    Widget default_widget;
+    boolean no_default_widget = true;
 
     public static WidgetViews getInstance() {
         return ourInstance;
@@ -38,7 +40,6 @@ public class WidgetViews {
     public WidgetViews() {
         this.data_model = Data.getInstance();
         the_widgets = new ArrayList<Widget>();
-
     }
 
 }
@@ -62,6 +63,7 @@ class Widget extends LinearLayout{
                         // 2 - Detail - could be never used;
                         // 3 - Code Scanner;
                         // 4 - List with datasets
+                        // 5 - Complex for Hoerbiger
                         // 31 - Code Scanner + GPS;
                         // ...
 

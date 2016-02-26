@@ -326,9 +326,14 @@ class SclableInterpreter {
                     case "form":
                         new_widget.widgetType = 1;
                         break;
+                    case "complex":
+                        new_widget.widgetType = 5;
+                        break;
                     // TODO: Implement the rest widget types.
                 }
                 new_widget.titleBar = temp_obj.getString("name");
+
+                // Checking for parent widgets
                 if(temp_obj.has("parents")) {
                     JSONArray temp_parents = temp_obj.getJSONArray("parents");
                     new_widget.myParentNames = new ArrayList<String>();
@@ -339,6 +344,14 @@ class SclableInterpreter {
                     new_widget.myParentNames = new ArrayList<String>(1);
                     new_widget.myParentNames.add(0, "Main Menu");
                 }
+
+                // Checking for default widget
+                if(temp_obj.has("default_widget"))
+                    if(temp_obj.getBoolean("default_widget")) {
+                        widgetViews.no_default_widget = false;
+                        widgetViews.default_widget = new_widget;
+                    }
+
                 JSONArray action_list = temp_obj.getJSONArray("action");
                 for(int y = 0; y < action_list.length(); y++){
                     JSONObject temp_action_obj = action_list.getJSONObject(y);
@@ -373,13 +386,14 @@ class SclableInterpreter {
 
             } catch (JSONException e) {
                 e.printStackTrace();
-                break;
+                //break;
             }
 
             widgetViews.the_widgets.add(new_widget);
         }
 
-        buildMenuAndChildren();
+        if(widgetViews.no_default_widget)
+            buildMenuAndChildren();
 
 
     }
@@ -387,6 +401,7 @@ class SclableInterpreter {
     // Builds the Widget Menu and sets all parent to child relationships. Afterwards it calls the
     // instancing of the Widget Menu.
     private void buildMenuAndChildren() {
+        System.out.println("Building main menu");
         Widget menu_widget = new Widget(context);
         menu_widget.id = widgetViews.the_widgets.size();
         menu_widget.widgetType = 0;
