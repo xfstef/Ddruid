@@ -47,7 +47,6 @@ public class WidgetViews {
 class Widget extends LinearLayout{
 
     Context context;
-    //LinearLayout widgetLinearLayout;
     int id;
     ArrayList<Table> myTables = new ArrayList<>();
     ArrayList<Action>myActions = new ArrayList<>();
@@ -62,13 +61,15 @@ class Widget extends LinearLayout{
                         // 1 - Form;
                         // 2 - Detail - could be never used;
                         // 3 - Code Scanner;
-                        // 4 - List with datasets
-                        // 5 - Complex for Hoerbiger
+                        // 4 - List with datasets;
+                        // 5 - Complex for Hoerbiger;
                         // 31 - Code Scanner + GPS;
                         // ...
 
     LinkedHashMap<Integer, ArrayList<Integer>> list_view_columns; // This variable defines the
     // attributes that should be visible in list widgets.
+
+    ArrayList<Step> steps = new ArrayList<>();  // These are needed for complex widgets.
 
     public Widget(Context context) {
         super(context);
@@ -80,4 +81,14 @@ class Widget extends LinearLayout{
         setGravity(Gravity.CENTER);
         setOrientation(LinearLayout.VERTICAL);
     }
+}
+
+class Step{
+    String name;
+    short ui_element_type;  // This defines what type of UI element the step uses.
+                            // 0 - Text View;
+                            // 1 - Recycler View;
+                            // 2 - ...
+    String ui_label;
+    LookupTable lookupTable;
 }

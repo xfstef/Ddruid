@@ -111,3 +111,8 @@ class Spinner{
     int source_column;
     ArrayList<Integer> target_columns;
 }
+
+// This class is used to prepare data that requires a lookup.
+class LookupTable{
+
+}

@@ -352,25 +352,27 @@ class SclableInterpreter {
                         widgetViews.default_widget = new_widget;
                     }
 
-                JSONArray action_list = temp_obj.getJSONArray("action");
-                for(int y = 0; y < action_list.length(); y++){
-                    JSONObject temp_action_obj = action_list.getJSONObject(y);
-                    Iterator<String> the_keys = temp_action_obj.keys();
-                    String temp_key = the_keys.next();
-                    //new_widget.myTableNames.add(temp_key);
-                    //new_widget.myActionNames.add(temp_action_obj.getString(temp_key));
-                    new_widget.myTableActions.add(new Pair<String, String>(temp_key, temp_action_obj.getString(temp_key)));
-                    //System.out.println("Actions: " + temp_key + ", " + temp_action_obj.getString(temp_key));
+                if(temp_obj.has("action")) {
+                    JSONArray action_list = temp_obj.getJSONArray("action");
+                    for (int y = 0; y < action_list.length(); y++) {
+                        JSONObject temp_action_obj = action_list.getJSONObject(y);
+                        Iterator<String> the_keys = temp_action_obj.keys();
+                        String temp_key = the_keys.next();
+                        //new_widget.myTableNames.add(temp_key);
+                        //new_widget.myActionNames.add(temp_action_obj.getString(temp_key));
+                        new_widget.myTableActions.add(new Pair<String, String>(temp_key, temp_action_obj.getString(temp_key)));
+                        //System.out.println("Actions: " + temp_key + ", " + temp_action_obj.getString(temp_key));
+                    }
                 }
+
                 if(new_widget.widgetType == 4) {
                     JSONArray list_attributes = new JSONArray();
-                    //System.out.println("object " + temp_obj.toString());
                     list_attributes = temp_obj.getJSONArray("attributes");
-                    //System.out.println("keys " + list_attributes.toString());
                     JSONObject keys = new JSONObject();
                     new_widget.list_view_columns = new LinkedHashMap<>(list_attributes.length());
-                    //for(int r = 0; r < list_attributes.length(); r++){
-                    for(int i = 0; i < list_attributes.length(); i++){
+
+                    // TODO: Put this code back in when Hakan fixes the config file !!!
+                    /*for(int i = 0; i < list_attributes.length(); i++){
 
                         //System.out.println("Key: " + list_attributes.get(i));
                         keys = list_attributes.getJSONObject(i);
@@ -380,8 +382,43 @@ class SclableInterpreter {
                         for(int b = 0; b < values.length(); b++)
                             short_values.add((Integer) values.get(b));
                         new_widget.list_view_columns.put(Integer.valueOf(next_key), short_values);
+                    }*/
+
+                }
+
+                // Checking for steps
+                if(temp_obj.has("steps") && new_widget.widgetType == 5){
+                    JSONArray all_steps = temp_obj.getJSONArray("steps");
+                    new_widget.steps = new ArrayList<>(all_steps.length());
+                    for(int g = 0; g < all_steps.length(); g++){
+                        Step new_step = new Step();
+                        JSONObject step_data = all_steps.getJSONObject(g);
+                        new_step.name = step_data.getString("name");
+                        if(step_data.has("ui_element")) {
+                            switch (step_data.getString("ui_element")) {
+                                case "text_view":
+                                    new_step.ui_element_type = 0;
+                                    break;
+                                case "recycler_view":
+                                    new_step.ui_element_type = 1;
+                                    break;
+                                // TODO: Implement the rest.
+                            }
+                            if(step_data.has("label"))
+                                new_step.ui_label = step_data.getString("label");
+                        }
+                        JSONObject step_data_element = new JSONObject();
+                        if(step_data.has("lookup")){
+                            step_data_element = step_data.getJSONObject("lookup");
+                            // TODO: Finish reading and building the required lookup.
+                        }
+                        step_data_element = step_data.getJSONObject("success");
+                        // TODO: Finish parsing the success state for this step.
+                        step_data_element = step_data.getJSONObject("error");
+                        // TODO: Finish parsing the error state for this step.
+
+                        new_widget.steps.add(new_step);
                     }
-                    //System.out.println("entries: " + new_widget.list_view_columns.toString());
                 }
 
             } catch (JSONException e) {
@@ -389,6 +426,8 @@ class SclableInterpreter {
                 //break;
             }
 
+            if(new_widget.steps.size() > 0)
+                System.out.println("Step name: " + new_widget.steps.get(0).ui_label);
             widgetViews.the_widgets.add(new_widget);
         }
 
