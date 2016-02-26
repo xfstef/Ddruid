@@ -49,8 +49,8 @@ class Widget extends LinearLayout{
     Context context;
     //LinearLayout widgetLinearLayout;
     int id;
-    ArrayList<Table> myTables;
-    ArrayList<Action>myActions;
+    ArrayList<Table> myTables = new ArrayList<>();
+    ArrayList<Action>myActions = new ArrayList<>();
     ArrayList<Pair<String, String>> myTableActions;   // {["ticket", "create"],["ticket", "forward"]}
 
     ArrayList<Widget> myChildren;

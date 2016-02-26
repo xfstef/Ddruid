@@ -94,17 +94,19 @@ public class UIBuilder {
         // step I: find table within Widget.myTables.TableName which matches to the Widget.myTableActions.first (Table)
         for(int i = 0; i < widget.myTableActions.size(); i++)
         {
-            Table inflating_table = Utils.findTableToAction(widget.myTables, widget.myTableActions.get(i).first);
-            Log.d(CLASS_NAME,"Table name: " + inflating_table.table_name);
+            if(!widget.myTables.isEmpty()) {
+                Table inflating_table = Utils.findTableToAction(widget.myTables, widget.myTableActions.get(i).first);
+                Log.d(CLASS_NAME, "Table name: " + inflating_table.table_name);
 
-            // Step II: find the corresponding action which matches to the found table
-            for(int j = 0; j < widget.myTables.size(); j++)
-            {
-                Action inflating_action = Utils.findTableAction(inflating_table.myActions, widget.myTableActions.get(i).second);
-                Log.d(CLASS_NAME, "Inflating action: " + inflating_action.name);
-                widget = inflateFormAndAddUIElements(widget, inflating_action);
-                current_action = inflating_action;
 
+                // Step II: find the corresponding action which matches to the found table
+                for (int j = 0; j < widget.myTables.size(); j++) {
+                    Action inflating_action = Utils.findTableAction(inflating_table.myActions, widget.myTableActions.get(i).second);
+                    Log.d(CLASS_NAME, "Inflating action: " + inflating_action.name);
+                    widget = inflateFormAndAddUIElements(widget, inflating_action);
+                    current_action = inflating_action;
+
+                }
             }
         }
         return widget;

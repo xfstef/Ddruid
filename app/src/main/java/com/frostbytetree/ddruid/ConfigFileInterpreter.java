@@ -346,7 +346,7 @@ class SclableInterpreter {
                 }
 
                 // Checking for default widget
-                if(temp_obj.has("default_widget"))
+                if(temp_obj.has("default_widget") && new_widget.widgetType == 5)
                     if(temp_obj.getBoolean("default_widget")) {
                         widgetViews.no_default_widget = false;
                         widgetViews.default_widget = new_widget;
