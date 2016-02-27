@@ -114,5 +114,13 @@ class Spinner{
 
 // This class is used to prepare data that requires a lookup.
 class LookupTable{
-
+    short uses = 0; // This describes what kind of input device the lookup needs on the UI.
+                    // 0 - Standard for keyboard;
+                    // 1 - Scanner;
+                    // 2 - GPS;
+                    // 3 - Selection (spinner).
+    String referenced_table_name;
+    Table referenced_table; // Table used for the SQL Query.
+    String SQL_command; // SQL Query.
+    ArrayList<String> result;   // The result from the SQL Query.
 }

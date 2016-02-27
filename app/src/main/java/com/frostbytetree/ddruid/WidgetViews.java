@@ -92,4 +92,7 @@ class Step{
                                 // 99 - NO UI.
     String ui_label;
     LookupTable lookupTable;
+    Step next_if_success;
+
+    Step next_if_error;
 }

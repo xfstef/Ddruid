@@ -410,6 +410,24 @@ class SclableInterpreter {
                         JSONObject step_data_element = new JSONObject();
                         if(step_data.has("lookup")){
                             step_data_element = step_data.getJSONObject("lookup");
+                            LookupTable new_lookup = new LookupTable();
+                            new_lookup.referenced_table_name = step_data_element.getString("table");
+                            if(step_data_element.has("input_interface"))
+                                switch(step_data_element.getString("input_interface")){
+                                    case "scanner":
+                                        new_lookup.uses = 1;
+                                        break;
+                                    case "gps":
+                                        new_lookup.uses = 2;
+                                        break;
+                                    default:
+                                        new_lookup.uses = 3;
+                                        break;
+                                }
+                            new_lookup.SQL_command = buildSQLCommand(step_data_element.getJSONObject
+                                    ("attribute_map"), new_lookup.referenced_table_name);
+                            new_step.lookupTable = new_lookup;
+
                             // TODO: Finish reading and building the required lookup.
                         }
                         step_data_element = step_data.getJSONObject("success");
@@ -435,6 +453,15 @@ class SclableInterpreter {
             buildMenuAndChildren();
 
 
+    }
+
+    private String buildSQLCommand(JSONObject attribute_map, String referenced_table_name) {
+        Iterator<String> keys = attribute_map.keys();
+        while(keys.hasNext())
+        {
+            System.out.println("Getting key: " + keys.next());
+        }
+        return null;
     }
 
     // Builds the Widget Menu and sets all parent to child relationships. Afterwards it calls the
