@@ -85,10 +85,11 @@ class Widget extends LinearLayout{
 
 class Step{
     String name;
-    short ui_element_type;  // This defines what type of UI element the step uses.
-                            // 0 - Text View;
-                            // 1 - Recycler View;
-                            // 2 - ...
+    short ui_element_type = 99; // This defines what type of UI element the step uses.
+                                // 0 - Text View;
+                                // 1 - Recycler View;
+                                // 2 - ...
+                                // 99 - NO UI.
     String ui_label;
     LookupTable lookupTable;
 }
