@@ -139,7 +139,7 @@ class SclableInterpreter {
         linkTablesToWidgets();
         linkReferencesToTable();
         linkActionsToWidgets();
-        linkTablesToSteps();
+        //linkTablesToSteps();
 
     }
 
