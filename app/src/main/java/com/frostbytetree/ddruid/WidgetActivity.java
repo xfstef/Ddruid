@@ -1,5 +1,6 @@
 package com.frostbytetree.ddruid;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -17,9 +18,12 @@ import android.util.Pair;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -56,6 +60,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
 
     RecycleViewWidgetAdapter widgetAdapter;
     // RecycleViewDataSetAdapter tableAdapter;
+    LinearLayout.LayoutParams layoutParams;
 
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -87,9 +92,10 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
         my_widget = appLogic.currentWidget;
 
         setTheme(appLogic.configFile.custom_color);
-
+        setStatusBarTheme();
 
         // init the UI Builder
+
         uiBuilder = UIBuilder.getInstance();
 
         uiBuilder.setContext(this);
@@ -104,11 +110,25 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
+    @TargetApi(21)
+    private void setStatusBarTheme()
+    {
+        Log.d(CLASS_NAME, "setStatusBarTheme called!");
+        /*
+        Window window = this.getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        window.setStatusBarColor(this.getResources().getColor(appLogic.configFile.custom_color));
+        */
+    }
+
     void checkWidgetType() {
         // 0 - List;
         // 1 - Form;
         // 3 - Code Scanner;
         Log.d(CLASS_NAME, "Widget Type: " + my_widget.widgetType);
+
+
         switch (my_widget.widgetType) {
             case 0:
                 initWidgetList();
@@ -120,9 +140,85 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
                 startWidgetListActivity();
                 //initTableList();
                 break;
+            case 5: // send the first step
+                uiBuilder.loadInitialState(my_widget);
+                initStepWidget(my_widget.steps.get(0));
+                //handleStepWidget(my_widget.steps.get(0));
             default:
 
         }
+
+    }
+
+    private void initStepWidget(Step step)
+    {
+        appLogic.currentStep = step;
+        layoutParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        layoutParams.setMargins(16, 16, 16, 16);
+        my_widget.removeAllViews();
+
+        checkStepType(step);
+
+    }
+
+    private void checkStepType(Step step)
+    {
+        Log.i(CLASS_NAME, "Current Step: " + step.name);
+        switch(step.ui_element_type)
+        {
+            case 0:
+                View element = uiBuilder.addTextViewElementStep(step);
+                my_widget.addView(element, layoutParams);
+                widgetScreen.addView(my_widget);
+                if(step.lookupTable.uses == 1) // scanner widget
+                    initScan();
+                break;
+            case 1:
+
+                break;
+        }
+    }
+
+    private void handleStepWidget(Step step)
+    {
+
+    // Widget new_ui_widget = uiBuilder.inflateStep(step, appLogic);
+    // widgetScreen.addView(new_ui_widget);
+    // if this step needs a scanner
+    // if(my_widget.steps.get(i).lookupTable.uses == 1)
+    // initScan();
+    // break;
+
+    }
+
+    private void initScan()
+    {
+
+        FrameLayout scannerWidget = (FrameLayout)findViewById(R.id.scanner);
+        scannerWidget.setVisibility(View.VISIBLE);
+
+        // Create a new Fragment to be placed in the activity layout
+        Scanner scanner = new Scanner();
+
+        // In case this activity was started with special instructions from an
+        // Intent, pass the Intent's extras to the fragment as arguments
+        scanner.setArguments(getIntent().getExtras());
+
+        // Add the fragment to the 'fragment_container' FrameLayout
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.scanner, scanner).commit();
+
+    }
+
+    //TODO: the corect elements should be updated with the scan result
+    private void updateUI(String code)
+    {
+        for(int i = 0; i < uiBuilder.all_view_elements.size(); i++)
+        {
+
+        }
+
     }
 
     void initFormWidget()
@@ -342,7 +438,15 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
             return;
         }
 
-        super.onBackPressed();
+        int count = getFragmentManager().getBackStackEntryCount();
+        if (count == 0) {
+            Log.i(CLASS_NAME, "No Fragment detected!.öö,llkhghhhzgggggta^^^6^´88855^353443323");
+            super.onBackPressed();
+            //additional code
+        } else {
+            Log.i(CLASS_NAME, "Fragment should close!");
+            getFragmentManager().popBackStack();
+        }
 
         // when adding dynamically views then they should be destroyed when going back
         my_widget.removeAllViews();
@@ -360,6 +464,9 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
             // this sends the android app to the background
             this.moveTaskToBack(true);
         }
+
+
+
 
     }
 
@@ -414,6 +521,13 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
         );
         AppIndex.AppIndexApi.end(client, viewAction);
         client.disconnect();
+    }
+
+    @Override
+    public void codeScanned(String code) {
+
+        Log.i(CLASS_NAME, "Code scanned: " + code);
+        updateUI(code);
     }
 
     @Override

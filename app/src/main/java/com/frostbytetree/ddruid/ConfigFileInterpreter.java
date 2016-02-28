@@ -139,7 +139,23 @@ class SclableInterpreter {
         linkTablesToWidgets();
         linkReferencesToTable();
         linkActionsToWidgets();
+        linkTablesToSteps();
 
+    }
+
+    private void linkTablesToSteps() {
+        for(int g = 0; g < widgetViews.the_widgets.size(); g++)
+            if(widgetViews.the_widgets.get(g).widgetType == 5)
+                for(int l = 0; l < widgetViews.the_widgets.get(g).steps.size(); l++)
+                    if(widgetViews.the_widgets.get(g).steps.get(l).lookupTable.referenced_table_name != null)
+                        for(int h = 0; h < data.tables.size(); h++)
+                            if(widgetViews.the_widgets.get(g).steps.get(l).lookupTable.referenced_table_name.
+                                    matches(data.tables.get(h).table_name)){
+                                widgetViews.the_widgets.get(g).steps.get(l).lookupTable.referenced_table
+                                        = data.tables.get(h);
+                                break;
+                            }
+        System.out.println("This shit worked: " + widgetViews.the_widgets.get(0).steps.get(0).lookupTable.referenced_table.table_name);
     }
 
     private void linkActionsToWidgets(){
@@ -326,9 +342,14 @@ class SclableInterpreter {
                     case "form":
                         new_widget.widgetType = 1;
                         break;
+                    case "complex":
+                        new_widget.widgetType = 5;
+                        break;
                     // TODO: Implement the rest widget types.
                 }
                 new_widget.titleBar = temp_obj.getString("name");
+
+                // Checking for parent widgets
                 if(temp_obj.has("parents")) {
                     JSONArray temp_parents = temp_obj.getJSONArray("parents");
                     new_widget.myParentNames = new ArrayList<String>();
@@ -339,25 +360,35 @@ class SclableInterpreter {
                     new_widget.myParentNames = new ArrayList<String>(1);
                     new_widget.myParentNames.add(0, "Main Menu");
                 }
-                JSONArray action_list = temp_obj.getJSONArray("action");
-                for(int y = 0; y < action_list.length(); y++){
-                    JSONObject temp_action_obj = action_list.getJSONObject(y);
-                    Iterator<String> the_keys = temp_action_obj.keys();
-                    String temp_key = the_keys.next();
-                    //new_widget.myTableNames.add(temp_key);
-                    //new_widget.myActionNames.add(temp_action_obj.getString(temp_key));
-                    new_widget.myTableActions.add(new Pair<String, String>(temp_key, temp_action_obj.getString(temp_key)));
-                    //System.out.println("Actions: " + temp_key + ", " + temp_action_obj.getString(temp_key));
+
+                // Checking for default widget
+                if(temp_obj.has("default_widget") && new_widget.widgetType == 5)
+                    if(temp_obj.getBoolean("default_widget")) {
+                        widgetViews.no_default_widget = false;
+                        widgetViews.default_widget = new_widget;
+                    }
+
+                if(temp_obj.has("action")) {
+                    JSONArray action_list = temp_obj.getJSONArray("action");
+                    for (int y = 0; y < action_list.length(); y++) {
+                        JSONObject temp_action_obj = action_list.getJSONObject(y);
+                        Iterator<String> the_keys = temp_action_obj.keys();
+                        String temp_key = the_keys.next();
+                        //new_widget.myTableNames.add(temp_key);
+                        //new_widget.myActionNames.add(temp_action_obj.getString(temp_key));
+                        new_widget.myTableActions.add(new Pair<String, String>(temp_key, temp_action_obj.getString(temp_key)));
+                        //System.out.println("Actions: " + temp_key + ", " + temp_action_obj.getString(temp_key));
+                    }
                 }
+
                 if(new_widget.widgetType == 4) {
                     JSONArray list_attributes = new JSONArray();
-                    //System.out.println("object " + temp_obj.toString());
                     list_attributes = temp_obj.getJSONArray("attributes");
-                    //System.out.println("keys " + list_attributes.toString());
                     JSONObject keys = new JSONObject();
                     new_widget.list_view_columns = new LinkedHashMap<>(list_attributes.length());
-                    //for(int r = 0; r < list_attributes.length(); r++){
-                    for(int i = 0; i < list_attributes.length(); i++){
+
+                    // TODO: Put this code back in when Hakan fixes the config file !!!
+                    /*for(int i = 0; i < list_attributes.length(); i++){
 
                         //System.out.println("Key: " + list_attributes.get(i));
                         keys = list_attributes.getJSONObject(i);
@@ -367,26 +398,125 @@ class SclableInterpreter {
                         for(int b = 0; b < values.length(); b++)
                             short_values.add((Integer) values.get(b));
                         new_widget.list_view_columns.put(Integer.valueOf(next_key), short_values);
+                    }*/
+
+                }
+
+                // Checking for steps
+                if(temp_obj.has("steps") && new_widget.widgetType == 5){
+                    JSONArray all_steps = temp_obj.getJSONArray("steps");
+                    new_widget.steps = new ArrayList<>(all_steps.length());
+                    for(int g = 0; g < all_steps.length(); g++){
+                        Step new_step = new Step();
+                        JSONObject step_data = all_steps.getJSONObject(g);
+                        new_step.name = step_data.getString("name");
+                        if(step_data.has("ui_element")) {
+                            switch (step_data.getString("ui_element")) {
+                                case "text_view":
+                                    new_step.ui_element_type = 0;
+                                    break;
+                                case "recycler_view":
+                                    new_step.ui_element_type = 1;
+                                    break;
+                                // TODO: Implement the rest.
+                            }
+                            if(step_data.has("label"))
+                                new_step.ui_label = step_data.getString("label");
+                        }
+                        JSONObject step_data_element = new JSONObject();
+                        if(step_data.has("lookup")){
+                            step_data_element = step_data.getJSONObject("lookup");
+                            LookupTable new_lookup = new LookupTable();
+                            new_lookup.referenced_table_name = step_data_element.getString("table");
+                            if(step_data_element.has("input_interface"))
+                                switch(step_data_element.getString("input_interface")){
+                                    case "scanner":
+                                        new_lookup.uses = 1;
+                                        break;
+                                    case "gps":
+                                        new_lookup.uses = 2;
+                                        break;
+                                    default:
+                                        new_lookup.uses = 3;
+                                        break;
+                                }
+                            new_lookup.SQL_command = buildSQLCommand(step_data_element.getJSONObject
+                                    ("attribute_map"), new_lookup.referenced_table_name);
+                            new_step.lookupTable = new_lookup;
+
+                            // TODO: Finish reading and building the required lookup.
+                        }
+                        step_data_element = step_data.getJSONObject("success");
+                        if(step_data_element.has("next_step"))
+                            new_step.next_step_if_success = step_data_element.getString("next_step");
+                        // TODO: Finish parsing the success state for this step.
+                        step_data_element = step_data.getJSONObject("error");
+                        if(step_data_element.has("next_step"))
+                            new_step.next_step_if_error = step_data_element.getString("next_step");
+                        // TODO: Finish parsing the error state for this step.
+
+                        new_widget.steps.add(new_step);
                     }
-                    //System.out.println("entries: " + new_widget.list_view_columns.toString());
                 }
 
             } catch (JSONException e) {
                 e.printStackTrace();
-                break;
+                //break;
+            }
+
+            if(new_widget.steps.size() > 0) {
+                linkSteps(new_widget);
             }
 
             widgetViews.the_widgets.add(new_widget);
         }
 
-        buildMenuAndChildren();
+        if(widgetViews.no_default_widget)
+            buildMenuAndChildren();
 
+    }
 
+    private void linkSteps(Widget new_widget) {
+        for(int r = 0; r < new_widget.steps.size(); r++){
+            if(new_widget.steps.get(r).next_step_if_success != null)
+                for(int e = 0; e < new_widget.steps.size(); e++)
+                    if(new_widget.steps.get(r).next_step_if_success.matches(new_widget.steps.get(e).name)) {
+                        new_widget.steps.get(r).next_if_success = new_widget.steps.get(e);
+                        break;
+                    }
+            if(new_widget.steps.get(r).next_step_if_error != null)
+                for(int f = 0; f < new_widget.steps.size(); f++)
+                    if(new_widget.steps.get(r).next_step_if_error.matches(new_widget.steps.get(f).name)) {
+                        new_widget.steps.get(r).next_if_error = new_widget.steps.get(f);
+                        break;
+                    }
+        }
+    }
+
+    private String buildSQLCommand(JSONObject attribute_map, String referenced_table_name) {
+        Iterator<String> keys = attribute_map.keys();
+        String key = null;
+        String value = null;
+        while(keys.hasNext())
+        {
+            key = keys.next();
+            try {
+                value = attribute_map.getString(key);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            if(key.matches(value)){
+
+            }
+            System.out.println("Key: " + key + ", " + value);
+        }
+        return null;
     }
 
     // Builds the Widget Menu and sets all parent to child relationships. Afterwards it calls the
     // instancing of the Widget Menu.
     private void buildMenuAndChildren() {
+        System.out.println("Building main menu");
         Widget menu_widget = new Widget(context);
         menu_widget.id = widgetViews.the_widgets.size();
         menu_widget.widgetType = 0;

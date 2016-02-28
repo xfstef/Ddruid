@@ -33,6 +33,7 @@ public class AppLogic extends Thread{
     SclableURIS sclableURIS;
     IDataInflateListener iDataInflateListener;
     SQLDaemon sqlDaemon;
+    Step currentStep;
 
     // This approach is used when selecting a object within a list, because passing objects via
     // activity less efficient

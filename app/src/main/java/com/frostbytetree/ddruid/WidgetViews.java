@@ -30,6 +30,8 @@ public class WidgetViews {
     Context context;
     Data data_model;
     ArrayList<Widget> the_widgets;
+    Widget default_widget;
+    boolean no_default_widget = true;
 
     public static WidgetViews getInstance() {
         return ourInstance;
@@ -38,7 +40,6 @@ public class WidgetViews {
     public WidgetViews() {
         this.data_model = Data.getInstance();
         the_widgets = new ArrayList<Widget>();
-
     }
 
 }
@@ -46,10 +47,9 @@ public class WidgetViews {
 class Widget extends LinearLayout{
 
     Context context;
-    //LinearLayout widgetLinearLayout;
     int id;
-    ArrayList<Table> myTables;
-    ArrayList<Action>myActions;
+    ArrayList<Table> myTables = new ArrayList<>();
+    ArrayList<Action>myActions = new ArrayList<>();
     ArrayList<Pair<String, String>> myTableActions;   // {["ticket", "create"],["ticket", "forward"]}
 
     ArrayList<Widget> myChildren;
@@ -61,12 +61,15 @@ class Widget extends LinearLayout{
                         // 1 - Form;
                         // 2 - Detail - could be never used;
                         // 3 - Code Scanner;
-                        // 4 - List with datasets
+                        // 4 - List with datasets;
+                        // 5 - Complex for Hoerbiger;
                         // 31 - Code Scanner + GPS;
                         // ...
 
     LinkedHashMap<Integer, ArrayList<Integer>> list_view_columns; // This variable defines the
     // attributes that should be visible in list widgets.
+
+    ArrayList<Step> steps = new ArrayList<>();  // These are needed for complex widgets.
 
     public Widget(Context context) {
         super(context);
@@ -78,4 +81,20 @@ class Widget extends LinearLayout{
         setGravity(Gravity.CENTER);
         setOrientation(LinearLayout.VERTICAL);
     }
+}
+
+class Step{
+    String name;
+    short ui_element_type = 99; // This defines what type of UI element the step uses.
+                                // 0 - Text View;
+                                // 1 - Recycler View;
+                                // 2 - ...
+                                // 99 - NO UI.
+    String ui_label;
+    LookupTable lookupTable;
+
+    String next_step_if_success = null;
+    Step next_if_success = null;
+    String next_step_if_error = null;
+    Step next_if_error = null;
 }
