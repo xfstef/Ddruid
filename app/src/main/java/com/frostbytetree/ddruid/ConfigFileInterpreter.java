@@ -431,8 +431,12 @@ class SclableInterpreter {
                             // TODO: Finish reading and building the required lookup.
                         }
                         step_data_element = step_data.getJSONObject("success");
+                        if(step_data_element.has("next_step"))
+                            new_step.next_step_if_success = step_data_element.getString("next_step");
                         // TODO: Finish parsing the success state for this step.
                         step_data_element = step_data.getJSONObject("error");
+                        if(step_data_element.has("next_step"))
+                            new_step.next_step_if_error = step_data_element.getString("next_step");
                         // TODO: Finish parsing the error state for this step.
 
                         new_widget.steps.add(new_step);
@@ -444,10 +448,14 @@ class SclableInterpreter {
                 //break;
             }
 
-            if(new_widget.steps.size() > 0)
-                System.out.println("Step name: " + new_widget.steps.get(0).ui_label);
+            if(new_widget.steps.size() > 0) {
+                linkSteps(new_widget);
+            }
+
             widgetViews.the_widgets.add(new_widget);
         }
+
+
 
         if(widgetViews.no_default_widget)
             buildMenuAndChildren();
@@ -455,11 +463,39 @@ class SclableInterpreter {
 
     }
 
+    private void linkSteps(Widget new_widget) {
+        for(int r = 0; r < new_widget.steps.size(); r++){
+            if(new_widget.steps.get(r).next_step_if_success != null)
+                for(int e = 0; e < new_widget.steps.size(); e++)
+                    if(new_widget.steps.get(r).next_step_if_success.matches(new_widget.steps.get(e).name)) {
+                        new_widget.steps.get(r).next_if_success = new_widget.steps.get(e);
+                        break;
+                    }
+            if(new_widget.steps.get(r).next_step_if_error != null)
+                for(int f = 0; f < new_widget.steps.size(); f++)
+                    if(new_widget.steps.get(r).next_step_if_error.matches(new_widget.steps.get(f).name)) {
+                        new_widget.steps.get(r).next_if_error = new_widget.steps.get(f);
+                        break;
+                    }
+        }
+    }
+
     private String buildSQLCommand(JSONObject attribute_map, String referenced_table_name) {
         Iterator<String> keys = attribute_map.keys();
+        String key = null;
+        String value = null;
         while(keys.hasNext())
         {
-            System.out.println("Getting key: " + keys.next());
+            key = keys.next();
+            try {
+                value = attribute_map.getString(key);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            if(key.matches(value)){
+
+            }
+            System.out.println("Key: " + key + ", " + value);
         }
         return null;
     }
