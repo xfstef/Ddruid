@@ -139,7 +139,23 @@ class SclableInterpreter {
         linkTablesToWidgets();
         linkReferencesToTable();
         linkActionsToWidgets();
+        linkTablesToSteps();
 
+    }
+
+    private void linkTablesToSteps() {
+        for(int g = 0; g < widgetViews.the_widgets.size(); g++)
+            if(widgetViews.the_widgets.get(g).widgetType == 5)
+                for(int l = 0; l < widgetViews.the_widgets.get(g).steps.size(); l++)
+                    if(widgetViews.the_widgets.get(g).steps.get(l).lookupTable.referenced_table_name != null)
+                        for(int h = 0; h < data.tables.size(); h++)
+                            if(widgetViews.the_widgets.get(g).steps.get(l).lookupTable.referenced_table_name.
+                                    matches(data.tables.get(h).table_name)){
+                                widgetViews.the_widgets.get(g).steps.get(l).lookupTable.referenced_table
+                                        = data.tables.get(h);
+                                break;
+                            }
+        System.out.println("This shit worked: " + widgetViews.the_widgets.get(0).steps.get(0).lookupTable.referenced_table.table_name);
     }
 
     private void linkActionsToWidgets(){
@@ -455,11 +471,8 @@ class SclableInterpreter {
             widgetViews.the_widgets.add(new_widget);
         }
 
-
-
         if(widgetViews.no_default_widget)
             buildMenuAndChildren();
-
 
     }
 
