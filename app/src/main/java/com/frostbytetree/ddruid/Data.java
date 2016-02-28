@@ -119,8 +119,8 @@ class LookupTable{
                     // 1 - Scanner;
                     // 2 - GPS;
                     // 3 - Selection (spinner).
-    String referenced_table_name;
-    Table referenced_table; // Table used for the SQL Query.
+    String referenced_table_name = null;
+    Table referenced_table = null; // Table used for the SQL Query.
     String SQL_command; // SQL Query.
     ArrayList<String> result;   // The result from the SQL Query.
 }
