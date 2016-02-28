@@ -249,6 +249,11 @@ public class WidgetActionActivity extends AppCompatActivity implements IDataInfl
         }
     }
 
+    @Override
+    public void codeScanned(String code) {
+
+    }
+
 
     private ArrayList<String> getReferencedAttributesForSpinner(Attribute spinnerAttribute)
     {

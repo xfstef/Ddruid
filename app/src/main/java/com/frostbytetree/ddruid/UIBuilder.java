@@ -112,6 +112,64 @@ public class UIBuilder {
         return widget;
     }
 
+
+    // This is for now the special hoerbiger inflator
+    /*
+    public Widget inflateStep(Step current_step, AppLogic appLogic)
+    {
+        Log.i(CLASS_NAME, "----------------------------------");
+        Log.i(CLASS_NAME, "Current Step: " + current_step.name);
+        Log.i(CLASS_NAME, "Current Step ui label: " + current_step.ui_label);
+        Log.i(CLASS_NAME, "Current Step type: " + current_step.ui_element_type);
+
+        //Log.i(CLASS_NAME, "Current Step referenced table: " + current_step.lookupTable.referenced_table_name);
+
+        loadInitialState(appLogic.currentWidget);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        layoutParams.setMargins(16, 16, 16, 16);
+        appLogic.currentWidget.removeAllViews();
+
+        switch(current_step.ui_element_type)
+        {
+            case 0:
+                View element = addTextViewElementStep(current_step);
+                appLogic.currentWidget.addView(element, layoutParams);
+                break;
+            case 1:
+
+                break;
+            default:
+
+        }
+
+        Log.i(CLASS_NAME, "Current Widget: " + appLogic.currentWidget.titleBar);
+        return appLogic.currentWidget;
+    }
+    */
+
+    public View addTextViewElementStep(Step step)
+    {
+        View content = LayoutInflater.from(context).inflate(R.layout.text_input_form, null);
+        // TextInputLayout input_item = new TextInputLayout(context);
+        TextInputLayout input_item = (TextInputLayout)content.findViewById(R.id.input_layout);
+        input_item.setTag(step.ui_label);
+        // input_item.setVisibility(View.VISIBLE);
+
+        // EditText input_text = new EditText(context);
+        EditText input_text = (EditText)content.findViewById(R.id.input);
+        input_text.setTag(step.ui_label);
+
+        input_text.setFocusable(false);
+        if(step.ui_label != null)
+            input_item.setHint(step.ui_label);
+
+        all_view_elements.add(new Pair<Short, View>(IS_INPUT_TEXT, input_text));
+        all_view_elements.add(new Pair<Short, View>(IS_INPUT_TEXT, input_item));
+
+        return input_item;
+    }
+
     Widget inflateTableDetailModel(LinearLayout ui_content, Widget widget, ArrayList<String> data_to_be_displayed)
     {
 
@@ -372,7 +430,7 @@ public class UIBuilder {
     }
 
     // Set every variable to it's initial form
-    private void loadInitialState(Widget widget)
+    public void loadInitialState(Widget widget)
     {
         widget.removeAllViews();
         all_view_elements.clear();

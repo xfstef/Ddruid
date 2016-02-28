@@ -287,6 +287,11 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
     }
 
     @Override
+    public void codeScanned(String code) {
+
+    }
+
+    @Override
     public void onBackPressed()
     {
         super.onBackPressed();
