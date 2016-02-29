@@ -46,7 +46,7 @@ public class UIBuilder {
 
 
     public static final short IS_INPUT_TEXT = 0;
-    //public static final short IS_EDIT_TEXT = 1;
+    public static final short IS_INPUT_LABEL = 1;
     public static final short IS_SPINNER = 2;
     public static final short IS_DATE_INPUT = 3;
     public static final short IS_ACTION_BUTTON = 4;
@@ -148,26 +148,26 @@ public class UIBuilder {
     }
     */
 
-    public View addTextViewElementStep(Step step)
+    public View scanElementStep(Step step)
     {
-        View content = LayoutInflater.from(context).inflate(R.layout.text_input_form, null);
-        // TextInputLayout input_item = new TextInputLayout(context);
-        TextInputLayout input_item = (TextInputLayout)content.findViewById(R.id.input_layout);
-        input_item.setTag(step.ui_label);
-        // input_item.setVisibility(View.VISIBLE);
+        View content = LayoutInflater.from(context).inflate(R.layout.scan_input_form, null);
+        LinearLayout scan_input = (LinearLayout)content.findViewById(R.id.scan_input);
+        TextInputLayout input_item = (TextInputLayout)content.findViewById(R.id.input_label);
+        input_item.setTag(step.name + ".label");
+        input_item.setHint(step.ui_label);
 
         // EditText input_text = new EditText(context);
-        EditText input_text = (EditText)content.findViewById(R.id.input);
-        input_text.setTag(step.ui_label);
+        EditText input_text = (EditText)content.findViewById(R.id.input_text);
+        input_text.setTag(step.name + ".text");
 
-        input_text.setFocusable(false);
-        if(step.ui_label != null)
-            input_item.setHint(step.ui_label);
+        Button bReset = (Button)content.findViewById(R.id.bReset);
+        bReset.setTag(step.name + ".button");
 
+        all_view_elements.add(new Pair<Short, View>(IS_INPUT_LABEL, input_item));
         all_view_elements.add(new Pair<Short, View>(IS_INPUT_TEXT, input_text));
-        all_view_elements.add(new Pair<Short, View>(IS_INPUT_TEXT, input_item));
+        all_view_elements.add(new Pair<Short, View>(IS_ACTION_BUTTON, bReset));
 
-        return input_item;
+        return scan_input;
     }
 
     Widget inflateTableDetailModel(LinearLayout ui_content, Widget widget, ArrayList<String> data_to_be_displayed)
@@ -180,9 +180,6 @@ public class UIBuilder {
 
         return widget;
     }
-
-
-
 
 
     Widget inflateFormAndAddUIElements(Widget widget, Action action)

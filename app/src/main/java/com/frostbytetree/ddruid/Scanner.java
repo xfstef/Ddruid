@@ -59,6 +59,17 @@ public class Scanner extends Fragment {
         autoFocusHandler = new Handler();
         mCamera = getCameraInstance();
         mCamera.setDisplayOrientation(90);
+        try
+        {
+            mCamera.reconnect();
+
+        } catch(Exception e)
+        {
+            Log.i(CLASS_NAME, "Camera could not be reconnected!");
+        }
+        mCamera.startPreview();
+        previewing = true;
+        Log.i(CLASS_NAME, "Camera loaded!");
         /* Instance barcode scanner */
         scanner = new ImageScanner();
         scanner.setConfig(0, Config.X_DENSITY, 3);
@@ -93,6 +104,7 @@ public class Scanner extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
+        Log.i(CLASS_NAME, "On detach called!");
         mListener = null;
     }
 
@@ -102,16 +114,18 @@ public class Scanner extends Fragment {
         try {
             c = Camera.open();
         } catch (Exception e){
+            Log.i(CLASS_NAME, "Could not open camera: " + e);
         }
         return c;
     }
 
-    private void releaseCamera() {
+    public void releaseCamera() {
         if (mCamera != null) {
             previewing = false;
             mCamera.setPreviewCallback(null);
             mCamera.release();
             mCamera = null;
+            mPreview = null;
         }
     }
 
@@ -126,7 +140,6 @@ public class Scanner extends Fragment {
         public void onPreviewFrame(byte[] data, Camera camera) {
             Camera.Parameters parameters = camera.getParameters();
             Camera.Size size = parameters.getPreviewSize();
-
             Image barcode = new Image(size.width, size.height, "Y800");
             barcode.setData(data);
 

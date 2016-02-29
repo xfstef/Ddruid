@@ -3,14 +3,19 @@ package com.frostbytetree.ddruid;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlarmManager;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatEditText;
+import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -18,6 +23,7 @@ import android.util.Pair;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -50,6 +56,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
     private static final int LIST_ACTIVITY_START = 2;
 
     FrameLayout widgetScreen;
+    FrameLayout scannerScreen;
     Toolbar toolbar;
     DrawerLayout drawer;
     ActionBarDrawerToggle mDrawerToggle;
@@ -61,6 +68,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
     RecycleViewWidgetAdapter widgetAdapter;
     // RecycleViewDataSetAdapter tableAdapter;
     LinearLayout.LayoutParams layoutParams;
+    Scanner scanner;
 
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -88,20 +96,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
         //my_widget = new Widget(this);
         //widgetViews = WidgetViews.getInstance();
 
-        appLogic = AppLogic.getInstance();
-        my_widget = appLogic.currentWidget;
 
-        setTheme(appLogic.configFile.custom_color);
-        setStatusBarTheme();
-
-        // init the UI Builder
-
-        uiBuilder = UIBuilder.getInstance();
-
-        uiBuilder.setContext(this);
-        uiBuilder.setCallback(this);
-        setContentView(R.layout.widget_activity);
-        initScreenItems();
         //System.out.println("Current widget on Resume: " + my_widget.titleBar);
 
 
@@ -140,7 +135,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
                 startWidgetListActivity();
                 //initTableList();
                 break;
-            case 5: // send the first step
+            case 5: // send the first step for complex widget
                 uiBuilder.loadInitialState(my_widget);
                 initStepWidget(my_widget.steps.get(0));
                 //handleStepWidget(my_widget.steps.get(0));
@@ -152,6 +147,12 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
 
     private void initStepWidget(Step step)
     {
+        // Problem when the child has already a parent defined
+        if((ViewGroup)my_widget.getParent() != null)
+        {
+            ((ViewGroup)my_widget.getParent()).removeView(my_widget);
+        }
+
         appLogic.currentStep = step;
         layoutParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -168,7 +169,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
         switch(step.ui_element_type)
         {
             case 0:
-                View element = uiBuilder.addTextViewElementStep(step);
+                View element = uiBuilder.scanElementStep(step);
                 my_widget.addView(element, layoutParams);
                 widgetScreen.addView(my_widget);
                 if(step.lookupTable.uses == 1) // scanner widget
@@ -195,11 +196,11 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
     private void initScan()
     {
 
-        FrameLayout scannerWidget = (FrameLayout)findViewById(R.id.scanner);
-        scannerWidget.setVisibility(View.VISIBLE);
+        scannerScreen = (FrameLayout)findViewById(R.id.scanner);
+        scannerScreen.setVisibility(View.VISIBLE);
 
         // Create a new Fragment to be placed in the activity layout
-        Scanner scanner = new Scanner();
+        scanner = new Scanner();
 
         // In case this activity was started with special instructions from an
         // Intent, pass the Intent's extras to the fragment as arguments
@@ -207,17 +208,8 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
 
         // Add the fragment to the 'fragment_container' FrameLayout
         getSupportFragmentManager().beginTransaction()
-                .add(R.id.scanner, scanner).commit();
-
-    }
-
-    //TODO: the corect elements should be updated with the scan result
-    private void updateUI(String code)
-    {
-        for(int i = 0; i < uiBuilder.all_view_elements.size(); i++)
-        {
-
-        }
+                .add(R.id.scanner, scanner, "TVOJA MAMA")
+                .addToBackStack(null).commit();
 
     }
 
@@ -427,26 +419,41 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
     public void onResume() {
         super.onResume();
 
+        Log.i(CLASS_NAME, "On Resume called!");
+        // close the camera
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag("TVOJA MAMA");
+        if(fragment != null) {
+            Log.i(CLASS_NAME, "Fragment will be removed!");
+            getSupportFragmentManager().beginTransaction().remove(fragment).commit();
+            scanner.releaseCamera();
+        }
+
+
+        appLogic = AppLogic.getInstance();
+        my_widget = appLogic.currentWidget;
+
+        setTheme(appLogic.configFile.custom_color);
+        setStatusBarTheme();
+
+        // init the UI Builder
+        uiBuilder = UIBuilder.getInstance();
+
+        uiBuilder.setContext(this);
+        uiBuilder.setCallback(this);
+        setContentView(R.layout.widget_activity);
+        initScreenItems();
     }
 
     @Override
     public void onBackPressed() {
 
+        super.onBackPressed();
         if (this.drawer.isDrawerOpen(GravityCompat.START))
         {
             this.drawer.closeDrawer(GravityCompat.START);
             return;
         }
 
-        int count = getFragmentManager().getBackStackEntryCount();
-        if (count == 0) {
-            Log.i(CLASS_NAME, "No Fragment detected!.öö,llkhghhhzgggggta^^^6^´88855^353443323");
-            super.onBackPressed();
-            //additional code
-        } else {
-            Log.i(CLASS_NAME, "Fragment should close!");
-            getFragmentManager().popBackStack();
-        }
 
         // when adding dynamically views then they should be destroyed when going back
         my_widget.removeAllViews();
@@ -523,11 +530,61 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
         client.disconnect();
     }
 
+    //TODO: the corect elements should be updated with the scan result
+    private void updateUI(String code)
+    {
+        for(int i = 0; i < uiBuilder.all_view_elements.size(); i++)
+        {
+            Short current_view_type = uiBuilder.all_view_elements.get(i).first;
+            View current_view = uiBuilder.all_view_elements.get(i).second;
+            Log.i(CLASS_NAME, "Current View Type " + current_view_type);
+            Log.i(CLASS_NAME, "Current View " + current_view);
+            String current_step_text_tag = appLogic.currentStep.name + ".text";
+            String current_step_button_tag = appLogic.currentStep.name + ".button";
+            if(current_view_type == uiBuilder.IS_INPUT_TEXT && current_view.getTag().toString().matches(current_step_text_tag))
+            {
+                Log.i(CLASS_NAME, "Edit Text should have been updated/Tag = " + current_view.getTag());
+                AppCompatEditText current_text = (AppCompatEditText) current_view;
+                current_text.setText(code);
+            }
+            if(current_view_type == uiBuilder.IS_ACTION_BUTTON && current_view.getTag().toString().matches(current_step_button_tag))
+            {
+                Log.i(CLASS_NAME, "Edit Text should have been updated/Tag = " + current_view.getTag());
+                Button current_button = (Button)current_view;
+                current_button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        initStepWidget(appLogic.currentStep);
+                    }
+                });
+                current_button.setVisibility(View.VISIBLE);
+            }
+
+
+        }
+
+    }
+
     @Override
     public void codeScanned(String code) {
 
+        // close the camera
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag("TVOJA MAMA");
+        if(fragment != null)
+            getSupportFragmentManager().beginTransaction().remove(fragment).commit();
+
+        /*
+        Log.i(CLASS_NAME, "Found back Stack Entries before pop: " + getFragmentManager().getBackStackEntryCount());
+        getFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        Log.i(CLASS_NAME, "Found back Stack Entries after pop: " + getFragmentManager().getBackStackEntryCount());
+        getSupportFragmentManager().beginTransaction().remove(scanner).commit();
+        */
+        scanner.releaseCamera();
+        scannerScreen.setVisibility(View.GONE);
+
         Log.i(CLASS_NAME, "Code scanned: " + code);
         updateUI(code);
+
     }
 
     @Override
