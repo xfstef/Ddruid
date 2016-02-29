@@ -388,7 +388,7 @@ class SclableInterpreter {
                     new_widget.list_view_columns = new LinkedHashMap<>(list_attributes.length());
 
                     // TODO: Put this code back in when Hakan fixes the config file !!!
-                    /*for(int i = 0; i < list_attributes.length(); i++){
+                    for(int i = 0; i < list_attributes.length(); i++){
 
                         //System.out.println("Key: " + list_attributes.get(i));
                         keys = list_attributes.getJSONObject(i);
@@ -398,7 +398,7 @@ class SclableInterpreter {
                         for(int b = 0; b < values.length(); b++)
                             short_values.add((Integer) values.get(b));
                         new_widget.list_view_columns.put(Integer.valueOf(next_key), short_values);
-                    }*/
+                    }
 
                 }
 
