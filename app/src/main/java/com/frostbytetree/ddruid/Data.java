@@ -121,6 +121,10 @@ class LookupTable{
                     // 3 - Selection (spinner).
     String referenced_table_name = null;
     Table referenced_table = null; // Table used for the SQL Query.
-    String SQL_command; // SQL Query.
-    ArrayList<String> result;   // The result from the SQL Query.
+
+    DataSet results = null;
+
+    ArrayList<String> SQL_command = null; // SQL Query.
+    ArrayList<String> result = null;   // The result from the SQL Query.
+
 }

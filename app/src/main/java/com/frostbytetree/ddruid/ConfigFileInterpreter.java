@@ -139,7 +139,7 @@ class SclableInterpreter {
         linkTablesToWidgets();
         linkReferencesToTable();
         linkActionsToWidgets();
-        //linkTablesToSteps();
+        linkTablesToSteps();
 
     }
 
@@ -147,7 +147,7 @@ class SclableInterpreter {
         for(int g = 0; g < widgetViews.the_widgets.size(); g++)
             if(widgetViews.the_widgets.get(g).widgetType == 5)
                 for(int l = 0; l < widgetViews.the_widgets.get(g).steps.size(); l++)
-                    if(widgetViews.the_widgets.get(g).steps.get(l).lookupTable.referenced_table_name != null)
+                    if(widgetViews.the_widgets.get(g).steps.get(l).lookupTable != null)
                         for(int h = 0; h < data.tables.size(); h++)
                             if(widgetViews.the_widgets.get(g).steps.get(l).lookupTable.referenced_table_name.
                                     matches(data.tables.get(h).table_name)){
@@ -155,7 +155,6 @@ class SclableInterpreter {
                                         = data.tables.get(h);
                                 break;
                             }
-        System.out.println("This shit worked: " + widgetViews.the_widgets.get(0).steps.get(0).lookupTable.referenced_table.table_name);
     }
 
     private void linkActionsToWidgets(){
@@ -440,6 +439,7 @@ class SclableInterpreter {
                                         new_lookup.uses = 3;
                                         break;
                                 }
+                            new_lookup.SQL_command = new ArrayList<>();
                             new_lookup.SQL_command = buildSQLCommand(step_data_element.getJSONObject
                                     ("attribute_map"), new_lookup.referenced_table_name);
                             new_step.lookupTable = new_lookup;
@@ -457,14 +457,15 @@ class SclableInterpreter {
 
                         new_widget.steps.add(new_step);
                     }
-                }
+                }else
+                    new_widget.steps = null;
 
             } catch (JSONException e) {
                 e.printStackTrace();
                 //break;
             }
 
-            if(new_widget.steps.size() > 0) {
+            if(new_widget.steps != null) {
                 linkSteps(new_widget);
             }
 
@@ -493,10 +494,12 @@ class SclableInterpreter {
         }
     }
 
-    private String buildSQLCommand(JSONObject attribute_map, String referenced_table_name) {
+    private ArrayList<String> buildSQLCommand(JSONObject attribute_map, String referenced_table_name) {
         Iterator<String> keys = attribute_map.keys();
         String key = null;
         String value = null;
+        ArrayList<String> result = new ArrayList<>();
+
         while(keys.hasNext())
         {
             key = keys.next();
@@ -509,6 +512,7 @@ class SclableInterpreter {
 
             }
             System.out.println("Key: " + key + ", " + value);
+
         }
         return null;
     }
