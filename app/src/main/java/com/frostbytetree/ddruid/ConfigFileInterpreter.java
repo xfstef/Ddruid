@@ -516,11 +516,15 @@ class SclableInterpreter {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            HashMap<String, String> element = data.splitTableFromAttribute(value);
-            System.out.println("Key: " + element.toString());
-
+            Pair<String, String> element = data.splitTableFromAttribute(key);
+            result.add(element.first);
+            result.add(element.second);
+            element = data.splitTableFromAttribute(value);
+            result.add(element.first);
+            result.add(element.second);
         }
-        return null;
+
+        return result;
     }
 
     // Builds the Widget Menu and sets all parent to child relationships. Afterwards it calls the

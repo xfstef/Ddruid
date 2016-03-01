@@ -89,12 +89,13 @@ public class Data {
         return searched;
     }
 
-    public HashMap<String, String> splitTableFromAttribute(String input){
-        HashMap<String, String> the_pair = new HashMap<>();
+    public Pair<String, String> splitTableFromAttribute(String input){
+        Pair<String, String> the_pair = null;
 
         for(int x = input.length()-1; x >= 0 ; x--)
             if(input.charAt(x) == '.') {
-                the_pair.put(input.substring(0, x), input.substring(x, input.length()-1));
+                the_pair = new Pair<>(input.substring(0, x), input.substring(x+1, input.length()));
+                return the_pair;
             }
 
         return the_pair;
