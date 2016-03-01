@@ -161,7 +161,7 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         Table myTable = findTableWithinWidget(myWidget);
-        if(myTable.dataSets == null) {
+        if(myTable.dataSets.size() == 0) {
             this.myTable = myTable;
             appLogic.getTableData(myTable, this);
         }
