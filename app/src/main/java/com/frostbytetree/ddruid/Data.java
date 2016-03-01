@@ -24,6 +24,8 @@ public class Data {
     Object data_lock = new Object();
     Object temp_object_lock = new Object();
 
+    DataAssistant dataAssistant = new DataAssistant();
+
     public static Data getInstance() {
         return ourInstance;
     }
@@ -127,4 +129,10 @@ class LookupTable{
     ArrayList<String> SQL_command = null; // SQL Query.
     ArrayList<String> result = null;   // The result from the SQL Query.
 
+}
+
+class DataAssistant{
+    //public Table getTable(String name){
+        //for(int x = 0; x < )
+    //}
 }
