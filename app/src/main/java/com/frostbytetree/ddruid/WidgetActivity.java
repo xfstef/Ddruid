@@ -453,6 +453,8 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
             this.drawer.closeDrawer(GravityCompat.START);
             return;
         }
+        if(scanner.isResumed())
+            scanner.onDestroy();
 
 
         // when adding dynamically views then they should be destroyed when going back
