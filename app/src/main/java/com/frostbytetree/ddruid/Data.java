@@ -24,8 +24,6 @@ public class Data {
     Object data_lock = new Object();
     Object temp_object_lock = new Object();
 
-    DataAssistant dataAssistant = new DataAssistant();
-
     public static Data getInstance() {
         return ourInstance;
     }
@@ -49,6 +47,59 @@ public class Data {
     synchronized public boolean getPersistancy(){
         return this.persistancy;
     }
+
+    public Table getTable(String name){
+        for(int x = 0; x < tables.size(); x++)
+            if(tables.get(x).table_name.matches(name))
+                return tables.get(x);
+
+        return null;
+    }
+
+    public short getIndexOfAttribute(Table table, String attribute){
+        if(table == null)
+            return -1;
+
+        for(int x = 0; x < table.attributes.size(); x++)
+            if(table.attributes.get(x).name.matches(attribute))
+                return (short) x;
+
+        return -1;
+    }
+
+    public DataSet getSetData(Table table, ArrayList<Short> indexes, ArrayList<String> parameters){
+        if (table == null)
+            return null;
+        if(indexes.size() != parameters.size())
+            return null;
+
+        DataSet searched = null;
+        for(int x = 0; x < table.dataSets.size(); x++) {
+            ArrayList<String> maybe = new ArrayList<>();
+            maybe = null;
+            for (int y = 0; y < indexes.size(); y++)
+                if (table.dataSets.get(x).set.get(indexes.get(y)).matches(parameters.get(y)))
+                    maybe = table.dataSets.get(x).set;
+                else
+                    maybe = null;
+            if(maybe != null)
+                searched.set.add(String.valueOf(maybe));
+        }
+
+        return searched;
+    }
+
+    public HashMap<String, String> splitTableFromAttribute(String input){
+        HashMap<String, String> the_pair = new HashMap<>();
+
+        for(int x = input.length()-1; x >= 0 ; x--)
+            if(input.charAt(x) == '.') {
+                the_pair.put(input.substring(0, x), input.substring(x, input.length()-1));
+            }
+
+        return the_pair;
+    }
+
 }
 
 class Table{
@@ -129,10 +180,4 @@ class LookupTable{
     ArrayList<String> SQL_command = null; // SQL Query.
     ArrayList<String> result = null;   // The result from the SQL Query.
 
-}
-
-class DataAssistant{
-    //public Table getTable(String name){
-        //for(int x = 0; x < )
-    //}
 }

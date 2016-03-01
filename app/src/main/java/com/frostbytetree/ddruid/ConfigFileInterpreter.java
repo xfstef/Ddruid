@@ -240,16 +240,15 @@ class SclableInterpreter {
 
     private void linkTablesToWidgets() {
         synchronized (data.data_lock){
-            for(int x = 0; x < widgetViews.the_widgets.size()-1; x++) {  // Only goes to n-1 because the last Widget is the Menu Widget
+            for(int x = 0; x < widgetViews.the_widgets.size(); x++) {  // Only goes to n-1 because the last Widget is the Menu Widget
                 // that doesn't have any tables or actions.
-                for (int y = 0; y < widgetViews.the_widgets.get(x).myTableActions.size(); y++) {
-                    widgetViews.the_widgets.get(x).myTables = new ArrayList<Table>(widgetViews.the_widgets.get(x).myTableActions.size());
-                    for (int z = 0; z < data.tables.size(); z++)
-                        if (widgetViews.the_widgets.get(x).myTableActions.get(y).first.matches(data.tables.get(z).table_name))
-                            widgetViews.the_widgets.get(x).myTables.add(data.tables.get(z));
-
-                }
-
+                if(!widgetViews.the_widgets.get(x).titleBar.matches("Main Menu"))
+                    for (int y = 0; y < widgetViews.the_widgets.get(x).myTableActions.size(); y++) {
+                        widgetViews.the_widgets.get(x).myTables = new ArrayList<Table>(widgetViews.the_widgets.get(x).myTableActions.size());
+                        for (int z = 0; z < data.tables.size(); z++)
+                            if (widgetViews.the_widgets.get(x).myTableActions.get(y).first.matches(data.tables.get(z).table_name))
+                                widgetViews.the_widgets.get(x).myTables.add(data.tables.get(z));
+                    }
             }
         }
 
@@ -508,10 +507,8 @@ class SclableInterpreter {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            if(key.matches(value)){
-
-            }
-            System.out.println("Key: " + key + ", " + value);
+            HashMap<String, String> element = data.splitTableFromAttribute(value);
+            System.out.println("Key: " + element.toString());
 
         }
         return null;

@@ -453,7 +453,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
             this.drawer.closeDrawer(GravityCompat.START);
             return;
         }
-        if(scanner.isResumed())
+        if(scanner != null && scanner.isResumed())
             scanner.onDestroy();
 
 
