@@ -140,6 +140,17 @@ class SclableInterpreter {
         linkReferencesToTable();
         linkActionsToWidgets();
         linkTablesToSteps();
+        linkStepTablesToWidget();
+
+    }
+
+    private void linkStepTablesToWidget(){
+        for(int x = 0; x < widgetViews.the_widgets.size(); x++)
+            if (widgetViews.the_widgets.get(x).widgetType == 5)
+                for (int g = 0; g < widgetViews.the_widgets.get(x).steps.size(); g++)
+                    if (widgetViews.the_widgets.get(x).steps.get(g).lookupTable != null &&
+                            !widgetViews.the_widgets.get(x).myTables.contains(widgetViews.the_widgets.get(x).steps.get(g).lookupTable.referenced_table))
+                        widgetViews.the_widgets.get(x).myTables.add(widgetViews.the_widgets.get(x).steps.get(g).lookupTable.referenced_table);
 
     }
 
@@ -436,9 +447,9 @@ class SclableInterpreter {
                                         new_lookup.uses = 3;
                                         break;
                                 }
-                            new_lookup.SQL_command = new ArrayList<>();
-                            new_lookup.SQL_command = buildSQLCommand(step_data_element.getJSONObject
-                                    ("attribute_map"), new_lookup.referenced_table_name);
+                            new_lookup.lookup_strings = new ArrayList<>();
+                            new_lookup.lookup_strings = copyLookupStrings(step_data_element.getJSONObject
+                                    ("attribute_map"));
                             new_step.lookupTable = new_lookup;
 
                             // TODO: Finish reading and building the required lookup.
@@ -491,7 +502,7 @@ class SclableInterpreter {
         }
     }
 
-    private ArrayList<String> buildSQLCommand(JSONObject attribute_map, String referenced_table_name) {
+    private ArrayList<String> copyLookupStrings(JSONObject attribute_map) {
         Iterator<String> keys = attribute_map.keys();
         String key = null;
         String value = null;

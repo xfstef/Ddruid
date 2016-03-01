@@ -177,7 +177,7 @@ class LookupTable{
 
     DataSet results = null;
 
-    ArrayList<String> SQL_command = null; // SQL Query.
+    ArrayList<String> lookup_strings = null; // SQL Query.
     ArrayList<String> result = null;   // The result from the SQL Query.
 
 }
