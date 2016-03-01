@@ -57,6 +57,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
 
     FrameLayout widgetScreen;
     FrameLayout scannerScreen;
+    FrameLayout loadingScreen;
     Toolbar toolbar;
     DrawerLayout drawer;
     ActionBarDrawerToggle mDrawerToggle;
@@ -95,7 +96,10 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
         super.onCreate(savedInstanceState);
         //my_widget = new Widget(this);
         //widgetViews = WidgetViews.getInstance();
+        appLogic = AppLogic.getInstance();
+        my_widget = appLogic.currentWidget;
 
+        setTheme(appLogic.configFile.custom_color);
 
         //System.out.println("Current widget on Resume: " + my_widget.titleBar);
 
@@ -105,17 +109,18 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
+    /*
     @TargetApi(21)
     private void setStatusBarTheme()
     {
         Log.d(CLASS_NAME, "setStatusBarTheme called!");
-        /*
+
         Window window = this.getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         window.setStatusBarColor(this.getResources().getColor(appLogic.configFile.custom_color));
-        */
-    }
+
+    }*/
 
     void checkWidgetType() {
         // 0 - List;
@@ -135,6 +140,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
                 startWidgetListActivity();
                 //initTableList();
                 break;
+            //TODO: this case should be called when all the tables are downloaded
             case 5: // send the first step for complex widget
                 uiBuilder.loadInitialState(my_widget);
                 initStepWidget(my_widget.steps.get(0));
@@ -332,12 +338,12 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
 
     void initScreenItems() {
 
+        setContentView(R.layout.widget_activity);
         widgetScreen = (FrameLayout) findViewById(R.id.mainContent);
+        //widgetScreen.setVisibility(View.GONE);
         toolbar = (Toolbar) findViewById(R.id.widget_toolbar);
-        my_widget = appLogic.currentWidget;
-
-        // set the current Interface for ui_endpoint (signalDataArived)
-        appLogic.iDataInflateListener = this;
+        loadingScreen = (FrameLayout)findViewById(R.id.loading_circle);
+        //loadingScreen.setVisibility(View.VISIBLE);
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(my_widget.titleBar);
@@ -421,41 +427,61 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
 
         Log.i(CLASS_NAME, "On Resume called!");
         // close the camera
-        Fragment fragment = getSupportFragmentManager().findFragmentByTag("TVOJA MAMA");
-        if(fragment != null) {
-            Log.i(CLASS_NAME, "Fragment will be removed!");
-            getSupportFragmentManager().beginTransaction().remove(fragment).commit();
-            scanner.releaseCamera();
-        }
 
-
-        appLogic = AppLogic.getInstance();
-        my_widget = appLogic.currentWidget;
-
-        setTheme(appLogic.configFile.custom_color);
-        setStatusBarTheme();
+        //setStatusBarTheme();
 
         // init the UI Builder
         uiBuilder = UIBuilder.getInstance();
 
         uiBuilder.setContext(this);
         uiBuilder.setCallback(this);
-        setContentView(R.layout.widget_activity);
+
+
+        my_widget = appLogic.currentWidget;
+
+        // set the current Interface for ui_endpoint (signalDataArived)
+        appLogic.iDataInflateListener = this;
+
+        /*
+        if (my_widget.myTables.get(0).dataSets.size() == 0)
+        {
+            Log.i(CLASS_NAME, "Getting Table: " + my_widget.myTables.get(0).table_name);
+            appLogic.getTableData(my_widget.myTables.get(0), this);
+        }*/
+
         initScreenItems();
+    }
+
+    @Override
+    public void onPause() {
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag("TVOJA MAMA");
+        if (fragment != null) {
+            Log.i(CLASS_NAME, "Fragment will be removed!");
+            getSupportFragmentManager().beginTransaction().remove(fragment).commit();
+            scanner.releaseCamera();
+        }
+        super.onPause();
     }
 
     @Override
     public void onBackPressed() {
 
-        super.onBackPressed();
         if (this.drawer.isDrawerOpen(GravityCompat.START))
         {
             this.drawer.closeDrawer(GravityCompat.START);
             return;
         }
-        if(scanner != null && scanner.isResumed())
+        /*
+        if(scanner != null && scanner.isResumed()) {
+            Log.i(CLASS_NAME, "Scanner should be destroyed!");
             scanner.onDestroy();
-
+        }*/
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag("TVOJA MAMA");
+        if (fragment != null) {
+            Log.i(CLASS_NAME, "Fragment will be removed!");
+            getSupportFragmentManager().beginTransaction().remove(fragment).commit();
+            scanner.releaseCamera();
+        }
 
         // when adding dynamically views then they should be destroyed when going back
         my_widget.removeAllViews();
@@ -473,9 +499,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
             // this sends the android app to the background
             this.moveTaskToBack(true);
         }
-
-
-
+        super.onBackPressed();
 
     }
 
@@ -487,7 +511,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
         if(requestCode == LIST_ACTIVITY_START)
         {
             Log.d(CLASS_NAME, "Init Screen Items invoked");
-            initScreenItems();
+            //initScreenItems();
 
         }
     }
@@ -532,7 +556,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
         client.disconnect();
     }
 
-    //TODO: the corect elements should be updated with the scan result
+    //TODO: the correct elements should be updated with the scan result
     private void updateUI(String code)
     {
         for(int i = 0; i < uiBuilder.all_view_elements.size(); i++)
