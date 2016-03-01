@@ -50,7 +50,7 @@ class Widget extends LinearLayout{
     int id;
     ArrayList<Table> myTables = new ArrayList<>();
     ArrayList<Action>myActions = new ArrayList<>();
-    ArrayList<Pair<String, String>> myTableActions;   // {["ticket", "create"],["ticket", "forward"]}
+    ArrayList<Pair<String, String>> myTableActions = new ArrayList<>();   // {["ticket", "create"],["ticket", "forward"]}
 
     ArrayList<Widget> myChildren;
     Widget myParent; // By default just one parent but there may exist cases with multiple parents.
