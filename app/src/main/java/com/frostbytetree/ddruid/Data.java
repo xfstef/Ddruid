@@ -32,22 +32,6 @@ public class Data {
         tables = new ArrayList<Table>();
     }
 
-    synchronized public void setTest(String test) {
-        this.test = test;
-    }
-
-    synchronized public String getTest(){
-        return this.test;
-    }
-
-    synchronized public void setPersistancy(boolean pers) {
-        this.persistancy = pers;
-    }
-
-    synchronized public boolean getPersistancy(){
-        return this.persistancy;
-    }
-
     public void executeLookup(LookupTable lookupTable, ArrayList<String> parameter){
         ArrayList<Short> searched_indices = new ArrayList<>();
         for(int x = 1; x < lookupTable.lookup_strings.size(); x += 4) {
@@ -82,8 +66,6 @@ public class Data {
             return null;
         if(indexes.size() != parameters.size())
             return null;
-
-        System.out.println("this shit worked!!!!!");
 
         DataSet searched = new DataSet();
         searched.set = new ArrayList<>();
