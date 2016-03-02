@@ -27,7 +27,12 @@
         <item name="colorAccent">@color/colorPrimary</item>
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" >
+        <item name="colorControlNormal">@color/textColorPrimary</item>
+        <item name="colorControlActivated">@color/colorBackground</item>
+        <item name="colorControlHighlight">@color/colorBackground</item>
+    </style>
+
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
     <style name="AppTheme.Indigo" parent="Theme.AppCompat.Light.DarkActionBar">

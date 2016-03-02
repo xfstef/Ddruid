@@ -70,6 +70,9 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
     // RecycleViewDataSetAdapter tableAdapter;
     LinearLayout.LayoutParams layoutParams;
     Scanner scanner;
+    Data data;
+
+    int requested_tables = 0;
 
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -98,29 +101,12 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
         //widgetViews = WidgetViews.getInstance();
         appLogic = AppLogic.getInstance();
         my_widget = appLogic.currentWidget;
-
         setTheme(appLogic.configFile.custom_color);
-
-        //System.out.println("Current widget on Resume: " + my_widget.titleBar);
-
 
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
-
-    /*
-    @TargetApi(21)
-    private void setStatusBarTheme()
-    {
-        Log.d(CLASS_NAME, "setStatusBarTheme called!");
-
-        Window window = this.getWindow();
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        window.setStatusBarColor(this.getResources().getColor(appLogic.configFile.custom_color));
-
-    }*/
 
     void checkWidgetType() {
         // 0 - List;
@@ -142,13 +128,21 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
                 break;
             //TODO: this case should be called when all the tables are downloaded
             case 5: // send the first step for complex widget
+                loadTablesRegardingStepWidget();
                 uiBuilder.loadInitialState(my_widget);
-                initStepWidget(my_widget.steps.get(0));
                 //handleStepWidget(my_widget.steps.get(0));
             default:
 
         }
 
+    }
+
+    private void loadTablesRegardingStepWidget()
+    {
+        requested_tables = my_widget.myTables.size();
+        for(int i = 0; i < my_widget.myTables.size(); i++) {
+            appLogic.getTableData(my_widget.myTables.get(i), this);
+        }
     }
 
     private void initStepWidget(Step step)
@@ -432,7 +426,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
 
         // init the UI Builder
         uiBuilder = UIBuilder.getInstance();
-
+        data = Data.getInstance();
         uiBuilder.setContext(this);
         uiBuilder.setCallback(this);
 
@@ -609,6 +603,15 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
         scannerScreen.setVisibility(View.GONE);
 
         Log.i(CLASS_NAME, "Code scanned: " + code);
+        Table current_table = appLogic.currentStep.lookupTable.referenced_table;
+
+        ArrayList<Short> searched_indices = new ArrayList<>();
+        short searched_index = data.getIndexOfAttribute(current_table, appLogic.currentStep.lookupTable.lookup_strings.get(1));
+        ArrayList<String> codesScanned = new ArrayList<>();
+        codesScanned.add(code);
+        searched_indices.add(searched_index);
+        DataSet select_result = data.getSetData(current_table, searched_indices, codesScanned);
+        Log.i(CLASS_NAME, "DataSet found for scanned item: " + select_result.set.toString());
         updateUI(code);
 
     }
@@ -644,6 +647,17 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
                             }
                     }
                 });
+                break;
+            case 5:
+                requested_tables--;
+                if(requested_tables == 0) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            initStepWidget(my_widget.steps.get(0));
+                        }
+                    });
+                }
                 break;
         }
 

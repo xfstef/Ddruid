@@ -73,7 +73,7 @@ public class Data {
         if(indexes.size() != parameters.size())
             return null;
 
-        DataSet searched = null;
+        DataSet searched = new DataSet();
         for(int x = 0; x < table.dataSets.size(); x++) {
             ArrayList<String> maybe = new ArrayList<>();
             maybe = null;
