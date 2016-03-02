@@ -48,6 +48,16 @@ public class Data {
         return this.persistancy;
     }
 
+    public void executeLookup(LookupTable lookupTable, ArrayList<String> parameter){
+        ArrayList<Short> searched_indices = new ArrayList<>();
+        for(int x = 1; x < lookupTable.lookup_strings.size(); x += 4) {
+            short searched_index = getIndexOfAttribute(lookupTable.referenced_table, lookupTable.lookup_strings.get(x));
+            searched_indices.add(searched_index);
+        }
+        lookupTable.results = getSetData(lookupTable.referenced_table, searched_indices, parameter);
+
+    }
+
     public Table getTable(String name){
         for(int x = 0; x < tables.size(); x++)
             if(tables.get(x).table_name.matches(name))
@@ -73,7 +83,10 @@ public class Data {
         if(indexes.size() != parameters.size())
             return null;
 
+        System.out.println("this shit worked!!!!!");
+
         DataSet searched = new DataSet();
+        searched.set = new ArrayList<>();
         for(int x = 0; x < table.dataSets.size(); x++) {
             ArrayList<String> maybe = new ArrayList<>();
             maybe = null;
@@ -176,9 +189,7 @@ class LookupTable{
     String referenced_table_name = null;
     Table referenced_table = null; // Table used for the SQL Query.
 
-    DataSet results = null;
-
     ArrayList<String> lookup_strings = null; // SQL Query.
-    ArrayList<String> result = null;   // The result from the SQL Query.
+    DataSet results = new DataSet();   // The result from the SQL Query.
 
 }

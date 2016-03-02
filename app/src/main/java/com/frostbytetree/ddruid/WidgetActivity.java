@@ -603,15 +603,11 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
         scannerScreen.setVisibility(View.GONE);
 
         Log.i(CLASS_NAME, "Code scanned: " + code);
-        Table current_table = appLogic.currentStep.lookupTable.referenced_table;
 
-        ArrayList<Short> searched_indices = new ArrayList<>();
-        short searched_index = data.getIndexOfAttribute(current_table, appLogic.currentStep.lookupTable.lookup_strings.get(1));
-        ArrayList<String> codesScanned = new ArrayList<>();
-        codesScanned.add(code);
-        searched_indices.add(searched_index);
-        DataSet select_result = data.getSetData(current_table, searched_indices, codesScanned);
-        Log.i(CLASS_NAME, "DataSet found for scanned item: " + select_result.set.toString());
+        ArrayList<String> parameters = new ArrayList<>();
+        parameters.add(code);
+        data.executeLookup(appLogic.currentStep.lookupTable, parameters);
+        Log.i(CLASS_NAME, "DataSet found for scanned item: " + appLogic.currentStep.lookupTable.results.set.toString());
         updateUI(code);
 
     }
