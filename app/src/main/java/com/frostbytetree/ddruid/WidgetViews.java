@@ -90,6 +90,8 @@ class Step{
                                 // 1 - Recycler View;
                                 // 2 - ...
                                 // 99 - NO UI.
+    Step last_step = null;
+
     String ui_label;
     ArrayList<String> load_in_ui;
     LookupTable lookupTable;

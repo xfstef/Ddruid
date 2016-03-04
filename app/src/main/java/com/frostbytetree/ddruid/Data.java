@@ -1,6 +1,7 @@
 package com.frostbytetree.ddruid;
 
 import android.util.Pair;
+import android.widget.ArrayAdapter;
 
 import org.json.JSONObject;
 
@@ -32,14 +33,27 @@ public class Data {
         tables = new ArrayList<Table>();
     }
 
+    // This Function acts as a SELECT * FROM ... SQL Query. The result is a DataSet with all found rows.
     public void executeLookup(LookupTable lookupTable, ArrayList<String> parameter){
         ArrayList<Short> searched_indices = new ArrayList<>();
-        for(int x = 1; x < lookupTable.lookup_strings.size(); x += 4) {
+        for(int x = 3; x < lookupTable.lookup_strings.size(); x += 4) {
             short searched_index = getIndexOfAttribute(lookupTable.referenced_table, lookupTable.lookup_strings.get(x));
             searched_indices.add(searched_index);
         }
         lookupTable.results = getSetData(lookupTable.referenced_table, searched_indices, parameter);
 
+    }
+
+    // This function is used to get all
+    public ArrayList<String> filterColumn(LookupTable lookupTable, String column_name){
+        ArrayList<String> result = new ArrayList<>();
+
+        short column_index = getIndexOfAttribute(lookupTable.referenced_table, column_name);
+        if(column_index >= 0)
+            for(int x = 0; x < lookupTable.results.size(); x++)
+                result.add(lookupTable.results.get(x).set.get(column_index));
+
+        return result;
     }
 
     public Table getTable(String name){
@@ -61,15 +75,17 @@ public class Data {
         return -1;
     }
 
-    public DataSet getSetData(Table table, ArrayList<Short> indexes, ArrayList<String> parameters){
+    public ArrayList<DataSet> getSetData(Table table, ArrayList<Short> indexes, ArrayList<String> parameters){
         if (table == null)
             return null;
         if(indexes.size() != parameters.size())
             return null;
 
-        DataSet searched = new DataSet();
-        searched.set = new ArrayList<>();
+        ArrayList<DataSet> searched = new ArrayList<>();
+
         for(int x = 0; x < table.dataSets.size(); x++) {
+            DataSet new_set = new DataSet();
+            new_set.set = new ArrayList<>();
             ArrayList<String> maybe = new ArrayList<>();
             maybe = null;
             for (int y = 0; y < indexes.size(); y++)
@@ -77,8 +93,10 @@ public class Data {
                     maybe = table.dataSets.get(x).set;
                 else
                     maybe = null;
-            if(maybe != null)
-                searched.set.add(String.valueOf(maybe));
+            if(maybe != null) {
+                new_set.set.add(String.valueOf(maybe));
+                searched.add(new_set);
+            }
         }
 
         return searched;
@@ -171,7 +189,7 @@ class LookupTable{
     String referenced_table_name = null;
     Table referenced_table = null; // Table used for the SQL Query.
 
-    ArrayList<String> lookup_strings = null; // SQL Query.
-    DataSet results = new DataSet();   // The result from the SQL Query.
-
+    ArrayList<String> lookup_strings = new ArrayList<>(); // SQL Query.
+    ArrayList<DataSet> results = new ArrayList<>();   // The result from the SQL Query.
+    ArrayList<String> column_filter = new ArrayList<>();
 }
