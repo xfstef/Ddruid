@@ -98,7 +98,10 @@ class Step{
 
     String next_step_if_success = null;
     Step next_if_success = null;
+    String success_label;
+
     String next_step_if_error = null;
     Step next_if_error = null;
     int error_message;
+
 }

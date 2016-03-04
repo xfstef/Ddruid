@@ -461,9 +461,10 @@ class SclableInterpreter {
                         if(step_data_element.has("next_step"))
                             new_step.next_step_if_success = step_data_element.getString("next_step");
                         if(step_data_element.has("label"))
-                            new_step.ui_label = step_data_element.getString("label");
+                            new_step.success_label = step_data_element.getString("label");
                         if(step_data_element.has("attributes")){
                             JSONArray succ_attr = step_data_element.getJSONArray("attributes");
+                            new_step.load_in_ui = new ArrayList<>();
                             for(int d = 0; d < succ_attr.length(); d++)
                                 new_step.load_in_ui.add(succ_attr.getString(d));
                         }
@@ -471,8 +472,6 @@ class SclableInterpreter {
                         step_data_element = step_data.getJSONObject("error");
                         if(step_data_element.has("next_step"))
                             new_step.next_step_if_error = step_data_element.getString("next_step");
-                        if(step_data_element.has("label"))
-                            new_step.ui_label = step_data_element.getString("label");
                         new_step.error_message = step_data_element.getInt("message");
 
                         new_widget.steps.add(new_step);
