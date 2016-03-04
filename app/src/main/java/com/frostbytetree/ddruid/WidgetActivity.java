@@ -425,15 +425,14 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
 
         //setStatusBarTheme();
 
+
+        // This section is needed  for the
         // init the UI Builder
         uiBuilder = UIBuilder.getInstance();
         data = Data.getInstance();
         uiBuilder.setContext(this);
         uiBuilder.setCallback(this);
-
-
         my_widget = appLogic.currentWidget;
-
         // set the current Interface for ui_endpoint (signalDataArived)
         appLogic.iDataInflateListener = this;
 
@@ -608,7 +607,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
         ArrayList<String> parameters = new ArrayList<>();
         parameters.add(code);
         data.executeLookup(appLogic.currentStep.lookupTable, parameters);
-        Log.i(CLASS_NAME, "DataSet found for scanned item: " + appLogic.currentStep.lookupTable.results.set.toString());
+        //Log.i(CLASS_NAME, "DataSet found for scanned item: " + appLogic.currentStep.lookupTable.results.set.toString());
         updateUI(code);
 
     }

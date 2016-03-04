@@ -337,7 +337,9 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
                 super();
                 this.adapter = adapter;
                 this.originalList = new LinkedList<>(originalList);
+
                 Log.i(CLASS_NAME, "Original List size: " + originalList.size());
+                Log.i(CLASS_NAME, "Orginal List: " + originalList.toString());
                 this.filteredList = new ArrayList<>();
             }
 
@@ -442,7 +444,7 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
-
+            Log.i(CLASS_NAME, "OnBindViewHolder called!");
 
             String tuple = new String();
             for(LinkedHashMap.Entry<Integer, ArrayList<Integer>> entry : myWidget.list_view_columns.entrySet())
@@ -469,6 +471,7 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
 
             }
             data.add(position, tuple);
+            Log.i(CLASS_NAME, "Data within Adapter: " + data);
             holder.mItem = dataSets.get(position).set;
             holder.mTextView.setText(tuple);
             holder.currentDataSet = dataSets.get(position);
