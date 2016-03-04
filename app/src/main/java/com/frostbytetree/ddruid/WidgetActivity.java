@@ -55,7 +55,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
     private static final String EMPTY_ERROR_MSG = "Field is required!";
     private static final int LIST_ACTIVITY_START = 2;
 
-    FrameLayout widgetScreen;
+    FrameLayout widgetScreen = null;
     FrameLayout scannerScreen;
     FrameLayout loadingScreen;
     Toolbar toolbar;
@@ -129,6 +129,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
             //TODO: this case should be called when all the tables are downloaded
             case 5: // send the first step for complex widget
                 loadTablesRegardingStepWidget();
+
                 uiBuilder.loadInitialState(my_widget);
                 //handleStepWidget(my_widget.steps.get(0));
             default:

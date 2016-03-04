@@ -47,6 +47,11 @@ public class Scanner extends Fragment {
     }
 
 
+    static {
+        System.loadLibrary("iconv");
+    }
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -112,7 +117,9 @@ public class Scanner extends Fragment {
     public static Camera getCameraInstance(){
         Camera c = null;
         try {
+
             c = Camera.open();
+            Log.i(CLASS_NAME, "Camera instance: " + c.toString());
         } catch (Exception e){
             Log.i(CLASS_NAME, "Could not open camera: " + e);
         }
