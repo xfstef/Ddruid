@@ -452,17 +452,28 @@ class SclableInterpreter {
                             new_lookup.lookup_strings = copyLookupStrings(step_data_element.getJSONObject
                                     ("attribute_map"));
                             new_step.lookupTable = new_lookup;
-
-                            // TODO: Finish reading and building the required lookup.
                         }
+
+                        if(step_data.has("execute_action"))
+                            new_step.action_name = step_data.getString("execute_action");
+
                         step_data_element = step_data.getJSONObject("success");
                         if(step_data_element.has("next_step"))
                             new_step.next_step_if_success = step_data_element.getString("next_step");
-                        // TODO: Finish parsing the success state for this step.
+                        if(step_data_element.has("label"))
+                            new_step.ui_label = step_data_element.getString("label");
+                        if(step_data_element.has("attributes")){
+                            JSONArray succ_attr = step_data_element.getJSONArray("attributes");
+                            for(int d = 0; d < succ_attr.length(); d++)
+                                new_step.load_in_ui.add(succ_attr.getString(d));
+                        }
+
                         step_data_element = step_data.getJSONObject("error");
                         if(step_data_element.has("next_step"))
                             new_step.next_step_if_error = step_data_element.getString("next_step");
-                        // TODO: Finish parsing the error state for this step.
+                        if(step_data_element.has("label"))
+                            new_step.ui_label = step_data_element.getString("label");
+                        new_step.error_message = step_data_element.getInt("message");
 
                         new_widget.steps.add(new_step);
                     }

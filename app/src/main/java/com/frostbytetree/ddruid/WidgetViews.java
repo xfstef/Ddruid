@@ -91,10 +91,14 @@ class Step{
                                 // 2 - ...
                                 // 99 - NO UI.
     String ui_label;
+    ArrayList<String> load_in_ui;
     LookupTable lookupTable;
+    String action_name;
+    Action action = new Action();
 
     String next_step_if_success = null;
     Step next_if_success = null;
     String next_step_if_error = null;
     Step next_if_error = null;
+    int error_message;
 }
