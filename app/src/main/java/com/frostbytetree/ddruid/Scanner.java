@@ -62,8 +62,11 @@ public class Scanner extends Fragment {
 
 
         autoFocusHandler = new Handler();
+        if(mCamera != null)
+            releaseCamera();
         mCamera = getCameraInstance();
         mCamera.setDisplayOrientation(90);
+        /*
         try
         {
             mCamera.reconnect();
@@ -71,7 +74,7 @@ public class Scanner extends Fragment {
         } catch(Exception e)
         {
             Log.i(CLASS_NAME, "Camera could not be reconnected!");
-        }
+        }*/
         mCamera.startPreview();
         previewing = true;
         Log.i(CLASS_NAME, "Camera loaded!");
@@ -117,7 +120,6 @@ public class Scanner extends Fragment {
     public static Camera getCameraInstance(){
         Camera c = null;
         try {
-
             c = Camera.open();
             Log.i(CLASS_NAME, "Camera instance: " + c.toString());
         } catch (Exception e){

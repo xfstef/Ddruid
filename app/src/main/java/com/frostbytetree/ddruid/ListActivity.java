@@ -74,9 +74,6 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
 
                 if (myTable != null) {
                     Log.i(CLASS_NAME, "Text searched: " + query);
-                    // final ArrayList<DataSet> filteredModelList = filter(myTable.dataSets, newText);
-                    // tableAdapter.animateTo(filteredModelList);
-                    // recList.scrollToPosition(0);
                     tableAdapter.getFilter().filter(query);
                     return true;
                 } else
@@ -89,6 +86,7 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
     }
 
 
+    /*
     private ArrayList<DataSet> filter(ArrayList<DataSet> dataSets, String query) {
         query = query.toLowerCase();
 
@@ -100,7 +98,7 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
             }
         }
         return filteredDataSetList;
-    }
+    }*/
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
@@ -308,38 +306,35 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
 
 
         private List<DataSet> dataSets;
-        private List<String> data;
+        //private List<String> data;
         private List<String> filteredData;
         Table table;
         ListActivity father = null;
 
         public TableListItemRecyclerViewAdapter(ArrayList<DataSet> dataSets) {
             this.dataSets = dataSets;
-            this.data = new ArrayList<>();
+           // this.data = new ArrayList<>();
             this.filteredData = new ArrayList<>();
         }
 
         @Override
         public Filter getFilter() {
-            return new ListFilter(this, data);
+            return new ListFilter(this, dataSets);
         }
 
         private class ListFilter extends Filter {
 
             private final TableListItemRecyclerViewAdapter adapter;
-
-            private final List<String> originalList;
-
+            private final List<DataSet> originalList;
             private final List<String> filteredList;
-
-            private ListFilter(TableListItemRecyclerViewAdapter adapter, List<String> originalList)
+            private ListFilter(TableListItemRecyclerViewAdapter adapter, List<DataSet> dataSets)
             {
                 super();
                 this.adapter = adapter;
-                this.originalList = new LinkedList<>(originalList);
+                this.originalList = new LinkedList<>(dataSets);
 
                 Log.i(CLASS_NAME, "Original List size: " + originalList.size());
-                Log.i(CLASS_NAME, "Orginal List: " + originalList.toString());
+                Log.i(CLASS_NAME, "Original List: " + originalList.toString());
                 this.filteredList = new ArrayList<>();
             }
 
@@ -351,15 +346,19 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
 
                 if (constraint.length() == 0) {
                     Log.i(CLASS_NAME, "Constraint empty, adding all List ...");
-                    filteredList.addAll(originalList);
+                    for(int i = 0; i < originalList.size(); i++)
+                        filteredData.add(originalList.get(i).set.toString());
+
                 } else {
                     Log.i(CLASS_NAME, "Filter constraint: " + constraint);
                     final String filterPattern = constraint.toString().toLowerCase().trim();
 
-                    for (final String set : originalList) {
-                        if (set.contains(filterPattern)) {
-                            Log.i(CLASS_NAME, "Filtered Element: " + set.toString());
-                            filteredList.add(set);
+                    for(int i = 0; i < originalList.size(); i++)
+                    {
+                        if(originalList.get(i).set.toString().contains(filterPattern))
+                        {
+                            Log.i(CLASS_NAME, "Filtered Element: " + originalList.get(i).set.toString());
+                            filteredList.add(originalList.get(i).set.toString());
                         }
                     }
                 }
@@ -376,64 +375,6 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
             }
 
         }
-
-        /*
-
-        public void setModels(ArrayList<DataSet> dataSet) {
-            dataSets = new ArrayList<>(dataSet);
-        }
-
-        public DataSet removeItem(int position) {
-            final DataSet model = dataSets.remove(position);
-            notifyItemRemoved(position);
-            return model;
-        }
-
-        public void addItem(int position, DataSet model) {
-            dataSets.add(position, model);
-            notifyItemInserted(position);
-        }
-
-        public void moveItem(int fromPosition, int toPosition) {
-            final DataSet model = dataSets.remove(fromPosition);
-            dataSets.add(toPosition, model);
-            notifyItemMoved(fromPosition, toPosition);
-        }
-
-        public void animateTo(ArrayList<DataSet> datasets) {
-            applyAndAnimateRemovals(datasets);
-            applyAndAnimateAdditions(datasets);
-            applyAndAnimateMovedItems(datasets);
-        }
-
-        private void applyAndAnimateRemovals(ArrayList<DataSet> datasets) {
-            for (int i = datasets.size() - 1; i >= 0; i--) {
-                final DataSet dataSet = datasets.get(i);
-                if (!datasets.contains(dataSet)) {
-                    removeItem(i);
-                }
-            }
-        }
-
-        private void applyAndAnimateAdditions(ArrayList<DataSet> datasets) {
-            for (int i = 0, count = datasets.size(); i < count; i++) {
-                final DataSet dataSet = datasets.get(i);
-                if (!datasets.contains(dataSet)) {
-                    addItem(i, dataSet);
-                }
-            }
-        }
-
-        private void applyAndAnimateMovedItems(ArrayList<DataSet> datasets) {
-            for (int toPosition = datasets.size() - 1; toPosition >= 0; toPosition--) {
-                final DataSet dataSet = datasets.get(toPosition);
-                final int fromPosition = dataSets.indexOf(dataSet);
-                if (fromPosition >= 0 && fromPosition != toPosition) {
-                    moveItem(fromPosition, toPosition);
-                }
-            }
-        }
-        */
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -468,10 +409,8 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
                 }
                 tuple = tuple + " " + temp;
 
-
             }
-            data.add(position, tuple);
-            Log.i(CLASS_NAME, "Data within Adapter: " + data);
+
             holder.mItem = dataSets.get(position).set;
             holder.mTextView.setText(tuple);
             holder.currentDataSet = dataSets.get(position);

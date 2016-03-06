@@ -9,6 +9,7 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -112,7 +113,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
         // 0 - List;
         // 1 - Form;
         // 3 - Code Scanner;
-        Log.d(CLASS_NAME, "Widget Type: " + my_widget.widgetType);
+        Log.i(CLASS_NAME, "Widget Type: " + my_widget.widgetType);
 
 
         switch (my_widget.widgetType) {
@@ -128,12 +129,19 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
                 break;
             //TODO: this case should be called when all the tables are downloaded
             case 5: // send the first step for complex widget
-                loadTablesRegardingStepWidget();
-
+                Log.i(CLASS_NAME, "My Widget tables size: " + my_widget.myTables.size());
                 uiBuilder.loadInitialState(my_widget);
-                //handleStepWidget(my_widget.steps.get(0));
-            default:
-
+                for(int i = 0; i < my_widget.myTables.size(); i++) {
+                    if (my_widget.myTables.get(i).dataSets.size() == 0) {
+                        loadTablesRegardingStepWidget();
+                        break;
+                    }
+                    else {
+                        Log.i(CLASS_NAME, "Only init step widget without reloading tables");
+                        initStepWidget(my_widget.steps.get(0));
+                        break;
+                    }
+                }
         }
 
     }
@@ -374,7 +382,6 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
             mDrawerToggle.syncState();
         }
         widgetScreen.removeAllViews();
-        checkWidgetType();
     }
 
 
@@ -447,15 +454,18 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
         }*/
 
         initScreenItems();
+        checkWidgetType();
     }
 
     @Override
     public void onPause() {
+        // if camera fragment was activated
         Fragment fragment = getSupportFragmentManager().findFragmentByTag("TVOJA MAMA");
         if (fragment != null) {
             Log.i(CLASS_NAME, "Fragment will be removed!");
-            getSupportFragmentManager().beginTransaction().remove(fragment).commit();
             scanner.releaseCamera();
+            getSupportFragmentManager().beginTransaction().remove(fragment).commit();
+
         }
         super.onPause();
     }
@@ -476,8 +486,8 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
         Fragment fragment = getSupportFragmentManager().findFragmentByTag("TVOJA MAMA");
         if (fragment != null) {
             Log.i(CLASS_NAME, "Fragment will be removed!");
-            getSupportFragmentManager().beginTransaction().remove(fragment).commit();
             scanner.releaseCamera();
+            getSupportFragmentManager().beginTransaction().remove(fragment).commit();
         }
 
         // when adding dynamically views then they should be destroyed when going back
@@ -553,8 +563,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
         client.disconnect();
     }
 
-    //TODO: the correct elements should be updated with the scan result
-    private void updateUI(String code)
+    private void updateUIWithScanResult(String code)
     {
         for(int i = 0; i < uiBuilder.all_view_elements.size(); i++)
         {
@@ -567,7 +576,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
             if(current_view_type == uiBuilder.IS_INPUT_TEXT && current_view.getTag().toString().matches(current_step_text_tag))
             {
                 Log.i(CLASS_NAME, "Edit Text should have been updated/Tag = " + current_view.getTag());
-                AppCompatEditText current_text = (AppCompatEditText) current_view;
+                TextInputEditText current_text = (TextInputEditText) current_view;
                 current_text.setText(code);
             }
             if(current_view_type == uiBuilder.IS_ACTION_BUTTON && current_view.getTag().toString().matches(current_step_button_tag))
@@ -611,7 +620,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
         parameters.add(code);
         data.executeLookup(appLogic.currentStep.lookupTable, parameters);
         //Log.i(CLASS_NAME, "DataSet found for scanned item: " + appLogic.currentStep.lookupTable.results.set.toString());
-        updateUI(code);
+        updateUIWithScanResult(code);
 
     }
 

@@ -3,6 +3,7 @@ package com.frostbytetree.ddruid;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.os.Handler;
+import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -157,7 +158,7 @@ public class UIBuilder {
         input_item.setHint(step.ui_label);
 
         // EditText input_text = new EditText(context);
-        EditText input_text = (EditText)content.findViewById(R.id.input_text);
+        TextInputEditText input_text = (TextInputEditText)content.findViewById(R.id.input_text);
         input_text.setTag(step.name + ".text");
 
         Button bReset = (Button)content.findViewById(R.id.bReset);
