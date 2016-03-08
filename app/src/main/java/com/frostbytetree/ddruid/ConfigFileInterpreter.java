@@ -448,6 +448,8 @@ class SclableInterpreter {
                                         new_lookup.uses = 3;
                                         break;
                                 }
+                            else
+                                new_lookup.uses = 99;
                             new_lookup.lookup_strings = new ArrayList<>();
                             new_lookup.lookup_strings = copyLookupStrings(step_data_element.getJSONObject
                                     ("attribute_map"));

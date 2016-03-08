@@ -214,6 +214,7 @@ class LookupTable{
                     // 1 - Scanner;
                     // 2 - GPS;
                     // 3 - Selection (spinner).
+                    // 99 - No input required. Execute lookup automatically !
     String referenced_table_name = null;
     Table referenced_table = null; // Table used for the Query.
 
