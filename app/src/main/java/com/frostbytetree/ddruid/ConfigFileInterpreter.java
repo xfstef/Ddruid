@@ -431,6 +431,8 @@ class SclableInterpreter {
                             if(step_data.has("label"))
                                 new_step.ui_label = step_data.getString("label");
                         }
+                        else
+                            new_step.ui_element_type = 99;
                         JSONObject step_data_element = new JSONObject();
                         if(step_data.has("lookup")){
                             step_data_element = step_data.getJSONObject("lookup");
