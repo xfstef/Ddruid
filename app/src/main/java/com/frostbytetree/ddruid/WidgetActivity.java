@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -560,7 +561,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
         client.disconnect();
     }
 
-    private void updateUIWithScanResult(ArrayList<String> result)
+    private void updateStepSuccessUI(ArrayList<String> result)
     {
         for(int i = 0; i < uiBuilder.all_view_elements.size(); i++)
         {
@@ -568,14 +569,22 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
             View current_view = uiBuilder.all_view_elements.get(i).second;
             Log.i(CLASS_NAME, "Current View Type " + current_view_type);
             Log.i(CLASS_NAME, "Current View " + current_view);
+            String current_step_label_tag = appLogic.currentStep.name + ".label";
             String current_step_text_tag = appLogic.currentStep.name + ".text";
             String current_step_button_tag = appLogic.currentStep.name + ".button";
+            if(current_view_type == uiBuilder.IS_INPUT_LABEL && current_view.getTag().toString().matches(current_step_label_tag))
+            {
+                Log.i(CLASS_NAME, "Label Text should have been updated/Tag = " + current_view.getTag());
+                TextInputLayout current_label = (TextInputLayout) current_view;
+                current_label.setHint(appLogic.currentStep.success_label);
+
+            }
             if(current_view_type == uiBuilder.IS_INPUT_TEXT && current_view.getTag().toString().matches(current_step_text_tag))
             {
                 Log.i(CLASS_NAME, "Edit Text should have been updated/Tag = " + current_view.getTag());
                 TextInputEditText current_text = (TextInputEditText) current_view;
                 current_text.setText(result.get(0));
-                break;
+                //break;
             }
             if(current_view_type == uiBuilder.IS_ACTION_BUTTON && current_view.getTag().toString().matches(current_step_button_tag))
             {
@@ -588,7 +597,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
                     }
                 });
                 current_button.setVisibility(View.VISIBLE);
-                break;
+                //break;
             }
         }
     }
@@ -620,7 +629,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
         if(!appLogic.currentStep.lookupTable.results.isEmpty()) {
             ArrayList<String> ui_results = new ArrayList<>();
             ui_results = appLogic.widgetViews.prepareStepSuccessUI(appLogic.currentStep);
-            updateUIWithScanResult(ui_results);
+            updateStepSuccessUI(ui_results);
         }
         else{
             // TODO: Handle Error state.
