@@ -35,16 +35,44 @@ public class Data {
 
     // This Function acts as a SELECT * FROM ... SQL Query. The result is a DataSet with all found rows.
     public void executeLookup(LookupTable lookupTable, ArrayList<String> parameter){
+
         ArrayList<Short> searched_indices = new ArrayList<>();
-        for(int x = 3; x < lookupTable.lookup_strings.size(); x += 4) {
-            short searched_index = getIndexOfAttribute(lookupTable.referenced_table, lookupTable.lookup_strings.get(x));
+        for(int x = 0; x < lookupTable.lookup_strings.size(); x += 5) {
+            short searched_index = getIndexOfAttribute(lookupTable.referenced_table, lookupTable.lookup_strings.get(x+1));
             searched_indices.add(searched_index);
         }
         lookupTable.results = getSetData(lookupTable.referenced_table, searched_indices, parameter);
-
     }
 
-    // This function is used to get all
+    public String getXFromYWhereZ(String target_table, String target_attribute, String target_value){
+        String result = null;
+        Table table = getTable(target_table);
+        short taget_column = getIndexOfAttribute(table, target_attribute);
+        ArrayList<DataSet> searched = new ArrayList<>();
+
+        for(int x = 0; x < table.dataSets.size(); x++) {
+            DataSet new_set = new DataSet();
+            new_set.set = new ArrayList<>();
+            ArrayList<String> maybe = new ArrayList<>();
+            maybe = null;
+            for (int y = 0; y < table.attributes.size(); y++)
+                if (table.dataSets.get(x).set.get(y).matches(target_value))
+                    maybe = table.dataSets.get(x).set;
+                else
+                    maybe = null;
+            if(maybe != null) {
+                new_set.set.add(String.valueOf(maybe));
+                searched.add(new_set);
+            }
+        }
+
+        if(searched.size() > 0)
+            result = searched.get(0).set.get(taget_column);
+
+        return result;
+    }
+
+    // This function is used to filter down the result attributes.
     public ArrayList<String> filterColumn(LookupTable lookupTable, String column_name){
         ArrayList<String> result = new ArrayList<>();
 
@@ -94,7 +122,7 @@ public class Data {
                 else
                     maybe = null;
             if(maybe != null) {
-                new_set.set.add(String.valueOf(maybe));
+                new_set.set = maybe;
                 searched.add(new_set);
             }
         }
@@ -130,7 +158,7 @@ class Table{
 
 class DataSet{
     // TODO: Enable more data types.
-    ArrayList<String> set = new ArrayList<>(1);
+    ArrayList<String> set = new ArrayList<>();
 }
 
 class Attribute{
@@ -187,9 +215,8 @@ class LookupTable{
                     // 2 - GPS;
                     // 3 - Selection (spinner).
     String referenced_table_name = null;
-    Table referenced_table = null; // Table used for the SQL Query.
+    Table referenced_table = null; // Table used for the Query.
 
-    ArrayList<String> lookup_strings = new ArrayList<>(); // SQL Query.
-    ArrayList<DataSet> results = new ArrayList<>();   // The result from the SQL Query.
-    ArrayList<String> column_filter = new ArrayList<>();
+    ArrayList<String> lookup_strings = new ArrayList<>();   // Strings needed for the Query.
+    ArrayList<DataSet> results = new ArrayList<>();   // The result from the Query.
 }

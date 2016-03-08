@@ -456,6 +456,15 @@ class SclableInterpreter {
 
                         if(step_data.has("execute_action"))
                             new_step.action_name = step_data.getString("execute_action");
+                        if(step_data.has("action_attributes")){
+                            JSONArray action_attr = step_data.getJSONArray("action_attributes");
+                            new_step.action_attributes = new ArrayList<>();
+                            for(int r = 0; r < action_attr.length(); r++) {
+                                JSONObject temp = action_attr.getJSONObject(r);
+                                new_step.action_attributes.add(temp.getString("step"));
+                                new_step.action_attributes.add(temp.getString("result"));
+                            }
+                        }
 
                         step_data_element = step_data.getJSONObject("success");
                         if(step_data_element.has("next_step"))
@@ -464,9 +473,14 @@ class SclableInterpreter {
                             new_step.success_label = step_data_element.getString("label");
                         if(step_data_element.has("attributes")){
                             JSONArray succ_attr = step_data_element.getJSONArray("attributes");
-                            new_step.load_in_ui = new ArrayList<>();
-                            for(int d = 0; d < succ_attr.length(); d++)
-                                new_step.load_in_ui.add(succ_attr.getString(d));
+                            new_step.result_definitions = new ArrayList<>();
+                            new_step.result_attributes = new ArrayList<>();
+                            for(int d = 0; d < succ_attr.length(); d++) {
+                                JSONObject temp = succ_attr.getJSONObject(d);
+                                String key = temp.keys().next();
+                                new_step.result_definitions.add(key);
+                                new_step.result_attributes.add(temp.getString(key));
+                            }
                         }
 
                         step_data_element = step_data.getJSONObject("error");
@@ -516,23 +530,38 @@ class SclableInterpreter {
     private ArrayList<String> copyLookupStrings(JSONObject attribute_map) {
         Iterator<String> keys = attribute_map.keys();
         String key = null;
-        String value = null;
+        JSONObject value = new JSONObject();
         ArrayList<String> result = new ArrayList<>();
 
         while(keys.hasNext())
         {
             key = keys.next();
             try {
-                value = attribute_map.getString(key);
+                if(!attribute_map.get(key).equals(null))
+                    value = attribute_map.getJSONObject(key);
+                else
+                    value = null;
+
+                Pair<String, String> element = data.splitTableFromAttribute(key);
+                result.add(element.first);
+                result.add(element.second);
+
+                if(value != null) {
+                    result.add(value.getString("step"));
+                    element = data.splitTableFromAttribute(value.getString("result"));
+                    result.add(element.first);
+                    result.add(element.second);
+                }
+                else {
+                    result.add("");
+                    result.add("");
+                    result.add("");
+                }
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            Pair<String, String> element = data.splitTableFromAttribute(key);
-            result.add(element.first);
-            result.add(element.second);
-            element = data.splitTableFromAttribute(value);
-            result.add(element.first);
-            result.add(element.second);
+
         }
 
         return result;

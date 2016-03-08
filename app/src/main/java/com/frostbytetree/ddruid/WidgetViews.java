@@ -42,6 +42,37 @@ public class WidgetViews {
         the_widgets = new ArrayList<Widget>();
     }
 
+    // TODO: This function should be split in half. The first half should be ran the first time the
+    // step is initialized. Additional attribute definitions will be required in the Step class.
+    public ArrayList<String> prepareStepSuccessUI(Step currentStep) {
+        ArrayList<String> result = new ArrayList<>();
+
+        for(int d = 0; d < currentStep.lookupTable.results.size(); d++) {
+            String partial_result = new String();
+            for (int x = 0; x < currentStep.result_definitions.size(); x++) {
+                switch (currentStep.result_definitions.get(x)) {
+                    case "string":
+                        partial_result += currentStep.result_attributes.get(x);
+                        break;
+                    case "result":
+                        Pair<String, String> table_attr = data_model.splitTableFromAttribute(currentStep.result_attributes.get(x));
+                        partial_result += data_model.filterColumn(currentStep.lookupTable, table_attr.second).get(d);
+                        break;
+                    // TODO: See if you can get a better definition for this lookup, at the moment it is very suspicious!
+                    default:
+                        Pair<String, String> left_side = data_model.splitTableFromAttribute(currentStep.result_definitions.get(x));
+                        Pair<String, String> right_side = data_model.splitTableFromAttribute(currentStep.result_attributes.get(x));
+                        ArrayList<String> left_lookup = new ArrayList<>();
+                        left_lookup.add(data_model.filterColumn(currentStep.lookupTable, left_side.second).get(d));
+                        partial_result += data_model.getXFromYWhereZ(right_side.first, right_side.second, left_lookup.get(d));
+                        break;
+                }
+            }
+            result.add(partial_result);
+        }
+
+        return result;
+    }
 }
 
 class Widget extends LinearLayout{
@@ -93,14 +124,16 @@ class Step{
     Step last_step = null;
 
     String ui_label;
-    ArrayList<String> load_in_ui;
     LookupTable lookupTable;
     String action_name;
-    Action action = new Action();
+    Action action;
+    ArrayList<String> action_attributes;
 
     String next_step_if_success = null;
     Step next_if_success = null;
-    String success_label;
+    String success_label = null;
+    ArrayList<String> result_definitions;
+    ArrayList<String> result_attributes;
 
     String next_step_if_error = null;
     Step next_if_error = null;

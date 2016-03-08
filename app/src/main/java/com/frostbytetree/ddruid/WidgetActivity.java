@@ -429,10 +429,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
 
         Log.i(CLASS_NAME, "On Resume called!");
         // close the camera
-
         //setStatusBarTheme();
-
-
         // This section is needed  for the
         // init the UI Builder
         uiBuilder = UIBuilder.getInstance();
@@ -563,7 +560,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
         client.disconnect();
     }
 
-    private void updateUIWithScanResult(String code)
+    private void updateUIWithScanResult(ArrayList<String> result)
     {
         for(int i = 0; i < uiBuilder.all_view_elements.size(); i++)
         {
@@ -577,7 +574,8 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
             {
                 Log.i(CLASS_NAME, "Edit Text should have been updated/Tag = " + current_view.getTag());
                 TextInputEditText current_text = (TextInputEditText) current_view;
-                current_text.setText(code);
+                current_text.setText(result.get(0));
+                break;
             }
             if(current_view_type == uiBuilder.IS_ACTION_BUTTON && current_view.getTag().toString().matches(current_step_button_tag))
             {
@@ -590,11 +588,9 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
                     }
                 });
                 current_button.setVisibility(View.VISIBLE);
+                break;
             }
-
-
         }
-
     }
 
     @Override
@@ -620,7 +616,15 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
         parameters.add(code);
         data.executeLookup(appLogic.currentStep.lookupTable, parameters);
         //Log.i(CLASS_NAME, "DataSet found for scanned item: " + appLogic.currentStep.lookupTable.results.set.toString());
-        updateUIWithScanResult(code);
+
+        if(!appLogic.currentStep.lookupTable.results.isEmpty()) {
+            ArrayList<String> ui_results = new ArrayList<>();
+            ui_results = appLogic.widgetViews.prepareStepSuccessUI(appLogic.currentStep);
+            updateUIWithScanResult(ui_results);
+        }
+        else{
+            // TODO: Handle Error state.
+        }
 
     }
 
