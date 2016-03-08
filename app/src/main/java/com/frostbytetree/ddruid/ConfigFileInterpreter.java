@@ -470,7 +470,10 @@ class SclableInterpreter {
                         if(step_data_element.has("next_step"))
                             new_step.next_step_if_success = step_data_element.getString("next_step");
                         if(step_data_element.has("label"))
-                            new_step.success_label = step_data_element.getString("label");
+                            if(!step_data_element.get("label").equals(null))
+                                new_step.success_label = step_data_element.getString("label");
+                            else
+                                new_step.success_label = "";
                         if(step_data_element.has("attributes")){
                             JSONArray succ_attr = step_data_element.getJSONArray("attributes");
                             new_step.result_definitions = new ArrayList<>();
