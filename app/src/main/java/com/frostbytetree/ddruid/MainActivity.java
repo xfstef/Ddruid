@@ -89,6 +89,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (!appLogic.isAlive())
             appLogic.start();
 
+        data.appLogic = appLogic;
+
         sqldaemon = SQLDaemon.getInstance();
         if (!sqldaemon.isAlive())
             sqldaemon.start();

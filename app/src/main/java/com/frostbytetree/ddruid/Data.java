@@ -18,12 +18,11 @@ import java.util.HashMap;
 
 public class Data {
     private static Data ourInstance = new Data();
-    private String test;
-    private boolean persistancy = false;
     ArrayList<Table> tables;
     JSONObject temp_object = null;
     Object data_lock = new Object();
     Object temp_object_lock = new Object();
+    AppLogic appLogic;
 
     public static Data getInstance() {
         return ourInstance;
@@ -33,15 +32,38 @@ public class Data {
         tables = new ArrayList<Table>();
     }
 
+    public ArrayList<String> selectTargetParameters(ArrayList<String> lookupString, int startPos){
+        ArrayList<String> result = new ArrayList<>();
+
+        Step searched_step = new Step();
+        for(int x = 0; x < appLogic.currentWidget.steps.size(); x++)
+            if(appLogic.currentWidget.steps.get(x).name.matches(lookupString.get(startPos+2))){
+                searched_step = appLogic.currentWidget.steps.get(x);
+                break;
+            }
+        Table searched_table = searched_step.lookupTable.referenced_table;
+        result = filterColumn(searched_step.lookupTable, lookupString.get(startPos+4));
+
+        return result;
+    }
+
     // This Function acts as a SELECT * FROM ... SQL Query. The result is a DataSet with all found rows.
     public void executeLookup(LookupTable lookupTable, ArrayList<String> parameter){
-
         ArrayList<Short> searched_indices = new ArrayList<>();
+        lookupTable.results = new ArrayList<>();
+
         for(int x = 0; x < lookupTable.lookup_strings.size(); x += 5) {
+            if(parameter.isEmpty())
+                parameter = selectTargetParameters(lookupTable.lookup_strings, x);
             short searched_index = getIndexOfAttribute(lookupTable.referenced_table, lookupTable.lookup_strings.get(x+1));
             searched_indices.add(searched_index);
+            ArrayList<DataSet> sets_found = getSetData(lookupTable.referenced_table, searched_indices, parameter);
+            if(lookupTable.results.isEmpty())
+                lookupTable.results = sets_found;
+            else
+                lookupTable.results.retainAll(sets_found);
         }
-        lookupTable.results = getSetData(lookupTable.referenced_table, searched_indices, parameter);
+
     }
 
     public String getXFromYWhereZ(String target_table, String target_attribute, String target_value){
