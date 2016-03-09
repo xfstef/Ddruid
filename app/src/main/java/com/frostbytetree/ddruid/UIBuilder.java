@@ -51,6 +51,8 @@ public class UIBuilder {
     public static final short IS_SPINNER = 2;
     public static final short IS_DATE_INPUT = 3;
     public static final short IS_ACTION_BUTTON = 4;
+    public static final short IS_RECYCLER_HEADER = 5;
+    public static final short IS_RECYCLER_VIEW = 6;
 
     private static UIBuilder ourInstance = new UIBuilder();
 
@@ -149,7 +151,7 @@ public class UIBuilder {
     }
     */
 
-    public View scanElementStep(Step step)
+    public View inputElementStep(Step step)
     {
         View content = LayoutInflater.from(context).inflate(R.layout.scan_input_form, null);
         LinearLayout scan_input = (LinearLayout)content.findViewById(R.id.scan_input);
@@ -169,6 +171,21 @@ public class UIBuilder {
         all_view_elements.add(new Pair<Short, View>(IS_ACTION_BUTTON, bReset));
 
         return scan_input;
+    }
+
+    public View recyclerViewStep(Step step)
+    {
+        View content = LayoutInflater.from(context).inflate(R.layout.recycler_view_lookup_results, null);
+        LinearLayout lin_layout = (LinearLayout)content.findViewById(R.id.lin_layout_recycler_view);
+        TextView recycler_header = (TextView)content.findViewById(R.id.txtHeading);
+        recycler_header.setTag(step.name + ".label");
+        RecyclerView recyclerView = (RecyclerView)content.findViewById(R.id.itemsRecyclerView);
+        recyclerView.setTag(step.name + ".recyclerview");
+
+
+        all_view_elements.add(new Pair<Short, View>(IS_RECYCLER_HEADER, recycler_header));
+        all_view_elements.add(new Pair<Short, View>(IS_RECYCLER_VIEW, recyclerView));
+        return lin_layout;
     }
 
     Widget inflateTableDetailModel(LinearLayout ui_content, Widget widget, ArrayList<String> data_to_be_displayed)

@@ -18,6 +18,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.AppCompatTextView;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -162,7 +163,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
         {
             ((ViewGroup)my_widget.getParent()).removeView(my_widget);
         }
-
+        widgetScreen.addView(my_widget);
         appLogic.currentStep = step;
         layoutParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -176,31 +177,97 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
     private void checkStepType(Step step)
     {
         Log.i(CLASS_NAME, "Current Step: " + step.name);
+        Log.i(CLASS_NAME, "Step Type: " + step.ui_element_type);
+
         switch(step.ui_element_type)
         {
+            // TextView
             case 0:
-                View element = uiBuilder.scanElementStep(step);
+                View element = uiBuilder.inputElementStep(step);
                 my_widget.addView(element, layoutParams);
-                widgetScreen.addView(my_widget);
-                if(step.lookupTable.uses == 1) // scanner widget
-                    initScan();
+                // Which kind of input is used for this step
+                switch(step.lookupTable.uses)
+                {
+                    case 0:
+                        //standard input
+                        break;
+                    case 1:
+                        initScan();
+                        break;
+                    case 2:
+                        // GPS
+                        break;
+                    case 3:
+                        // Spinner dropdown
+                        break;
+                    case 99:
+                        // no input just do lookup
+                        break;
+                }
                 break;
+            // RecyclerView
             case 1:
+                ArrayList<String> lookupResults = lookupResultsForRecyclerViewer(step);
+                // Success
+                if(!lookupResults.isEmpty())
+                    displayRecyclerViewerResults(step, lookupResults);
+
+                break;
+            // no UI (for action steps)
+            case 99:
 
                 break;
         }
     }
 
-    private void handleStepWidget(Step step)
+    private ArrayList<String> lookupResultsForRecyclerViewer(Step step)
     {
 
-    // Widget new_ui_widget = uiBuilder.inflateStep(step, appLogic);
-    // widgetScreen.addView(new_ui_widget);
-    // if this step needs a scanner
-    // if(my_widget.steps.get(i).lookupTable.uses == 1)
-    // initScan();
-    // break;
+        ArrayList<String> parameters = new ArrayList<>();
+        data.executeLookup(appLogic.currentStep.lookupTable, parameters);
 
+        if(!appLogic.currentStep.lookupTable.results.isEmpty())
+        {
+            Log.i(CLASS_NAME, "Lookup Results: " + appLogic.currentStep.lookupTable.results.toString());
+            ArrayList<String> ui_results = new ArrayList<>();
+            ui_results = appLogic.widgetViews.prepareStepSuccessUI(appLogic.currentStep);
+            return ui_results;
+        }
+        else
+            return null;
+
+    }
+
+
+    private void displayRecyclerViewerResults(Step step, ArrayList<String> lookupData)
+    {
+        View element2 = uiBuilder.recyclerViewStep(step);
+        my_widget.addView(element2, layoutParams);
+
+        ResultsAdapter tableAdapter = new ResultsAdapter(lookupData);
+        LinearLayoutManager llm = new LinearLayoutManager(this);
+        llm.setOrientation(LinearLayoutManager.VERTICAL);
+        for(int i = 0; i < uiBuilder.all_view_elements.size(); i++) {
+            Short current_view_type = uiBuilder.all_view_elements.get(i).first;
+            View current_view = uiBuilder.all_view_elements.get(i).second;
+            Log.i(CLASS_NAME, "Current View Type " + current_view_type);
+            Log.i(CLASS_NAME, "Current View " + current_view);
+            String current_step_recycler_header_tag = appLogic.currentStep.name + ".label";
+            String current_step_recycler_view_tag = appLogic.currentStep.name + ".recyclerview";
+
+            if (current_view_type == uiBuilder.IS_RECYCLER_HEADER && current_view.getTag().toString().matches(current_step_recycler_header_tag)){
+                TextView current_label = (TextView)current_view;
+                current_label.setText(appLogic.currentStep.ui_label);
+            }
+
+            if (current_view_type == uiBuilder.IS_RECYCLER_VIEW && current_view.getTag().toString().matches(current_step_recycler_view_tag)) {
+
+                Log.i(CLASS_NAME, "Label Text should have been updated/Tag = " + current_view.getTag());
+                RecyclerView recList = (RecyclerView) current_view;
+                recList.setAdapter(tableAdapter);
+                recList.setLayoutManager(llm);
+            }
+        }
     }
 
     private void initScan()
@@ -229,9 +296,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
         widgetScreen.addView(new_ui_widget);
 
         checkForSpinnerDataLoading();
-
         Button action = uiBuilder.action_button;
-
         action.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -577,7 +642,6 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
                 Log.i(CLASS_NAME, "Label Text should have been updated/Tag = " + current_view.getTag());
                 TextInputLayout current_label = (TextInputLayout) current_view;
                 current_label.setHint(appLogic.currentStep.success_label);
-
             }
             if(current_view_type == uiBuilder.IS_INPUT_TEXT && current_view.getTag().toString().matches(current_step_text_tag))
             {
@@ -593,6 +657,8 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
                 current_button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        Log.i(CLASS_NAME, "Current button clicked!");
+                        setPreviousStep(appLogic.currentStep);
                         initStepWidget(appLogic.currentStep);
                     }
                 });
@@ -600,6 +666,22 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
                 //break;
             }
         }
+        setNextStep(appLogic.currentStep.next_if_success);
+        checkStepType(appLogic.currentStep);
+    }
+
+    // Helper function: set the parent step as current step and the child steps parent to null
+    private void setPreviousStep(Step current)
+    {
+        appLogic.currentStep = current.parent_step;
+        current.parent_step = null;
+    }
+
+    // Helper function: The child step gets his parent and the child is declaired as current now
+    private void setNextStep(Step child_step)
+    {
+        child_step.parent_step = appLogic.currentStep;
+        appLogic.currentStep = child_step;
     }
 
     @Override

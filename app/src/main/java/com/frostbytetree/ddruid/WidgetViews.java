@@ -106,7 +106,7 @@ class Widget extends LinearLayout{
         super(context);
         this.context = context;
         //widgetLinearLayout = new LinearLayout(context);
-        ArrayList<Widget> myChildren = new ArrayList<Widget>();
+        //ArrayList<Widget> myChildren = new ArrayList<Widget>();
         myParent = null;
         setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
         setGravity(Gravity.CENTER);
@@ -121,7 +121,7 @@ class Step{
                                 // 1 - Recycler View;
                                 // 2 - ...
                                 // 99 - NO UI.
-    Step last_step = null;
+    Step parent_step = null;
 
     String ui_label;
     LookupTable lookupTable;
