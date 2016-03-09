@@ -173,10 +173,10 @@ public class UIBuilder {
         bScan.setText(step.ui_label);
         bScan.setTag(step.name + ".scan");
 
+        all_view_elements.add(new Pair<Short, View>(IS_ACTION_BUTTON, bReset));
         all_view_elements.add(new Pair<Short, View>(IS_LAYOUT, scan_input));
         all_view_elements.add(new Pair<Short, View>(IS_INPUT_LABEL, input_item));
         all_view_elements.add(new Pair<Short, View>(IS_INPUT_TEXT, input_text));
-        all_view_elements.add(new Pair<Short, View>(IS_ACTION_BUTTON, bReset));
         all_view_elements.add(new Pair<Short, View>(IS_ACTION_BUTTON, bScan));
 
         return scan_input;
