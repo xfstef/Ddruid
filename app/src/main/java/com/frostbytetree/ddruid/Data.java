@@ -78,19 +78,17 @@ public class Data {
             DataSet new_set = new DataSet();
             new_set.set = new ArrayList<>();
             ArrayList<String> maybe = new ArrayList<>();
-            maybe = null;
+            System.out.println("current: "+ table.dataSets.get(x).set.get(target_column)+ ", searched: " + target_id);
             //for (int y = 0; y < table.attributes.size(); y++)
-                if (table.dataSets.get(x).set.get(target_column).matches(target_id))
+                if(table.dataSets.get(x).set.get(target_column).matches(target_id))
                     maybe = table.dataSets.get(x).set;
-                else
-                    maybe = null;
-            if(maybe != null) {
-                new_set.set.add(String.valueOf(maybe));
+            if(!maybe.isEmpty()) {
+                new_set.set = maybe;
                 searched.add(new_set);
             }
         }
 
-        if(searched.size() > 0)
+        if(!searched.isEmpty())
             result = searched.get(0).set.get(result_column);
 
         return result;

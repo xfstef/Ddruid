@@ -130,6 +130,7 @@ class SclableInterpreter {
             }
 
             new_table.dataSets = new ArrayList<DataSet>();
+            System.out.println("Added Kurac table: " + new_table.table_name);
 
             synchronized (data.data_lock){
                 data.tables.add(new_table);
@@ -141,8 +142,28 @@ class SclableInterpreter {
         linkActionsToWidgets();
         linkTablesToSteps();
         linkStepTablesToWidget();
+        linkHiddenStepTablesToWidget();
 
+    }
 
+    private void linkHiddenStepTablesToWidget(){
+        for(int x = 0; x < widgetViews.the_widgets.size(); x++) {
+            Widget temp_widget = widgetViews.the_widgets.get(x);
+            if (temp_widget.widgetType == 5)
+                for (int y = 0; y <temp_widget.steps.size(); y++){
+                    Step temp_step = temp_widget.steps.get(y);
+                    for(int z = 0; z < temp_step.result_attributes.size(); z++){
+                        String temp_attribute = temp_step.result_attributes.get(z);
+                        Pair<String, String> attr_pair = data.splitTableFromAttribute(temp_attribute);
+                        if(attr_pair != null) {
+                            Table searched_temp = data.getTable(attr_pair.first);
+                            if (!temp_widget.myTables.contains(searched_temp))
+                                temp_widget.myTables.add(searched_temp);
+                        }
+                    }
+                }
+
+        }
     }
 
     private void linkStepTablesToWidget(){
