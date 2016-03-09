@@ -52,7 +52,7 @@ import java.util.ArrayList;
 //TODO Check for free memory
 //TODO If no free memory then Talk to SQLite Controller
 
-public class WidgetActivity extends AppCompatActivity implements IDataInflateListener{
+public class WidgetActivity extends AppCompatActivity implements IDataInflateListener, View.OnClickListener{
 
     private static final String CLASS_NAME = "Widget Activity";
     private static final String EMPTY_ERROR_MSG = "Field is required!";
@@ -86,10 +86,12 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
+        Log.i(CLASS_NAME, "Back pressed!!!!!");
         int id = item.getItemId();
         switch(id)
         {
             case android.R.id.home:
+
                 onBackPressed();
                 break;
         }
@@ -134,7 +136,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
                 Log.i(CLASS_NAME, "My Widget tables size: " + my_widget.myTables.size());
                 uiBuilder.loadInitialState(my_widget);
                 for(int i = 0; i < my_widget.myTables.size(); i++) {
-                    if (my_widget.myTables.get(i).dataSets.size() == 0) {
+                    if (my_widget.myTables.get(i).dataSets.isEmpty()) {
                         loadTablesRegardingStepWidget();
                         break;
                     }
@@ -209,8 +211,9 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
             case 1:
                 ArrayList<String> lookupResults = lookupResultsForRecyclerViewer(step);
                 // Success
-                if(!lookupResults.isEmpty())
+                if(!lookupResults.isEmpty()) {
                     displayRecyclerViewerResults(step, lookupResults);
+                }
 
                 break;
             // no UI (for action steps)
@@ -268,25 +271,172 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
                 recList.setLayoutManager(llm);
             }
         }
+        setNextStep(step.next_if_success);
+        checkStepType(appLogic.currentStep);
     }
+
+    private void updateStepSuccessUI(ArrayList<String> result)
+    {
+        for(int i = 0; i < uiBuilder.all_view_elements.size(); i++)
+        {
+            Short current_view_type = uiBuilder.all_view_elements.get(i).first;
+            View current_view = uiBuilder.all_view_elements.get(i).second;
+            Log.i(CLASS_NAME, "Current View Type " + current_view_type);
+            Log.i(CLASS_NAME, "Current View " + current_view);
+            String current_step_label_tag = appLogic.currentStep.name + ".label";
+            String current_step_text_tag = appLogic.currentStep.name + ".text";
+            String current_step_reset_button_tag = appLogic.currentStep.name + ".reset";
+            String current_step_scan_button_tag = appLogic.currentStep.name + ".scan";
+
+            if(current_view_type == uiBuilder.IS_INPUT_LABEL && current_view.getTag().toString().matches(current_step_label_tag))
+            {
+                Log.i(CLASS_NAME, "Label Text should have been updated/Tag = " + current_view.getTag());
+                TextInputLayout current_label = (TextInputLayout) current_view;
+                current_label.setVisibility(View.VISIBLE);
+                current_label.setHint(appLogic.currentStep.success_label);
+            }
+            if(current_view_type == uiBuilder.IS_INPUT_TEXT && current_view.getTag().toString().matches(current_step_text_tag))
+            {
+                Log.i(CLASS_NAME, "Edit Text should have been updated/Tag = " + current_view.getTag());
+                TextInputEditText current_text = (TextInputEditText) current_view;
+                current_text.setText(result.get(0));
+                //break;
+            }
+            if(current_view_type == uiBuilder.IS_ACTION_BUTTON && current_view.getTag().toString().matches(current_step_reset_button_tag))
+            {
+                Log.i(CLASS_NAME, "Edit Text should have been updated/Tag = " + current_view.getTag());
+                final Button current_button = (Button)current_view;
+
+                current_button.setOnClickListener(this);
+
+                        /*new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.i(CLASS_NAME, "button reset clicked in step: " + appLogic.currentStep.name);
+                        Log.i(CLASS_NAME, "button tag: " + current_button.getTag());
+                        //TODO: remove all views with all the logic for the proceeding steps
+                        //setPreviousStep(appLogic.currentStep);
+                        //initStepWidget(appLogic.currentStep);
+                    }
+                });*/
+                current_button.setVisibility(View.VISIBLE);
+            }
+            if(current_view_type == uiBuilder.IS_ACTION_BUTTON && current_view.getTag().toString().matches(current_step_scan_button_tag))
+            {
+                Log.i(CLASS_NAME, "Edit Text should have been updated/Tag = " + current_view.getTag());
+                Button current_button = (Button)current_view;
+                current_button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.i(CLASS_NAME, "button scan clicked!");
+                        //setPreviousStep(appLogic.currentStep);
+                        //initStepWidget(appLogic.currentStep);
+                    }
+                });
+                current_button.setVisibility(View.GONE);
+                //break;
+            }
+
+        }
+        setNextStep(appLogic.currentStep.next_if_success);
+        checkStepType(appLogic.currentStep);
+    }
+
+
+    @Override
+    public void onClick(View view) {
+
+
+
+        if(view.getTag().toString().contains(".reset")) {
+            // First: find the current step and set
+            for(int i = 0; i < my_widget.steps.size(); i++)
+            {
+                if(view.getTag().toString().contains(my_widget.steps.get(i).name))
+                {
+                    appLogic.currentStep = my_widget.steps.get(i);
+                    Log.i(CLASS_NAME, "Current step: " + appLogic.currentStep.name);
+                }
+            }
+
+            // Second: Remove every ui_element which is after the ui selected
+            for (int i = 0; i < uiBuilder.all_view_elements.size(); i++)
+            {
+                if(uiBuilder.all_view_elements.get(i).first == uiBuilder.IS_ACTION_BUTTON &&
+                        view == uiBuilder.all_view_elements.get(i).second)
+                {
+                    // remove every view including myself
+                    for(int j = i; j < uiBuilder.all_view_elements.size(); j++)
+                    {
+                        Log.i(CLASS_NAME, "Item to be removed: " + uiBuilder.all_view_elements.get(j).second.getTag());
+                        View currentViewToRemove = uiBuilder.all_view_elements.get(j).second;
+                        //uiBuilder.all_view_elements.remove(j);
+                        ((ViewGroup) currentViewToRemove.getParent()).removeView(currentViewToRemove);
+
+                    }
+                }
+
+            }
+            // Third: remove every ui_element from the selected step
+            //for(int i = 0; i < uiBuilder.all_view_elements)
+            //checkStepType(appLogic.currentStep);
+
+        }
+
+    }
+
+
+    // Helper function: set the parent step as current step and the child steps parent to null
+    private void setPreviousStep(Step current)
+    {
+        appLogic.currentStep = current.parent_step;
+        current.parent_step = null;
+    }
+
+    // Helper function: The child step gets his parent and the child is declaired as current now
+    private void setNextStep(Step child_step)
+    {
+        child_step.parent_step = appLogic.currentStep;
+        appLogic.currentStep = child_step;
+    }
+
 
     private void initScan()
     {
 
-        scannerScreen = (FrameLayout)findViewById(R.id.scanner);
-        scannerScreen.setVisibility(View.VISIBLE);
+        for(int i = 0; i < uiBuilder.all_view_elements.size(); i++) {
+            Short current_view_type = uiBuilder.all_view_elements.get(i).first;
+            View current_view = uiBuilder.all_view_elements.get(i).second;
+            Log.i(CLASS_NAME, "Current View Type " + current_view_type);
+            Log.i(CLASS_NAME, "Current View " + current_view);
+            String scan_tag = appLogic.currentStep.name + ".scan";
 
-        // Create a new Fragment to be placed in the activity layout
-        scanner = new Scanner();
+            if (current_view_type == uiBuilder.IS_ACTION_BUTTON && current_view.getTag().toString().matches(scan_tag)){
+                Button bScan = (Button)current_view;
+                bScan.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        widgetScreen.setVisibility(View.GONE);
+                        scannerScreen.setVisibility(View.VISIBLE);
 
-        // In case this activity was started with special instructions from an
-        // Intent, pass the Intent's extras to the fragment as arguments
-        scanner.setArguments(getIntent().getExtras());
+                        // Create a new Fragment to be placed in the activity layout
+                        scanner = new Scanner();
 
-        // Add the fragment to the 'fragment_container' FrameLayout
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.scanner, scanner, "TVOJA MAMA")
-                .addToBackStack(null).commit();
+                        // In case this activity was started with special instructions from an
+                        // Intent, pass the Intent's extras to the fragment as arguments
+                        scanner.setArguments(getIntent().getExtras());
+
+                        // Add the fragment to the 'fragment_container' FrameLayout
+                        getSupportFragmentManager().beginTransaction()
+                                .add(R.id.scanner, scanner, "TVOJA MAMA")
+                                .addToBackStack(null).commit();
+                    }
+                });
+                break;
+            }
+
+        }
+
 
     }
 
@@ -353,6 +503,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
         });
     }
 
+
     // This function loads the table datasets for each Spinner on the screen
     private void checkForSpinnerDataLoading()
     {
@@ -409,6 +560,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
 
         setContentView(R.layout.widget_activity);
         widgetScreen = (FrameLayout) findViewById(R.id.mainContent);
+        scannerScreen = (FrameLayout) findViewById(R.id.scanner);
         //widgetScreen.setVisibility(View.GONE);
         toolbar = (Toolbar) findViewById(R.id.widget_toolbar);
         loadingScreen = (FrameLayout)findViewById(R.id.loading_circle);
@@ -626,80 +778,15 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
         client.disconnect();
     }
 
-    private void updateStepSuccessUI(ArrayList<String> result)
-    {
-        for(int i = 0; i < uiBuilder.all_view_elements.size(); i++)
-        {
-            Short current_view_type = uiBuilder.all_view_elements.get(i).first;
-            View current_view = uiBuilder.all_view_elements.get(i).second;
-            Log.i(CLASS_NAME, "Current View Type " + current_view_type);
-            Log.i(CLASS_NAME, "Current View " + current_view);
-            String current_step_label_tag = appLogic.currentStep.name + ".label";
-            String current_step_text_tag = appLogic.currentStep.name + ".text";
-            String current_step_button_tag = appLogic.currentStep.name + ".button";
-            if(current_view_type == uiBuilder.IS_INPUT_LABEL && current_view.getTag().toString().matches(current_step_label_tag))
-            {
-                Log.i(CLASS_NAME, "Label Text should have been updated/Tag = " + current_view.getTag());
-                TextInputLayout current_label = (TextInputLayout) current_view;
-                current_label.setHint(appLogic.currentStep.success_label);
-            }
-            if(current_view_type == uiBuilder.IS_INPUT_TEXT && current_view.getTag().toString().matches(current_step_text_tag))
-            {
-                Log.i(CLASS_NAME, "Edit Text should have been updated/Tag = " + current_view.getTag());
-                TextInputEditText current_text = (TextInputEditText) current_view;
-                current_text.setText(result.get(0));
-                //break;
-            }
-            if(current_view_type == uiBuilder.IS_ACTION_BUTTON && current_view.getTag().toString().matches(current_step_button_tag))
-            {
-                Log.i(CLASS_NAME, "Edit Text should have been updated/Tag = " + current_view.getTag());
-                Button current_button = (Button)current_view;
-                current_button.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Log.i(CLASS_NAME, "Current button clicked!");
-                        setPreviousStep(appLogic.currentStep);
-                        initStepWidget(appLogic.currentStep);
-                    }
-                });
-                current_button.setVisibility(View.VISIBLE);
-                //break;
-            }
-        }
-        setNextStep(appLogic.currentStep.next_if_success);
-        checkStepType(appLogic.currentStep);
-    }
-
-    // Helper function: set the parent step as current step and the child steps parent to null
-    private void setPreviousStep(Step current)
-    {
-        appLogic.currentStep = current.parent_step;
-        current.parent_step = null;
-    }
-
-    // Helper function: The child step gets his parent and the child is declaired as current now
-    private void setNextStep(Step child_step)
-    {
-        child_step.parent_step = appLogic.currentStep;
-        appLogic.currentStep = child_step;
-    }
-
     @Override
     public void codeScanned(String code) {
-
+        scanner.releaseCamera();
+        scannerScreen.setVisibility(View.GONE);
+        widgetScreen.setVisibility(View.VISIBLE);
         // close the camera
         Fragment fragment = getSupportFragmentManager().findFragmentByTag("TVOJA MAMA");
         if(fragment != null)
             getSupportFragmentManager().beginTransaction().remove(fragment).commit();
-
-        /*
-        Log.i(CLASS_NAME, "Found back Stack Entries before pop: " + getFragmentManager().getBackStackEntryCount());
-        getFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        Log.i(CLASS_NAME, "Found back Stack Entries after pop: " + getFragmentManager().getBackStackEntryCount());
-        getSupportFragmentManager().beginTransaction().remove(scanner).commit();
-        */
-        scanner.releaseCamera();
-        scannerScreen.setVisibility(View.GONE);
 
         Log.i(CLASS_NAME, "Code scanned: " + code);
 
@@ -790,5 +877,6 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
 
         return attributes;
     }
+
 
 }

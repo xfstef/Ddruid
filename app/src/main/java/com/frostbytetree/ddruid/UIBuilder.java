@@ -53,6 +53,7 @@ public class UIBuilder {
     public static final short IS_ACTION_BUTTON = 4;
     public static final short IS_RECYCLER_HEADER = 5;
     public static final short IS_RECYCLER_VIEW = 6;
+    public static final short IS_LAYOUT = 7;
 
     private static UIBuilder ourInstance = new UIBuilder();
 
@@ -155,6 +156,8 @@ public class UIBuilder {
     {
         View content = LayoutInflater.from(context).inflate(R.layout.scan_input_form, null);
         LinearLayout scan_input = (LinearLayout)content.findViewById(R.id.scan_input);
+        scan_input.setTag(step.name + ".layout");
+
         TextInputLayout input_item = (TextInputLayout)content.findViewById(R.id.input_label);
         input_item.setTag(step.name + ".label");
         input_item.setHint(step.ui_label);
@@ -164,11 +167,17 @@ public class UIBuilder {
         input_text.setTag(step.name + ".text");
 
         Button bReset = (Button)content.findViewById(R.id.bReset);
-        bReset.setTag(step.name + ".button");
+        bReset.setTag(step.name + ".reset");
 
+        Button bScan = (Button)content.findViewById(R.id.bScan);
+        bScan.setText(step.ui_label);
+        bScan.setTag(step.name + ".scan");
+
+        all_view_elements.add(new Pair<Short, View>(IS_LAYOUT, scan_input));
         all_view_elements.add(new Pair<Short, View>(IS_INPUT_LABEL, input_item));
         all_view_elements.add(new Pair<Short, View>(IS_INPUT_TEXT, input_text));
         all_view_elements.add(new Pair<Short, View>(IS_ACTION_BUTTON, bReset));
+        all_view_elements.add(new Pair<Short, View>(IS_ACTION_BUTTON, bScan));
 
         return scan_input;
     }
@@ -177,12 +186,13 @@ public class UIBuilder {
     {
         View content = LayoutInflater.from(context).inflate(R.layout.recycler_view_lookup_results, null);
         LinearLayout lin_layout = (LinearLayout)content.findViewById(R.id.lin_layout_recycler_view);
+        lin_layout.setTag(step.name + ".layout");
         TextView recycler_header = (TextView)content.findViewById(R.id.txtHeading);
         recycler_header.setTag(step.name + ".label");
         RecyclerView recyclerView = (RecyclerView)content.findViewById(R.id.itemsRecyclerView);
         recyclerView.setTag(step.name + ".recyclerview");
 
-
+        all_view_elements.add(new Pair<Short, View>(IS_LAYOUT, lin_layout));
         all_view_elements.add(new Pair<Short, View>(IS_RECYCLER_HEADER, recycler_header));
         all_view_elements.add(new Pair<Short, View>(IS_RECYCLER_VIEW, recyclerView));
         return lin_layout;
