@@ -32,6 +32,7 @@ public class Data {
         tables = new ArrayList<Table>();
     }
 
+    // We need to get the desired results from another step. This is how we do it.
     public ArrayList<String> selectTargetParameters(ArrayList<String> lookupString, int startPos){
         ArrayList<String> result = new ArrayList<>();
 
@@ -66,19 +67,20 @@ public class Data {
 
     }
 
-    public String getXFromYWhereZ(String target_table, String target_attribute, String target_value){
+    public String getXFromYWhereZ(String target_table, String target_attribute, String target_id){
         String result = null;
         Table table = getTable(target_table);
-        short taget_column = getIndexOfAttribute(table, target_attribute);
+        short result_column = getIndexOfAttribute(table, target_attribute);
         ArrayList<DataSet> searched = new ArrayList<>();
+        short target_column = getIndexOfAttribute(table, "id");
 
         for(int x = 0; x < table.dataSets.size(); x++) {
             DataSet new_set = new DataSet();
             new_set.set = new ArrayList<>();
             ArrayList<String> maybe = new ArrayList<>();
             maybe = null;
-            for (int y = 0; y < table.attributes.size(); y++)
-                if (table.dataSets.get(x).set.get(y).matches(target_value))
+            //for (int y = 0; y < table.attributes.size(); y++)
+                if (table.dataSets.get(x).set.get(target_column).matches(target_id))
                     maybe = table.dataSets.get(x).set;
                 else
                     maybe = null;
@@ -89,7 +91,7 @@ public class Data {
         }
 
         if(searched.size() > 0)
-            result = searched.get(0).set.get(taget_column);
+            result = searched.get(0).set.get(result_column);
 
         return result;
     }

@@ -61,10 +61,15 @@ public class WidgetViews {
                     // TODO: See if you can get a better definition for this lookup, at the moment it is very suspicious!
                     default:
                         Pair<String, String> left_side = data_model.splitTableFromAttribute(currentStep.result_definitions.get(x));
+                        System.out.println("left_side: " + left_side.first + " | " + left_side.second + " JJJJJJJJJJJJJJJJJJJJJ");
                         Pair<String, String> right_side = data_model.splitTableFromAttribute(currentStep.result_attributes.get(x));
+                        System.out.println("right_side: " + right_side.first + " | " + right_side.second + " KKKKKKKKKKKKKKKKKKKK");
                         ArrayList<String> left_lookup = new ArrayList<>();
                         left_lookup.add(data_model.filterColumn(currentStep.lookupTable, left_side.second).get(d));
-                        partial_result += data_model.getXFromYWhereZ(right_side.first, right_side.second, left_lookup.get(d));
+                        System.out.println("lookup: " + left_lookup.toString() + " $#($#*(&$#*(&$#*(");
+
+                        for(int e = 0; e < left_lookup.size(); e++)
+                            partial_result += data_model.getXFromYWhereZ(right_side.first, right_side.second, left_lookup.get(e));
                         break;
                 }
             }
