@@ -449,6 +449,28 @@ public class UIBuilder {
 
     }
 
+    public void checkExistingUIAndremoveNextUIElements(String step_name)
+    {
+        for (int i = 0; i < all_view_elements.size(); i++)
+        {
+            if(all_view_elements.get(i).second.getTag().toString().contains(step_name))
+            {
+                // Second:
+                // remove every view including myself also fill new list with the elements which needs to be removed
+                for(int j = i; j < all_view_elements.size(); j++)
+                {
+                    Log.i(CLASS_NAME, "Item[ " + j + "] to be removed: " + all_view_elements.get(j).second.getTag());
+                    View currentViewToRemove = all_view_elements.get(j).second;
+                    ((ViewGroup) currentViewToRemove.getParent()).removeView(currentViewToRemove);
+
+                }
+                // Third: remove all elements from the new created list
+                all_view_elements.subList(i, all_view_elements.size()).clear();
+            }
+
+        }
+    }
+
     public void initSpinnerAdapter(Spinner spinner, ArrayList<String> spinnerData)
     {
         SpinnerAdapter adapter = new SpinnerAdapter(context,

@@ -274,17 +274,19 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
                 break;
             // no UI (for action steps)
             case 99:
+                if(step.lookupTable != null) {
+                    ArrayList<String> lookupResults1 = lookupResultsForRecyclerViewer(step);
+                }
                 if(step.action_table_name == null)
                 {
-                    ArrayList<String> lookupResults1 = lookupResultsForRecyclerViewer(step);
-                    // Success
-                    if(!lookupResults1.isEmpty()) {
-                        displayRecyclerViewerResults(step, lookupResults1);
-                    }
+                    setNextStep(step.next_if_success);
+                    checkStepType(appLogic.currentStep);
                 }
                 else
                 {
-
+                    //Action execute
+                    setNextStep(step.next_if_success);
+                    checkStepType(appLogic.currentStep);
                 }
 
                 break;
@@ -299,7 +301,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
 
         if(!appLogic.currentStep.lookupTable.results.isEmpty())
         {
-            Log.i(CLASS_NAME, "Lookup Results: " + appLogic.currentStep.lookupTable.results.toString());
+            //Log.i(CLASS_NAME, "Lookup Results: " + appLogic.currentStep.lookupTable.results.toString());
             ArrayList<String> ui_results = new ArrayList<>();
             ui_results = appLogic.widgetViews.prepareStepSuccessUI(appLogic.currentStep);
             return ui_results;
@@ -344,12 +346,9 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
 
     private void updateStepSuccessUI(ArrayList<String> result)
     {
-        for(int i = 0; i < uiBuilder.all_view_elements.size(); i++)
-        {
+        for(int i = 0; i < uiBuilder.all_view_elements.size(); i++) {
             Short current_view_type = uiBuilder.all_view_elements.get(i).first;
             View current_view = uiBuilder.all_view_elements.get(i).second;
-            Log.i(CLASS_NAME, "Current View Type " + current_view_type);
-            Log.i(CLASS_NAME, "Current View " + current_view);
             String current_step_label_tag = appLogic.currentStep.name + ".label";
             String current_step_text_tag = appLogic.currentStep.name + ".text";
             String current_step_reset_button_tag = appLogic.currentStep.name + ".reset";
@@ -388,8 +387,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
                 });*/
                 current_button.setVisibility(View.VISIBLE);
             }
-            if(current_view_type == uiBuilder.IS_ACTION_BUTTON && current_view.getTag().toString().matches(current_step_scan_button_tag))
-            {
+            if(current_view_type == uiBuilder.IS_ACTION_BUTTON && current_view.getTag().toString().matches(current_step_scan_button_tag)) {
                 Log.i(CLASS_NAME, "Edit Text should have been updated/Tag = " + current_view.getTag());
                 Button current_button = (Button)current_view;
                 current_button.setOnClickListener(new View.OnClickListener() {
@@ -424,28 +422,11 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
                     break;
                 }
             }
+
             Log.i(CLASS_NAME, "all_view_elements.size: " + uiBuilder.all_view_elements.size());
-            for (int i = 0; i < uiBuilder.all_view_elements.size(); i++)
-            {
-                if(uiBuilder.all_view_elements.get(i).first == uiBuilder.IS_ACTION_BUTTON &&
-                        view == uiBuilder.all_view_elements.get(i).second)
-                {
-                    // Second:
-                    // remove every view including myself also fill new list with the elements which needs to be removed
-                    for(int j = i; j < uiBuilder.all_view_elements.size(); j++)
-                    {
-                        Log.i(CLASS_NAME, "Item[ " + j + "] to be removed: " + uiBuilder.all_view_elements.get(j).second.getTag());
-                        View currentViewToRemove = uiBuilder.all_view_elements.get(j).second;
-                        ((ViewGroup) currentViewToRemove.getParent()).removeView(currentViewToRemove);
-
-                    }
-                    // Third: remove all elements from the new created list
-                    uiBuilder.all_view_elements.subList(i, uiBuilder.all_view_elements.size()).clear();
-                }
-
-            }
+            uiBuilder.checkExistingUIAndremoveNextUIElements(appLogic.currentStep.name);
             checkStepType(appLogic.currentStep);
-            Log.i(CLASS_NAME, "At last the all_view_elemeents size is: " + uiBuilder.all_view_elements.size());
+            Log.i(CLASS_NAME, "At last the all_view_elements size is: " + uiBuilder.all_view_elements.size());
         }
 
     }
@@ -459,8 +440,8 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
     }
 
     // Helper function: The child step gets his parent and the child is declaired as current now
-    private void setNextStep(Step child_step)
-    {
+    private void setNextStep(Step child_step) {
+        uiBuilder.checkExistingUIAndremoveNextUIElements(child_step.name);
         child_step.parent_step = appLogic.currentStep;
         appLogic.currentStep = child_step;
     }
@@ -472,8 +453,6 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
         for(int i = 0; i < uiBuilder.all_view_elements.size(); i++) {
             Short current_view_type = uiBuilder.all_view_elements.get(i).first;
             View current_view = uiBuilder.all_view_elements.get(i).second;
-            Log.i(CLASS_NAME, "Current View Type " + current_view_type);
-            Log.i(CLASS_NAME, "Current View " + current_view);
             String scan_tag = appLogic.currentStep.name + ".scan";
 
             if (current_view_type == uiBuilder.IS_ACTION_BUTTON && current_view.getTag().toString().matches(scan_tag)){
@@ -631,8 +610,8 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
 
     private void initNavigationDrawer()
     {
-        TextView username = (TextView)findViewById(R.id.txtUserName);
-        Button about = (Button)findViewById(R.id.bAbout);
+        TextView username = (TextView) findViewById(R.id.txtUserName);
+        Button about = (Button) findViewById(R.id.bAbout);
         Button logout = (Button)findViewById(R.id.bLogout);
 
         if(appLogic.configFile.username == null)
@@ -745,8 +724,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
         Log.i(CLASS_NAME, "OnActivityResult called resultCode " + requestCode);
         Log.i(CLASS_NAME, "Widget " + my_widget.titleBar);
         appLogic.temporary_dataSet = null;
-        if(requestCode == LIST_ACTIVITY_START)
-        {
+        if (requestCode == LIST_ACTIVITY_START) {
             Log.i(CLASS_NAME, "Init Screen Items invoked");
             initInstances();
             initScreenItems();
@@ -799,7 +777,6 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
         client.disconnect();
     }
 
-    @Override
     public void codeScanned(String code) {
         /*
         scanner.releaseCamera();
@@ -817,10 +794,19 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
         data.executeLookup(appLogic.currentStep.lookupTable, parameters);
         //Log.i(CLASS_NAME, "DataSet found for scanned item: " + appLogic.currentStep.lookupTable.results.set.toString());
 
-        if(!appLogic.currentStep.lookupTable.results.isEmpty()) {
+        if (!appLogic.currentStep.lookupTable.results.isEmpty()) {
             ArrayList<String> ui_results = new ArrayList<>();
             ui_results = appLogic.widgetViews.prepareStepSuccessUI(appLogic.currentStep);
-            updateStepSuccessUI(ui_results);
+            if(appLogic.currentStep.ui_element_type != 99) {
+                Log.i(CLASS_NAME, "UI ELEMENT Not 99!");
+                updateStepSuccessUI(ui_results);
+            }
+            else
+            {
+                Log.i(CLASS_NAME, "UI ELEMENT IS 99!");
+                setNextStep(appLogic.currentStep.next_if_success);
+                checkStepType(appLogic.currentStep);
+            }
         }
         else{
             // TODO: Handle Error state.
