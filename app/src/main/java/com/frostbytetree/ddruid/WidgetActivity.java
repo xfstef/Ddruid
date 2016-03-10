@@ -18,6 +18,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.AppCompatTextView;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -57,6 +58,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
     private static final String CLASS_NAME = "Widget Activity";
     private static final String EMPTY_ERROR_MSG = "Field is required!";
     private static final int LIST_ACTIVITY_START = 2;
+    private static final int SCAN_ACTIVITY_START = 3;
 
     FrameLayout widgetScreen = null;
     FrameLayout scannerScreen;
@@ -316,11 +318,10 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
         ResultsAdapter tableAdapter = new ResultsAdapter(lookupData);
         LinearLayoutManager llm = new LinearLayoutManager(this);
         llm.setOrientation(LinearLayoutManager.VERTICAL);
+        llm.setSmoothScrollbarEnabled(true);
         for(int i = 0; i < uiBuilder.all_view_elements.size(); i++) {
             Short current_view_type = uiBuilder.all_view_elements.get(i).first;
             View current_view = uiBuilder.all_view_elements.get(i).second;
-            Log.i(CLASS_NAME, "Current View Type " + current_view_type);
-            Log.i(CLASS_NAME, "Current View " + current_view);
             String current_step_recycler_header_tag = appLogic.currentStep.name + ".label";
             String current_step_recycler_view_tag = appLogic.currentStep.name + ".recyclerview";
 
@@ -476,10 +477,15 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
             String scan_tag = appLogic.currentStep.name + ".scan";
 
             if (current_view_type == uiBuilder.IS_ACTION_BUTTON && current_view.getTag().toString().matches(scan_tag)){
-                Button bScan = (Button)current_view;
+                final Button bScan = (Button)current_view;
                 bScan.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+
+                        Intent intent = new Intent(getApplicationContext(),Scanner.class);
+                        intent.putExtra("scan_label",bScan.getText());
+                        startActivityForResult(intent, SCAN_ACTIVITY_START);
+                        /* OLD FRAGMENT SHIT
                         widgetScreen.setVisibility(View.GONE);
                         scannerScreen.setVisibility(View.VISIBLE);
 
@@ -488,12 +494,13 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
 
                         // In case this activity was started with special instructions from an
                         // Intent, pass the Intent's extras to the fragment as arguments
-                        scanner.setArguments(getIntent().getExtras());
+                        //scanner.setArguments(getIntent().getExtras());
 
                         // Add the fragment to the 'fragment_container' FrameLayout
                         getSupportFragmentManager().beginTransaction()
                                 .add(R.id.scanner, scanner, "TVOJA MAMA")
                                 .addToBackStack(null).commit();
+                                */
                     }
                 });
                 break;
@@ -746,6 +753,10 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
             checkWidgetType();
 
         }
+        if(requestCode == SCAN_ACTIVITY_START && data != null)
+        {
+            codeScanned(data.getStringExtra("scanned_code"));
+        }
     }
 
     @Override
@@ -790,6 +801,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
 
     @Override
     public void codeScanned(String code) {
+        /*
         scanner.releaseCamera();
         scannerScreen.setVisibility(View.GONE);
         widgetScreen.setVisibility(View.VISIBLE);
@@ -797,7 +809,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
         Fragment fragment = getSupportFragmentManager().findFragmentByTag("TVOJA MAMA");
         if(fragment != null)
             getSupportFragmentManager().beginTransaction().remove(fragment).commit();
-
+        */
         Log.i(CLASS_NAME, "Code scanned: " + code);
 
         ArrayList<String> parameters = new ArrayList<>();

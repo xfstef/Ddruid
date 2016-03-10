@@ -63,6 +63,9 @@
 
         </activity>
         <activity android:name=".About">
+        </activity>
+        <activity
+            android:name=".Scanner" >
 
         </activity>
     </application>
