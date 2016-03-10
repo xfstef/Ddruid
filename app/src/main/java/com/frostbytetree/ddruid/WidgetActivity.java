@@ -101,11 +101,20 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
     public void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+
         //my_widget = new Widget(this);
         //widgetViews = WidgetViews.getInstance();
         appLogic = AppLogic.getInstance();
         my_widget = appLogic.currentWidget;
         setTheme(appLogic.configFile.custom_color);
+        uiBuilder = UIBuilder.getInstance();
+        data = Data.getInstance();
+        uiBuilder.setContext(this);
+        uiBuilder.setCallback(this);
+        uiBuilder.loadInitialState(my_widget);
+
+        initScreenItems();
+        checkWidgetType();
 
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -130,10 +139,8 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
                 startWidgetListActivity();
                 //initTableList();
                 break;
-            //TODO: this case should be called when all the tables are downloaded
             case 5: // send the first step for complex widget
                 Log.i(CLASS_NAME, "My Widget tables size: " + my_widget.myTables.size());
-                uiBuilder.loadInitialState(my_widget);
                 for(int i = 0; i < my_widget.myTables.size(); i++) {
                     if (my_widget.myTables.get(i).dataSets.isEmpty()) {
                         loadTablesRegardingStepWidget();
@@ -664,8 +671,6 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
             appLogic.getTableData(my_widget.myTables.get(0), this);
         }*/
 
-        initScreenItems();
-        checkWidgetType();
     }
 
     @Override
@@ -677,6 +682,8 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
             scanner.releaseCamera();
             getSupportFragmentManager().beginTransaction().remove(fragment).commit();
 
+            scannerScreen.setVisibility(View.GONE);
+            widgetScreen.setVisibility(View.VISIBLE);
         }
         super.onPause();
     }
