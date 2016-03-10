@@ -126,7 +126,7 @@ class Step{
 
     String ui_label;
     LookupTable lookupTable;
-    String action_name;
+    String action_table_name = null;
     Action action;
     ArrayList<String> action_attributes;
 

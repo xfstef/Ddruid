@@ -143,7 +143,24 @@ class SclableInterpreter {
         linkTablesToSteps();
         linkStepTablesToWidget();
         linkHiddenStepTablesToWidget();
+        //linkActionsToSteps();
 
+    }
+
+    private void linkActionsToSteps(){
+        for(int x = 0; x < widgetViews.the_widgets.size(); x++){
+            Widget temp_widget = widgetViews.the_widgets.get(x);
+            if(temp_widget.widgetType == 5){
+                for(int y = 0; y < temp_widget.steps.size(); y++){
+                    Step temp_step = temp_widget.steps.get(y);
+                    if(!temp_step.action_table_name.isEmpty()) {
+                        Table temp_table = data.getTable(temp_step.action_table_name);
+                        //if(temp_widget.myTables.contains(temp_table))
+
+                    }
+                }
+            }
+        }
     }
 
     private void linkHiddenStepTablesToWidget(){
@@ -454,6 +471,7 @@ class SclableInterpreter {
                         }
                         else
                             new_step.ui_element_type = 99;
+
                         JSONObject step_data_element = new JSONObject();
                         if(step_data.has("lookup")){
                             step_data_element = step_data.getJSONObject("lookup");
@@ -480,7 +498,7 @@ class SclableInterpreter {
                         }
 
                         if(step_data.has("execute_action"))
-                            new_step.action_name = step_data.getString("execute_action");
+                            new_step.action_table_name = step_data.getString("execute_action");
                         if(step_data.has("action_attributes")){
                             JSONArray action_attr = step_data.getJSONArray("action_attributes");
                             new_step.action_attributes = new ArrayList<>();

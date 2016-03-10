@@ -66,6 +66,8 @@ public class Data {
                 if(!sets_found.isEmpty())
                     lookupTable.results.retainAll(sets_found);
         }
+        if(!lookupTable.results.isEmpty())
+            System.out.println("Advanced lookup shit: " + lookupTable.results.get(0).set.toString());
 
     }
 

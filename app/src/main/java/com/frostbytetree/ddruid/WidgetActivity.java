@@ -274,7 +274,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
                 break;
             // no UI (for action steps)
             case 99:
-                if(step.action == null)
+                if(step.action_table_name == null)
                 {
                     ArrayList<String> lookupResults1 = lookupResultsForRecyclerViewer(step);
                     // Success
