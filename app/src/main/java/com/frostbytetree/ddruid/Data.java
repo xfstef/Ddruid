@@ -60,9 +60,11 @@ public class Data {
             searched_indices.add(searched_index);
             ArrayList<DataSet> sets_found = getSetData(lookupTable.referenced_table, searched_indices, parameter);
             if(lookupTable.results.isEmpty())
-                lookupTable.results = sets_found;
+                if(!sets_found.isEmpty())
+                    lookupTable.results = sets_found;
             else
-                lookupTable.results.retainAll(sets_found);
+                if(!sets_found.isEmpty())
+                    lookupTable.results.retainAll(sets_found);
         }
 
     }
@@ -72,15 +74,15 @@ public class Data {
         Table table = getTable(target_table);
         short result_column = getIndexOfAttribute(table, target_attribute);
         ArrayList<DataSet> searched = new ArrayList<>();
-        short target_column = getIndexOfAttribute(table, "id");
+        //short target_column = getIndexOfAttribute(table, "id");
 
         for(int x = 0; x < table.dataSets.size(); x++) {
             DataSet new_set = new DataSet();
             new_set.set = new ArrayList<>();
             ArrayList<String> maybe = new ArrayList<>();
-            System.out.println("current: "+ table.dataSets.get(x).set.get(target_column)+ ", searched: " + target_id);
-            //for (int y = 0; y < table.attributes.size(); y++)
-                if(table.dataSets.get(x).set.get(target_column).matches(target_id))
+            //System.out.println("current: "+ table.dataSets.get(x).set.get(target_column)+ ", searched: " + target_id);
+            for (int y = 0; y < table.attributes.size(); y++)
+                if(table.dataSets.get(x).set.get(y).matches(target_id))
                     maybe = table.dataSets.get(x).set;
             if(!maybe.isEmpty()) {
                 new_set.set = maybe;
