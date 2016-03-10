@@ -152,6 +152,8 @@ public class UIBuilder {
     }
     */
 
+
+
     public View inputElementStep(Step step)
     {
         View content = LayoutInflater.from(context).inflate(R.layout.scan_input_form, null);

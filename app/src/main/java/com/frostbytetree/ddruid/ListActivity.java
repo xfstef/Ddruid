@@ -292,10 +292,12 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
     @Override
     public void onBackPressed()
     {
-        super.onBackPressed();
+        Log.i(CLASS_NAME, "List Activity on back pressed!");
+
         if(myWidget != null)
             appLogic.currentWidget = myWidget.myParent;
-        Log.d(CLASS_NAME, appLogic.currentWidget.titleBar);
+        Log.i(CLASS_NAME, "Current widget: " + appLogic.currentWidget.titleBar);
+        super.onBackPressed();
         finish();
     }
 

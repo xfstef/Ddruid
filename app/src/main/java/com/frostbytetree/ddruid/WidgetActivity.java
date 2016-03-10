@@ -99,26 +99,74 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
-
-        //my_widget = new Widget(this);
-        //widgetViews = WidgetViews.getInstance();
-        appLogic = AppLogic.getInstance();
-        my_widget = appLogic.currentWidget;
+        initInstances();
         setTheme(appLogic.configFile.custom_color);
-        uiBuilder = UIBuilder.getInstance();
-        data = Data.getInstance();
-        uiBuilder.setContext(this);
-        uiBuilder.setCallback(this);
-        uiBuilder.loadInitialState(my_widget);
-
         initScreenItems();
         checkWidgetType();
 
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+    }
+
+    private void initInstances()
+    {
+        //my_widget = new Widget(this);
+        //widgetViews = WidgetViews.getInstance();
+        appLogic = AppLogic.getInstance();
+        my_widget = appLogic.currentWidget;
+
+        uiBuilder = UIBuilder.getInstance();
+        data = Data.getInstance();
+        uiBuilder.setContext(this);
+        uiBuilder.setCallback(this);
+        uiBuilder.loadInitialState(my_widget);
+    }
+
+    private void initScreenItems() {
+
+        setContentView(R.layout.widget_activity);
+        widgetScreen = (FrameLayout) findViewById(R.id.mainContent);
+        scannerScreen = (FrameLayout) findViewById(R.id.scanner);
+        //widgetScreen.setVisibility(View.GONE);
+        toolbar = (Toolbar) findViewById(R.id.widget_toolbar);
+        //loadingScreen.setVisibility(View.VISIBLE);
+
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle(my_widget.titleBar);
+
+
+
+
+        // if that is not the root widget then, the back arrow should be displayed
+        // else the main should show the hamburger menu
+        if(my_widget.myParent != null)
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        else {
+            initNavigationDrawer();
+            drawer = (DrawerLayout) findViewById(R.id.DrawerLayout);        // drawer object Assigned to the view
+            mDrawerToggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.openDrawer, R.string.closeDrawer) {
+
+                @Override
+                public void onDrawerOpened(View drawerView) {
+                    super.onDrawerOpened(drawerView);
+                    // code here will execute once the drawer is opened( As I dont want anything happened whe drawer is
+                    // open I am not going to put anything here)
+                }
+
+                @Override
+                public void onDrawerClosed(View drawerView) {
+                    super.onDrawerClosed(drawerView);
+                    // Code here will execute once drawer is closed
+                }
+
+
+            }; // drawer Toggle Object Made
+            drawer.setDrawerListener(mDrawerToggle); // drawer Listener set to the drawer toggle
+            mDrawerToggle.syncState();
+        }
+        widgetScreen.removeAllViews();
     }
 
     void checkWidgetType() {
@@ -224,6 +272,18 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
                 break;
             // no UI (for action steps)
             case 99:
+                if(step.action == null)
+                {
+                    ArrayList<String> lookupResults1 = lookupResultsForRecyclerViewer(step);
+                    // Success
+                    if(!lookupResults1.isEmpty()) {
+                        displayRecyclerViewerResults(step, lookupResults1);
+                    }
+                }
+                else
+                {
+
+                }
 
                 break;
         }
@@ -560,50 +620,6 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
         startActivityForResult(intent, LIST_ACTIVITY_START);
     }
 
-    void initScreenItems() {
-
-        setContentView(R.layout.widget_activity);
-        widgetScreen = (FrameLayout) findViewById(R.id.mainContent);
-        scannerScreen = (FrameLayout) findViewById(R.id.scanner);
-        //widgetScreen.setVisibility(View.GONE);
-        toolbar = (Toolbar) findViewById(R.id.widget_toolbar);
-        //loadingScreen.setVisibility(View.VISIBLE);
-
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(my_widget.titleBar);
-
-
-
-
-        // if that is not the root widget then, the back arrow should be displayed
-        // else the main should show the hamburger menu
-        if(my_widget.myParent != null)
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        else {
-            initNavigationDrawer();
-            drawer = (DrawerLayout) findViewById(R.id.DrawerLayout);        // drawer object Assigned to the view
-            mDrawerToggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.openDrawer, R.string.closeDrawer) {
-
-                @Override
-                public void onDrawerOpened(View drawerView) {
-                    super.onDrawerOpened(drawerView);
-                    // code here will execute once the drawer is opened( As I dont want anything happened whe drawer is
-                    // open I am not going to put anything here)
-                }
-
-                @Override
-                public void onDrawerClosed(View drawerView) {
-                    super.onDrawerClosed(drawerView);
-                    // Code here will execute once drawer is closed
-                }
-
-
-            }; // drawer Toggle Object Made
-            drawer.setDrawerListener(mDrawerToggle); // drawer Listener set to the drawer toggle
-            mDrawerToggle.syncState();
-        }
-        widgetScreen.removeAllViews();
-    }
 
 
     private void initNavigationDrawer()
@@ -649,27 +665,16 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
         super.onResume();
 
         Log.i(CLASS_NAME, "On Resume called!");
-        // close the camera
-        //setStatusBarTheme();
-        // This section is needed  for the
-        // init the UI Builder
+
+
+        /*
         uiBuilder = UIBuilder.getInstance();
         data = Data.getInstance();
         uiBuilder.setContext(this);
         uiBuilder.setCallback(this);
-
-
         my_widget = appLogic.currentWidget;
-
-        // set the current Interface for ui_endpoint (signalDataArived)
         appLogic.iDataInflateListener = this;
-
-        /*
-        if (my_widget.myTables.get(0).dataSets.size() == 0)
-        {
-            Log.i(CLASS_NAME, "Getting Table: " + my_widget.myTables.get(0).table_name);
-            appLogic.getTableData(my_widget.myTables.get(0), this);
-        }*/
+        */
 
     }
 
@@ -730,13 +735,15 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d(CLASS_NAME, "OnActivityResult called resultCode " + requestCode);
-        Log.d(CLASS_NAME, "Widget " + my_widget.titleBar);
+        Log.i(CLASS_NAME, "OnActivityResult called resultCode " + requestCode);
+        Log.i(CLASS_NAME, "Widget " + my_widget.titleBar);
         appLogic.temporary_dataSet = null;
         if(requestCode == LIST_ACTIVITY_START)
         {
-            Log.d(CLASS_NAME, "Init Screen Items invoked");
-            //initScreenItems();
+            Log.i(CLASS_NAME, "Init Screen Items invoked");
+            initInstances();
+            initScreenItems();
+            checkWidgetType();
 
         }
     }
