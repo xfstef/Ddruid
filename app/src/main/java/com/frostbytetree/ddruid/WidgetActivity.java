@@ -357,29 +357,28 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
                     break;
                 }
             }
-
-            // Second: Remove every ui_element which is after the ui selected
+            Log.i(CLASS_NAME, "all_view_elements.size: " + uiBuilder.all_view_elements.size());
             for (int i = 0; i < uiBuilder.all_view_elements.size(); i++)
             {
                 if(uiBuilder.all_view_elements.get(i).first == uiBuilder.IS_ACTION_BUTTON &&
                         view == uiBuilder.all_view_elements.get(i).second)
                 {
-                    // remove every view including myself
+                    // Second:
+                    // remove every view including myself also fill new list with the elements which needs to be removed
                     for(int j = i; j < uiBuilder.all_view_elements.size(); j++)
                     {
-                        Log.i(CLASS_NAME, "Item to be removed: " + uiBuilder.all_view_elements.get(j).second.getTag());
+                        Log.i(CLASS_NAME, "Item[ " + j + "] to be removed: " + uiBuilder.all_view_elements.get(j).second.getTag());
                         View currentViewToRemove = uiBuilder.all_view_elements.get(j).second;
-                        //uiBuilder.all_view_elements.remove(j);
                         ((ViewGroup) currentViewToRemove.getParent()).removeView(currentViewToRemove);
 
                     }
+                    // Third: remove all elements from the new created list
+                    uiBuilder.all_view_elements.subList(i, uiBuilder.all_view_elements.size()).clear();
                 }
 
             }
-            // Third: remove every ui_element from the selected step
-            //for(int i = 0; i < uiBuilder.all_view_elements)
-            //checkStepType(appLogic.currentStep);
-
+            checkStepType(appLogic.currentStep);
+            Log.i(CLASS_NAME, "At last the all_view_elemeents size is: " + uiBuilder.all_view_elements.size());
         }
 
     }
