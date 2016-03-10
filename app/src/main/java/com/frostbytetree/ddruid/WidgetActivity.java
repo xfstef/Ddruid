@@ -346,16 +346,15 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
     @Override
     public void onClick(View view) {
 
-
-
         if(view.getTag().toString().contains(".reset")) {
-            // First: find the current step and set
+            // First: find the current step and set it
             for(int i = 0; i < my_widget.steps.size(); i++)
             {
                 if(view.getTag().toString().contains(my_widget.steps.get(i).name))
                 {
                     appLogic.currentStep = my_widget.steps.get(i);
                     Log.i(CLASS_NAME, "Current step: " + appLogic.currentStep.name);
+                    break;
                 }
             }
 
