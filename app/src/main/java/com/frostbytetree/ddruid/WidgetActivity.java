@@ -60,7 +60,6 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
 
     FrameLayout widgetScreen = null;
     FrameLayout scannerScreen;
-    FrameLayout loadingScreen;
     Toolbar toolbar;
     DrawerLayout drawer;
     ActionBarDrawerToggle mDrawerToggle;
@@ -561,7 +560,6 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
         scannerScreen = (FrameLayout) findViewById(R.id.scanner);
         //widgetScreen.setVisibility(View.GONE);
         toolbar = (Toolbar) findViewById(R.id.widget_toolbar);
-        loadingScreen = (FrameLayout)findViewById(R.id.loading_circle);
         //loadingScreen.setVisibility(View.VISIBLE);
 
         setSupportActionBar(toolbar);
