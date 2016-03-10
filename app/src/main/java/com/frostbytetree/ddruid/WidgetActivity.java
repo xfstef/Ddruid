@@ -285,6 +285,8 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
                 else
                 {
                     //Action execute
+                    //data.getStepAction(lookupResults1, data.getTable(step.action_table_name));
+                    //System.out.println("^^^$^$^$^$^^$ Trying to " + step.action.name);
                     setNextStep(step.next_if_success);
                     checkStepType(appLogic.currentStep);
                 }
@@ -462,7 +464,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
                     public void onClick(View v) {
 
                         Intent intent = new Intent(getApplicationContext(),Scanner.class);
-                        intent.putExtra("scan_label",bScan.getText());
+                        intent.putExtra("scan_label", bScan.getText());
                         startActivityForResult(intent, SCAN_ACTIVITY_START);
                         /* OLD FRAGMENT SHIT
                         widgetScreen.setVisibility(View.GONE);

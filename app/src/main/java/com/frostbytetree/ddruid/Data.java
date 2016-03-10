@@ -32,6 +32,19 @@ public class Data {
         tables = new ArrayList<Table>();
     }
 
+    // This function prepares the action that an action step should execute.
+    public Action getStepAction(DataSet dataSet, Table table){
+        Action result = new Action();
+
+        for(int x = 0; x < appLogic.currentWidget.myActions.size(); x++) {
+            Action temp_action = appLogic.currentWidget.myActions.get(x);
+            if (temp_action.sclablePreState.matches(dataSet.set.get(getIndexOfAttribute(table, "state"))))
+                return temp_action;
+        }
+
+        return result;
+    }
+
     // We need to get the desired results from another step. This is how we do it.
     public ArrayList<String> selectTargetParameters(ArrayList<String> lookupString, int startPos){
         ArrayList<String> result = new ArrayList<>();
