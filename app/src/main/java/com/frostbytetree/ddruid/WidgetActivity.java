@@ -34,6 +34,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -61,7 +62,9 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
     private static final int SCAN_ACTIVITY_START = 3;
 
     FrameLayout widgetScreen = null;
-    FrameLayout scannerScreen;
+    //FrameLayout scannerScreen;
+    ProgressBar loadingScreen;
+
     Toolbar toolbar;
     DrawerLayout drawer;
     ActionBarDrawerToggle mDrawerToggle;
@@ -130,7 +133,8 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
 
         setContentView(R.layout.widget_activity);
         widgetScreen = (FrameLayout) findViewById(R.id.mainContent);
-        scannerScreen = (FrameLayout) findViewById(R.id.scanner);
+        loadingScreen = (ProgressBar)findViewById(R.id.progressBar);
+        //scannerScreen = (FrameLayout) findViewById(R.id.scanner);
         //widgetScreen.setVisibility(View.GONE);
         toolbar = (Toolbar) findViewById(R.id.widget_toolbar);
         //loadingScreen.setVisibility(View.VISIBLE);
@@ -262,6 +266,8 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
                         // no input just do lookup
                         break;
                 }
+                widgetScreen.setVisibility(View.VISIBLE);
+                loadingScreen.setVisibility(View.GONE);
                 break;
             // RecyclerView
             case 1:
@@ -451,7 +457,6 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
 
     private void initScan()
     {
-
         for(int i = 0; i < uiBuilder.all_view_elements.size(); i++) {
             Short current_view_type = uiBuilder.all_view_elements.get(i).first;
             View current_view = uiBuilder.all_view_elements.get(i).second;
@@ -675,7 +680,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
             scanner.releaseCamera();
             getSupportFragmentManager().beginTransaction().remove(fragment).commit();
 
-            scannerScreen.setVisibility(View.GONE);
+            //scannerScreen.setVisibility(View.GONE);
             widgetScreen.setVisibility(View.VISIBLE);
         }
         super.onPause();
