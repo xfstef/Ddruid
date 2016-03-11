@@ -63,7 +63,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
 
     FrameLayout widgetScreen = null;
     //FrameLayout scannerScreen;
-    ProgressBar loadingScreen;
+    FrameLayout loadingScreen;
 
     Toolbar toolbar;
     DrawerLayout drawer;
@@ -133,7 +133,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
 
         setContentView(R.layout.widget_activity);
         widgetScreen = (FrameLayout) findViewById(R.id.mainContent);
-        loadingScreen = (ProgressBar)findViewById(R.id.progressBar);
+        loadingScreen = (FrameLayout)findViewById(R.id.loading_circle);
         //scannerScreen = (FrameLayout) findViewById(R.id.scanner);
         //widgetScreen.setVisibility(View.GONE);
         toolbar = (Toolbar) findViewById(R.id.widget_toolbar);
@@ -185,13 +185,18 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
         switch (my_widget.widgetType) {
             case 0:
                 initWidgetList();
+                widgetScreen.setVisibility(View.VISIBLE);
+                loadingScreen.setVisibility(View.GONE);
                 break;
             case 1:
                 initFormWidget();
+                widgetScreen.setVisibility(View.VISIBLE);
+                loadingScreen.setVisibility(View.GONE);
                 break;
             case 4:
                 startWidgetListActivity();
-                //initTableList();
+                widgetScreen.setVisibility(View.VISIBLE);
+                loadingScreen.setVisibility(View.GONE);
                 break;
             case 5: // send the first step for complex widget
                 Log.i(CLASS_NAME, "My Widget tables size: " + my_widget.myTables.size());
@@ -266,8 +271,6 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
                         // no input just do lookup
                         break;
                 }
-                widgetScreen.setVisibility(View.VISIBLE);
-                loadingScreen.setVisibility(View.GONE);
                 break;
             // RecyclerView
             case 1:
@@ -276,7 +279,6 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
                 if(!lookupResults.isEmpty()) {
                     displayRecyclerViewerResults(step, lookupResults);
                 }
-
                 break;
             // no UI (for action steps)
             case 99:
@@ -299,6 +301,8 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
 
                 break;
         }
+        widgetScreen.setVisibility(View.VISIBLE);
+        loadingScreen.setVisibility(View.GONE);
     }
 
     private ArrayList<String> lookupResultsForRecyclerViewer(Step step)
@@ -817,6 +821,9 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
         }
         else{
             // TODO: Handle Error state.
+            for(int i = 0; i < 3; i++)
+                Toast.makeText(getApplicationContext(),"Sry, no match for: " + code, Toast.LENGTH_SHORT).show();
+
         }
 
     }
