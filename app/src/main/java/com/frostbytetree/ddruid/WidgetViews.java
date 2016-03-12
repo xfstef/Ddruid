@@ -74,6 +74,16 @@ public class WidgetViews {
 
         return result;
     }
+
+    public Step getStep(Widget widget, String step){
+        Step result = new Step();
+
+        for(int x = 0; x < widget.steps.size(); x++)
+            if(widget.steps.get(x).name.matches(step))
+                return widget.steps.get(x);
+
+        return result;
+    }
 }
 
 class Widget extends LinearLayout{
