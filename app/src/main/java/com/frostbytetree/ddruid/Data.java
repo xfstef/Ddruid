@@ -52,7 +52,7 @@ public class Data {
 
         for(int x = 0; x < appLogic.currentWidget.myActions.size(); x++) {
             Action temp_action = appLogic.currentWidget.myActions.get(x);
-            if (temp_action.sclablePreState.matches(dataSet.set.get(getIndexOfAttribute(table, "state"))))
+            if (temp_action.sclablePreState.matches(dataSet.set.get(getIndexOfAttribute(table, "instance_state"))))
                 return temp_action;
         }
 
