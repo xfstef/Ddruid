@@ -280,6 +280,19 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
                     displayRecyclerViewerResults(step, lookupResults);
                 }
                 break;
+            // Action button
+            case 2:
+                if(step.action_table_name != null)
+                {
+                    Step step1 = my_widget.getStep(step.action_attributes.get(0));
+                    Table lookup = data.getTable(step.action_attributes.get(1));
+                    // we assume that we will only have one result
+                    step.action = data.getStepAction(step1.lookupTable.results.get(0),lookup);
+                    View actionElement = uiBuilder.actionElementStep(step);
+                    my_widget.addView(actionElement, layoutParams);
+
+                }
+                break;
             // no UI (for action steps)
             case 99:
                 if(step.lookupTable != null) {
@@ -380,7 +393,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
                 current_text.setText(result.get(0));
                 //break;
             }
-            if(current_view_type == uiBuilder.IS_ACTION_BUTTON && current_view.getTag().toString().matches(current_step_reset_button_tag))
+            if(current_view_type == uiBuilder.IS_SCAN_BUTTON && current_view.getTag().toString().matches(current_step_reset_button_tag))
             {
                 Log.i(CLASS_NAME, "Edit Text should have been updated/Tag = " + current_view.getTag());
                 final Button current_button = (Button)current_view;
@@ -399,7 +412,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
                 });*/
                 current_button.setVisibility(View.VISIBLE);
             }
-            if(current_view_type == uiBuilder.IS_ACTION_BUTTON && current_view.getTag().toString().matches(current_step_scan_button_tag)) {
+            if(current_view_type == uiBuilder.IS_SCAN_BUTTON && current_view.getTag().toString().matches(current_step_scan_button_tag)) {
                 Log.i(CLASS_NAME, "Edit Text should have been updated/Tag = " + current_view.getTag());
                 Button current_button = (Button)current_view;
                 current_button.setOnClickListener(new View.OnClickListener() {
@@ -466,7 +479,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
             View current_view = uiBuilder.all_view_elements.get(i).second;
             String scan_tag = appLogic.currentStep.name + ".scan";
 
-            if (current_view_type == uiBuilder.IS_ACTION_BUTTON && current_view.getTag().toString().matches(scan_tag)){
+            if (current_view_type == uiBuilder.IS_SCAN_BUTTON && current_view.getTag().toString().matches(scan_tag)){
                 final Button bScan = (Button)current_view;
                 bScan.setOnClickListener(new View.OnClickListener() {
                     @Override

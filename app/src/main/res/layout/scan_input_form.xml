@@ -37,4 +37,5 @@
         android:background="?attr/colorControlActivated"
         android:visibility="visible"
         android:layout_weight="1" />
+
 </LinearLayout>

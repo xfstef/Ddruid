@@ -51,6 +51,7 @@ public class UIBuilder {
     public static final short IS_SPINNER = 2;
     public static final short IS_DATE_INPUT = 3;
     public static final short IS_ACTION_BUTTON = 4;
+    public static final short IS_SCAN_BUTTON = 8;
     public static final short IS_RECYCLER_HEADER = 5;
     public static final short IS_RECYCLER_VIEW = 6;
     public static final short IS_LAYOUT = 7;
@@ -153,7 +154,6 @@ public class UIBuilder {
     */
 
 
-
     public View inputElementStep(Step step)
     {
         View content = LayoutInflater.from(context).inflate(R.layout.scan_input_form, null);
@@ -175,11 +175,11 @@ public class UIBuilder {
         bScan.setText(step.ui_label);
         bScan.setTag(step.name + ".scan");
 
-        all_view_elements.add(new Pair<Short, View>(IS_ACTION_BUTTON, bReset));
+        all_view_elements.add(new Pair<Short, View>(IS_SCAN_BUTTON, bReset));
         all_view_elements.add(new Pair<Short, View>(IS_LAYOUT, scan_input));
         all_view_elements.add(new Pair<Short, View>(IS_INPUT_LABEL, input_item));
         all_view_elements.add(new Pair<Short, View>(IS_INPUT_TEXT, input_text));
-        all_view_elements.add(new Pair<Short, View>(IS_ACTION_BUTTON, bScan));
+        all_view_elements.add(new Pair<Short, View>(IS_SCAN_BUTTON, bScan));
 
         return scan_input;
     }
@@ -198,6 +198,18 @@ public class UIBuilder {
         all_view_elements.add(new Pair<Short, View>(IS_RECYCLER_HEADER, recycler_header));
         all_view_elements.add(new Pair<Short, View>(IS_RECYCLER_VIEW, recyclerView));
         return lin_layout;
+    }
+
+    public View actionElementStep(Step step)
+    {
+        View content = LayoutInflater.from(context).inflate(R.layout.action_button, null);
+        Button bAction = (Button)content.findViewById(R.id.action_button);
+        bAction.setTag(step.name + ".action");
+        Log.i(CLASS_NAME, "Step.Action.Name: " + step.action.name);
+        bAction.setText(step.action.name);
+
+        all_view_elements.add(new Pair<Short, View>(IS_ACTION_BUTTON, bAction));
+        return bAction;
     }
 
     Widget inflateTableDetailModel(LinearLayout ui_content, Widget widget, ArrayList<String> data_to_be_displayed)
