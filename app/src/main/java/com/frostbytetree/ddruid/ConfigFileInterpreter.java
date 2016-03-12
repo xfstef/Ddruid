@@ -115,9 +115,11 @@ class SclableInterpreter {
                 new_table.attributes = new ArrayList<Attribute>(new_table.attribute_count);
                 addAttibutes(new_table, attributes);
 
-                JSONArray actions = temp_table.getJSONArray("actions");
-                new_table.myActions = new ArrayList<Action>(actions.length());
-                addActions(new_table, actions);
+                if(temp_table.has("actions")) {
+                    JSONArray actions = temp_table.getJSONArray("actions");
+                    new_table.myActions = new ArrayList<Action>(actions.length());
+                    addActions(new_table, actions);
+                }
 
                 JSONArray states = temp_table.getJSONArray("states");
                 new_table.sclable_states = new ArrayList<>(states.length());
@@ -532,7 +534,9 @@ class SclableInterpreter {
                         step_data_element = step_data.getJSONObject("error");
                         if(step_data_element.has("next_step"))
                             new_step.next_step_if_error = step_data_element.getString("next_step");
-                        new_step.error_message = step_data_element.getInt("message");
+                        if(step_data_element.has("message")){
+
+                        }
 
                         new_widget.steps.add(new_step);
                     }
