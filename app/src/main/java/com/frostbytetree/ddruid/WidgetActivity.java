@@ -43,7 +43,10 @@ import com.google.android.gms.appindexing.*;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.common.api.GoogleApiClient;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 /**
  * Created by XfStef on 11/27/2015.
@@ -291,6 +294,20 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
                     step.action = data.getStepAction(step1.lookupTable.results.get(0), table, table_attr.second);
                     View actionElement = uiBuilder.actionElementStep(step);
                     my_widget.addView(actionElement, layoutParams);
+                    for(int i = 0; i < uiBuilder.all_view_elements.size(); i++)
+                        if(uiBuilder.all_view_elements.get(i).second.getTag().toString().contains(".action"))
+                        {
+                            Button action = (Button)uiBuilder.all_view_elements.get(i).second;
+                            action.setOnClickListener(this);
+                            /*
+                            new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    appLogic.sendPost(step1.lookupTable.results.get(0),step.action, table);
+                                }
+                            });
+                            */
+                        }
 
                 }
                 break;
@@ -302,7 +319,6 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
                 if(step.action_table_name == null)
                 {
                     setNextStep(step.next_if_success);
-                    checkStepType(appLogic.currentStep);
                 }
                 else
                 {
@@ -310,7 +326,6 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
                     //data.getStepAction(lookupResults1, data.getTable(step.action_table_name));
                     //System.out.println("^^^$^$^$^$^^$ Trying to " + step.action.name);
                     setNextStep(step.next_if_success);
-                    checkStepType(appLogic.currentStep);
                 }
 
                 break;
@@ -367,7 +382,6 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
             }
         }
         setNextStep(step.next_if_success);
-        checkStepType(appLogic.currentStep);
     }
 
     private void updateStepSuccessUI(ArrayList<String> result)
@@ -430,7 +444,6 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
 
         }
         setNextStep(appLogic.currentStep.next_if_success);
-        checkStepType(appLogic.currentStep);
     }
 
 
@@ -454,7 +467,47 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
             checkStepType(appLogic.currentStep);
             Log.i(CLASS_NAME, "At last the all_view_elements size is: " + uiBuilder.all_view_elements.size());
         }
+        if(view.getTag().toString().contains(".action")){
+            Log.i(CLASS_NAME, "Current step: " + appLogic.currentStep.name);
 
+            Step step1 = my_widget.getStep(appLogic.currentStep.action_attributes.get(0));
+            Pair<String, String> table_attr = data.splitTableFromAttribute(appLogic.currentStep.action_attributes.get(1));
+            Table table = data.getTable(table_attr.first);
+            // we assume that we will only have one result
+            checkHiddenRequiredAttributes(step1.lookupTable.results.get(0), appLogic.currentStep.action);
+            appLogic.sendPost(step1.lookupTable.results.get(0), appLogic.currentStep.action, table);
+            setNextStep(appLogic.currentStep.next_if_success);
+        }
+
+    }
+
+    // When no UI should be shown but you need to post also something like timestamp
+    private void checkHiddenRequiredAttributes(DataSet dataSet, com.frostbytetree.ddruid.Action action)
+    {
+        for(int i = 0; i < action.attributes.size(); i++)
+        {
+            if(action.attribute_required.get(i))
+            {
+                Log.i(CLASS_NAME, "DataSet.set[" + dataSet.set.get(i) + "]");
+                if(dataSet.set.get(i).matches("null"))
+                {
+                    switch(action.attributes.get(i).attribute_type)
+                    {
+                        // date
+                        case 5:
+                            DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+                            String date = df.format(Calendar.getInstance().getTime());
+                            Log.i(CLASS_NAME, "The current date is : " + date);
+                            dataSet.set.set(i, date);
+                            break;
+                        // timestamp
+                        case 6:
+
+                            break;
+                    }
+                }
+            }
+        }
     }
 
 
@@ -470,6 +523,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
         uiBuilder.checkExistingUIAndremoveNextUIElements(child_step.name);
         child_step.parent_step = appLogic.currentStep;
         appLogic.currentStep = child_step;
+        checkStepType(appLogic.currentStep);
     }
 
 
@@ -825,12 +879,9 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
             if(appLogic.currentStep.ui_element_type != 99) {
                 Log.i(CLASS_NAME, "UI ELEMENT Not 99!");
                 updateStepSuccessUI(ui_results);
-            }
-            else
-            {
+            } else {
                 Log.i(CLASS_NAME, "UI ELEMENT IS 99!");
                 setNextStep(appLogic.currentStep.next_if_success);
-                checkStepType(appLogic.currentStep);
             }
         }
         else{
