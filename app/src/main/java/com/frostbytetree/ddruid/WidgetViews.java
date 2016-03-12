@@ -120,11 +120,13 @@ class Step{
     short ui_element_type = 99; // This defines what type of UI element the step uses.
                                 // 0 - Text View;
                                 // 1 - Recycler View;
-                                // 2 - ...
+                                // 2 - Button;
+                                // 3 - ...;
                                 // 99 - NO UI.
     Step parent_step = null;
 
     String ui_label;
+    String label_definition;
     LookupTable lookupTable;
     String action_table_name = null;
     Action action;

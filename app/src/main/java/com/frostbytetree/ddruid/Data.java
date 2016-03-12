@@ -32,6 +32,20 @@ public class Data {
         tables = new ArrayList<Table>();
     }
 
+    // We use this to get the allowed Actions of a DataSet.
+    public ArrayList<Action> getDataActions(DataSet dataSet, Table table, Widget widget){
+        ArrayList<Action> temp_actions = new ArrayList<>();
+
+        if(widget.myTables.contains(table))
+            for(int x = 0; x < table.myActions.size(); x++){
+                Action temp_action = table.myActions.get(x);
+                if(table.sclable_states.contains(temp_action.sclablePreState))
+                    temp_actions.add(temp_action);
+            }
+
+        return temp_actions;
+    }
+
     // This function prepares the action that an action step should execute.
     public Action getStepAction(DataSet dataSet, Table table){
         Action result = new Action();

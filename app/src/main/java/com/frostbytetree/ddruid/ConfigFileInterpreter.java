@@ -466,10 +466,20 @@ class SclableInterpreter {
                                 case "recycler_view":
                                     new_step.ui_element_type = 1;
                                     break;
+                                case "button":
+                                    new_step.ui_element_type = 2;
+                                    break;
                                 // TODO: Implement the rest.
                             }
-                            if(step_data.has("label"))
-                                new_step.ui_label = step_data.getString("label");
+                            if(step_data.has("label")) {
+                                Object temp_label = step_data.get("label");
+                                if(temp_label.getClass().equals(JSONObject.class))
+                                    new_step.label_definition = step_data.getJSONObject("label").getString("result");
+                                else
+                                    new_step.ui_label = step_data.getString("label");
+                            }
+                            if(new_step.label_definition != null)
+                                System.out.println("Label defined by: " + new_step.label_definition);
                         }
                         else
                             new_step.ui_element_type = 99;
