@@ -370,7 +370,7 @@ public class AppLogic extends Thread{
                         break;
                     }
                 System.out.println("Changes: " + table.dataSets.size());
-                if(change_list) {
+                if(change_list && currentWidget.steps.isEmpty()) {
                     table.dataSets.remove(temporary_dataSet);   // Hard coded solution to identifying modified dataset.
                     iDataInflateListener.signalDataArrived(table);
                 }
