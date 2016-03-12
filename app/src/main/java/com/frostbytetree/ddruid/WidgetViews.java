@@ -75,15 +75,6 @@ public class WidgetViews {
         return result;
     }
 
-    public Step getStep(Widget widget, String step){
-        Step result = new Step();
-
-        for(int x = 0; x < widget.steps.size(); x++)
-            if(widget.steps.get(x).name.matches(step))
-                return widget.steps.get(x);
-
-        return result;
-    }
 }
 
 class Widget extends LinearLayout{
@@ -122,6 +113,16 @@ class Widget extends LinearLayout{
         setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
         setGravity(Gravity.CENTER);
         setOrientation(LinearLayout.VERTICAL);
+    }
+
+    public Step getStep(String step){
+        Step result = new Step();
+
+        for(int x = 0; x < steps.size(); x++)
+            if(steps.get(x).name.matches(step))
+                return steps.get(x);
+
+        return result;
     }
 }
 
