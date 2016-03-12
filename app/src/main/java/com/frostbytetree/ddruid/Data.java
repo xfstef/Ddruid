@@ -47,12 +47,12 @@ public class Data {
     }
 
     // This function prepares the action that an action step should execute.
-    public Action getStepAction(DataSet dataSet, Table table){
+    public Action getStepAction(DataSet dataSet, Table table, String lookup_attr){
         Action result = new Action();
 
         for(int x = 0; x < appLogic.currentWidget.myActions.size(); x++) {
             Action temp_action = appLogic.currentWidget.myActions.get(x);
-            if (temp_action.sclablePreState.matches(dataSet.set.get(getIndexOfAttribute(table, "instance_state"))))
+            if (temp_action.sclablePreState.matches(dataSet.set.get(getIndexOfAttribute(table, lookup_attr))))
                 return temp_action;
         }
 
@@ -204,9 +204,19 @@ class Table{
     ArrayList<Attribute> attributes;
     ArrayList<DataSet> dataSets = new ArrayList<>();
     ArrayList<Widget> usedBy;
-    ArrayList<Action> myActions;
+    ArrayList<Action> myActions = new ArrayList<>();
     ArrayList<Table> children = new ArrayList<>();
     ArrayList<String> sclable_states;
+
+    public Action getAction(String action){
+        Action result = new Action();
+
+        for(int x = 0; x < myActions.size(); x++)
+            if(myActions.get(x).name.matches(action))
+                return myActions.get(x);
+
+        return result;
+    }
 }
 
 class DataSet{

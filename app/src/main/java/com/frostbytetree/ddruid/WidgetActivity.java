@@ -285,9 +285,10 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
                 if(step.action_table_name != null)
                 {
                     Step step1 = my_widget.getStep(step.action_attributes.get(0));
-                    Table lookup = data.getTable(step.action_attributes.get(1));
+                    Pair<String, String> table_attr = data.splitTableFromAttribute(step.action_attributes.get(1));
+                    Table table = data.getTable(table_attr.first);
                     // we assume that we will only have one result
-                    step.action = data.getStepAction(step1.lookupTable.results.get(0),lookup);
+                    step.action = data.getStepAction(step1.lookupTable.results.get(0), table, table_attr.second);
                     View actionElement = uiBuilder.actionElementStep(step);
                     my_widget.addView(actionElement, layoutParams);
 

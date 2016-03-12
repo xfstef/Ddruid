@@ -132,7 +132,6 @@ class SclableInterpreter {
             }
 
             new_table.dataSets = new ArrayList<DataSet>();
-            System.out.println("Added Kurac table: " + new_table.table_name);
 
             synchronized (data.data_lock){
                 data.tables.add(new_table);
@@ -210,15 +209,14 @@ class SclableInterpreter {
     }
 
     private void linkActionsToWidgets(){
-        for(int f = 0; f < widgetViews.the_widgets.size()-1; f++){
-            for (int y = 0; y < widgetViews.the_widgets.get(f).myTableActions.size(); y++) {
-                widgetViews.the_widgets.get(f).myActions = new ArrayList<Action>(widgetViews.the_widgets.get(f).myTableActions.size());
-                for (int z = 0; z < widgetViews.the_widgets.get(f).myTables.size(); z++)
-                    for(int d = 0; d < widgetViews.the_widgets.get(f).myTables.get(z).myActions.size(); d++)
-                        if (widgetViews.the_widgets.get(f).myTableActions.get(y).second.matches(
-                                widgetViews.the_widgets.get(f).myTables.get(z).myActions.get(d).name))
-                            widgetViews.the_widgets.get(f).myActions.add(widgetViews.the_widgets.get(f).myTables.get(z).myActions.get(d));
-
+        for(int f = 0; f < widgetViews.the_widgets.size(); f++){
+            Widget temp_widget = widgetViews.the_widgets.get(f);
+            for (int y = 0; y < temp_widget.myTableActions.size(); y++) {
+                Pair<String, String> temp_pair = temp_widget.myTableActions.get(y);
+                Table table = data.getTable(temp_pair.first);
+                Action action = table.getAction(temp_pair.second);
+                if(action != null)
+                    temp_widget.myActions.add(action);
             }
         }
     }
@@ -425,7 +423,7 @@ class SclableInterpreter {
                         //new_widget.myTableNames.add(temp_key);
                         //new_widget.myActionNames.add(temp_action_obj.getString(temp_key));
                         new_widget.myTableActions.add(new Pair<String, String>(temp_key, temp_action_obj.getString(temp_key)));
-                        //System.out.println("Actions: " + temp_key + ", " + temp_action_obj.getString(temp_key));
+                        System.out.println("Actions: " + temp_key + ", " + temp_action_obj.getString(temp_key));
                     }
                 }
 
