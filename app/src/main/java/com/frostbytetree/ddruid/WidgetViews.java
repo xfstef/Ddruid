@@ -151,6 +151,6 @@ class Step{
 
     String next_step_if_error = null;
     Step next_if_error = null;
-    int error_message;
+    String error_message = null;
 
 }
