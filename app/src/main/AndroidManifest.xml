@@ -68,6 +68,14 @@
             android:name=".Scanner" >
 
         </activity>
+
+        <receiver
+            android:name=".NetworkListener">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

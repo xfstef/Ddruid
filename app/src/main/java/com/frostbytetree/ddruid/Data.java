@@ -166,16 +166,16 @@ public class Data {
 
         for(int x = 0; x < table.dataSets.size(); x++) {
             DataSet new_set = new DataSet();
-            new_set.set = new ArrayList<>();
-            ArrayList<String> maybe = new ArrayList<>();
-            maybe = null;
+            //new_set.set = new ArrayList<>();
+            //ArrayList<String> maybe = new ArrayList<>();
+            //maybe = null;
             for (int y = 0; y < indexes.size(); y++)
                 if (table.dataSets.get(x).set.get(indexes.get(y)).matches(parameters.get(y)))
-                    maybe = table.dataSets.get(x).set;
+                    new_set = table.dataSets.get(x);
                 else
-                    maybe = null;
-            if(maybe != null) {
-                new_set.set = maybe;
+                    new_set = null;
+            if(new_set != null) {
+                //new_set.set = maybe;
                 searched.add(new_set);
             }
         }

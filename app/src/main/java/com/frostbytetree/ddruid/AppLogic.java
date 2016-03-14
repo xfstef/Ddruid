@@ -354,7 +354,7 @@ public class AppLogic extends Thread{
         }
         boolean change_list;
         System.out.println("Type: " + action.type);
-        switch(action.type){
+        switch(action.type) {
 
             case 0: // Create.
                 // TODO: Implement logic for creating a new tuple successfully.
@@ -362,17 +362,16 @@ public class AppLogic extends Thread{
             case 1: // Simple Edit.
                 System.out.println("Action requested: " + action.sclablePostState);
                 change_list = true;
-                if(table.sclable_states.size() > 0) {
+                if (table.sclable_states.size() > 0) {
                     for (int j = 0; j < table.sclable_states.size(); j++)
                         if (action.sclablePostState.matches(table.sclable_states.get(j))) {
                             change_list = false;
                             break;
                         }
-                }
-                else
+                } else
                     change_list = false;
                 System.out.println("Changes: " + table.dataSets.size());
-                if(change_list) {
+                if (change_list) {
                     table.dataSets.remove(dataSet);
                     iDataInflateListener.signalDataArrived(table);
                 }
@@ -381,8 +380,8 @@ public class AppLogic extends Thread{
             case 2: // Edit with form.
                 System.out.println("Action requested: " + action.sclablePostState);
                 change_list = true;
-                if(table.sclable_states.size() > 0)
-                    for(int j = 0; j < table.sclable_states.size(); j++) {
+                if (table.sclable_states.size() > 0)
+                    for (int j = 0; j < table.sclable_states.size(); j++) {
                         System.out.println("Object State: " + (table.sclable_states.get(j)));
                         if (action.sclablePostState.matches(table.sclable_states.get(j))) {
                             change_list = false;
@@ -392,7 +391,7 @@ public class AppLogic extends Thread{
                 else
                     change_list = false;
                 System.out.println("Changes: " + table.dataSets.size());
-                if(change_list && currentWidget.steps == null) {
+                if (change_list && currentWidget.steps == null) {
                     table.dataSets.remove(temporary_dataSet);   // Hard coded solution to identifying modified dataset.
                     iDataInflateListener.signalDataArrived(table);
                 }
@@ -404,6 +403,29 @@ public class AppLogic extends Thread{
                 break;
             case 5: // Step Action.
                 System.out.println("Step Action Called !");
+                System.out.println("Valve state: " + dataSet.set.get(data.getIndexOfAttribute(table, "instance_state")));
+                System.out.println("Action POST State: " + action.sclablePostState);
+                change_list = true;
+                if (table.sclable_states.size() > 0) {
+                    for (int j = 0; j < table.sclable_states.size(); j++) {
+                        System.out.println("Object State: " + (table.sclable_states.get(j)));
+                        if (action.sclablePostState.matches(table.sclable_states.get(j))) {
+                            dataSet.set.set(data.getIndexOfAttribute(table, "instance_state"), action.sclablePostState);
+                            System.out.println("Changed to FALSE in FOR");
+                            change_list = false;
+                            break;
+                        }
+                    }
+                } else{
+                    System.out.println("Changed to FALSE");
+                    change_list = false;
+                }
+                if(change_list) {
+                    System.out.println("TRYING TO REMOVE DATASET!!!");
+                    table.dataSets.remove(table.dataSets.indexOf(dataSet));
+                    //table.dataSets.remove(dataSet);   // Hard coded solution to identifying modified dataset.
+                }
+                System.out.println("Changes: " + table.dataSets.size());
                 break;
         }
     }

@@ -2,6 +2,8 @@ package com.frostbytetree.ddruid;
 
 import android.app.Notification;
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -25,6 +27,7 @@ public class DataTransferController extends Service{
     ConfigFile configFile;
     CommunicationDaemon commDaemon;
     Notification someNotification;
+    NetworkListener networkListener;
 
     public static DataTransferController getInstance() {
         return ourInstance;
@@ -42,6 +45,7 @@ public class DataTransferController extends Service{
         startForeground(0, someNotification);
         commDaemon = CommunicationDaemon.getInstance();
         commDaemon.start();
+        networkListener = new NetworkListener();
     }
 
     @Nullable
