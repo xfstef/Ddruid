@@ -543,7 +543,8 @@ class SclableInterpreter {
                         if(step_data_element.has("next_step"))
                             new_step.next_step_if_error = step_data_element.getString("next_step");
                         if(step_data_element.has("message")){
-
+                            new_step.error_message = step_data_element.getString("message");
+                            System.out.println("Error: " + new_step.error_message);
                         }
 
                         new_widget.steps.add(new_step);
