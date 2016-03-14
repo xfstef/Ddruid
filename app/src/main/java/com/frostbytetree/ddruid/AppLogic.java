@@ -37,7 +37,7 @@ public class AppLogic extends Thread{
 
     // This approach is used when selecting a object within a list, because passing objects via
     // activity less efficient
-    DataSet temporary_dataSet = null;
+    DataSet temporary_dataSet = new DataSet();
     short thread_throttling = 5000; // This option is used to determine how much the Thread sleeps.
                                     // 5000 - Idle mode: the app is minimized with no bkg operation.
                                     // 1000 - Passive mode: app is sending / getting data.
@@ -147,8 +147,17 @@ public class AppLogic extends Thread{
                         break;
                     case 213:   // Got POST Edit Operation finished successfully.
                         System.out.println("Post Edit operation finished successfully !");
+                        if(finished_operation.requested_operation.new_post_set != null){
+                            System.out.println("New DataSet: " + finished_operation.requested_operation.new_post_set.set.toString());
+                            data.updateDataSet(finished_operation.requested_operation.the_table, finished_operation.requested_operation.new_post_set);
+                            iDataInflateListener.signalDataArrived(finished_operation.requested_operation.the_table);
+                        }
                         finished_operation.requested_operation.status = 6;
                         // TODO: Remove the successfully modified Data Set
+                        break;
+                    case 215:   // Got POST Step action finished successfully.
+                        System.out.println("Post Step Action operation finished successfully !");
+                        finished_operation.requested_operation.status = 6;
                         break;
                     // TODO: Implement the rest of possible post successful operation calls
                 }
@@ -171,6 +180,8 @@ public class AppLogic extends Thread{
                     case 111:
                         break;
                     case 212:
+                        break;
+                    case 215:
                         break;
                 }
                 break;
@@ -195,6 +206,10 @@ public class AppLogic extends Thread{
                         finished_operation.requested_operation.status = 6;
                         break;
                     case 213:   // Could not post edit to server.
+                        System.out.println("Got error from server.");
+                        finished_operation.requested_operation.status = 6;
+                        break;
+                    case 215:   // Step action failed.
                         System.out.println("Got error from server.");
                         finished_operation.requested_operation.status = 6;
                         break;
@@ -345,14 +360,17 @@ public class AppLogic extends Thread{
                 // TODO: Implement logic for creating a new tuple successfully.
                 break;
             case 1: // Simple Edit.
-                // TODO: Implement logic for handling this change in the app.
                 System.out.println("Action requested: " + action.sclablePostState);
                 change_list = true;
-                for(int j = 0; j < table.sclable_states.size(); j++)
-                    if(action.sclablePostState.matches(table.sclable_states.get(j))) {
-                        change_list = false;
-                        break;
-                    }
+                if(table.sclable_states.size() > 0) {
+                    for (int j = 0; j < table.sclable_states.size(); j++)
+                        if (action.sclablePostState.matches(table.sclable_states.get(j))) {
+                            change_list = false;
+                            break;
+                        }
+                }
+                else
+                    change_list = false;
                 System.out.println("Changes: " + table.dataSets.size());
                 if(change_list) {
                     table.dataSets.remove(dataSet);
@@ -361,23 +379,31 @@ public class AppLogic extends Thread{
                 System.out.println("Changes: " + table.dataSets.size());
                 break;
             case 2: // Edit with form.
-                // TODO: Implement logic for handling this change in the app.
                 System.out.println("Action requested: " + action.sclablePostState);
                 change_list = true;
-                for(int j = 0; j < table.sclable_states.size(); j++)
-                    if(action.sclablePostState.matches(table.sclable_states.get(j))) {
-                        change_list = false;
-                        break;
+                if(table.sclable_states.size() > 0)
+                    for(int j = 0; j < table.sclable_states.size(); j++) {
+                        System.out.println("Object State: " + (table.sclable_states.get(j)));
+                        if (action.sclablePostState.matches(table.sclable_states.get(j))) {
+                            change_list = false;
+                            break;
+                        }
                     }
+                else
+                    change_list = false;
                 System.out.println("Changes: " + table.dataSets.size());
-                if(change_list && currentWidget.steps.isEmpty()) {
+                if(change_list && currentWidget.steps == null) {
                     table.dataSets.remove(temporary_dataSet);   // Hard coded solution to identifying modified dataset.
                     iDataInflateListener.signalDataArrived(table);
                 }
                 System.out.println("Changes: " + table.dataSets.size());
                 break;
             case 3: // Delete.
-                // TODO: Implement logic for handling this change in the app.
+                table.dataSets.remove(dataSet);
+                iDataInflateListener.signalDataArrived(table);
+                break;
+            case 5: // Step Action.
+                System.out.println("Step Action Called !");
                 break;
         }
     }
@@ -416,8 +442,12 @@ public class AppLogic extends Thread{
             case 3:
                 post_procedure.requested_operation.type = 213;
                 break;
+            case 4:
+                break;
+            case 5:
+                post_procedure.requested_operation.type = 215;
+                break;
         }
-
 
         post_procedure.requested_operation.new_post_set = dataSet;
         post_procedure.iDataInflateListener = iDataInflateListener;

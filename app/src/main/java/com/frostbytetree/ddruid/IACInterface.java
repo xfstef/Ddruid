@@ -56,7 +56,7 @@ class Operation {
                     // 1xx - GET; 2xx - POST;
                     // x0x - SQLite DB; x1x - Server;
                     // xx0 - Config File; xx1 - DB Table; xx2 - Create DS; xx3 - Edit DS;
-                    // xx4 - Operations Store; TODO: finish definitions.
+                    // xx4 - Operations Store; xx5 - Step Operation; TODO: finish definitions.
     String REST_command;    // If a REST command is needed, else this string is NULL.
     Table the_table;   // If a table is needed then a data model will be given.
     JSONObject sclable_object;  // Used to send POST and DELETE commands to Sclable.

@@ -133,6 +133,9 @@ public class CommunicationDaemon extends Thread{
             case 213:
                 postToServer(message);
                 break;
+            case 215:
+                postToServer(message);
+                break;
             // TODO: Define behaviour for the other operation types.
         }
     }

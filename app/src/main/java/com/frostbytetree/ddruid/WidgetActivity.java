@@ -475,6 +475,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
             Table table = data.getTable(table_attr.first);
             // we assume that we will only have one result
             checkHiddenRequiredAttributes(step1.lookupTable.results.get(0), appLogic.currentStep.action);
+            appLogic.currentStep.action.type = 5;
             appLogic.sendPost(step1.lookupTable.results.get(0), appLogic.currentStep.action, table);
             setNextStep(appLogic.currentStep.next_if_success);
         }

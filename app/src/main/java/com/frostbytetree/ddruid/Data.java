@@ -195,6 +195,16 @@ public class Data {
         return the_pair;
     }
 
+    public void updateDataSet(Table table, DataSet new_set){
+
+        short id_index = getIndexOfAttribute(table, "id");
+        for(int x = 0; x < table.dataSets.size(); x++)
+            if(table.dataSets.get(x).set.get(id_index).matches(new_set.set.get(id_index))){
+                table.dataSets.get(x).set = new_set.set;
+                return;
+            }
+    }
+
 }
 
 class Table{
@@ -217,11 +227,13 @@ class Table{
 
         return result;
     }
+
 }
 
 class DataSet{
     // TODO: Enable more data types.
     ArrayList<String> set = new ArrayList<>();
+    boolean modified_offline = false;
 }
 
 class Attribute{
@@ -248,8 +260,9 @@ class Action{
     short type; // 0 - For create new data set;
                 // 1 - For simple edit data set;
                 // 2 - For complex edit with form;
-                // 3 - For delete data set.
-                // 4 - Read action.
+                // 3 - For delete data set;
+                // 4 - Read action;
+                // 5 - Step action.
     String sclablePreState;
     String sclablePostState;
     // The sclable States can be:
