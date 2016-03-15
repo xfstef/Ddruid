@@ -161,7 +161,7 @@ public class WidgetActionActivity extends AppCompatActivity implements IDataInfl
                                 return;
                                 //Log.i(CLASS_NAME, "Field " + i + " is required!");
                             }
-                            if(current_spinner.getSelectedItemPosition() > 0)
+                            if (current_spinner.getSelectedItemPosition() > 0)
                                 setPost.set.add(selected_source_columns.get(current_spinner.getSelectedItemPosition() - 1));
                             else
                                 setPost.set.add("");
@@ -247,6 +247,18 @@ public class WidgetActionActivity extends AppCompatActivity implements IDataInfl
                 });
                 break;
         }
+    }
+
+    @Override
+    public void signalOffline(String could_not_send_now)
+    {
+
+    }
+
+    @Override
+    public void signalOnline(String operation_finished)
+    {
+
     }
 
     @Override

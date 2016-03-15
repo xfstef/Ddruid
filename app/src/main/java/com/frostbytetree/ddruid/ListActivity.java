@@ -285,6 +285,18 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
     }
 
     @Override
+    public void signalOffline(String could_not_send_now)
+    {
+
+    }
+
+    @Override
+    public void signalOnline(String operation_finished)
+    {
+
+    }
+
+    @Override
     public void codeScanned(String code) {
 
     }

@@ -886,9 +886,15 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
             }
         }
         else{
+            for(int i = 0; i < uiBuilder.all_view_elements.size(); i++)
+            {
+                //if(uiBuilder.)
+            }
+            /*
             // TODO: Handle Error state.
             for(int i = 0; i < 3; i++)
                 Toast.makeText(getApplicationContext(),"Sry, no match for: " + code, Toast.LENGTH_SHORT).show();
+                */
 
         }
 
@@ -938,6 +944,18 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
                 }
                 break;
         }
+
+    }
+
+    @Override
+    public void signalOffline(String could_not_send_now)
+    {
+
+    }
+
+    @Override
+    public void signalOnline(String operation_finished)
+    {
 
     }
 
