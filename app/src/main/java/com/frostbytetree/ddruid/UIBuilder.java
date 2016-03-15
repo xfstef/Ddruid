@@ -51,11 +51,11 @@ public class UIBuilder {
     public static final short IS_SPINNER = 2;
     public static final short IS_DATE_INPUT = 3;
     public static final short IS_ACTION_BUTTON = 4;
-    public static final short IS_SCAN_BUTTON = 8;
     public static final short IS_RECYCLER_HEADER = 5;
     public static final short IS_RECYCLER_VIEW = 6;
     public static final short IS_LAYOUT = 7;
-    public static final short IS_ERROR_TEXT = 8;
+    public static final short IS_SCAN_BUTTON = 8;
+    public static final short IS_ERROR_TEXT = 9;
 
     private static UIBuilder ourInstance = new UIBuilder();
 
