@@ -13,11 +13,12 @@ import android.util.Log;
  */
 
 public class NetworkListener extends BroadcastReceiver {
+    CommunicationDaemon communicationDaemon;
 
     @Override
     public void onReceive(Context context, Intent intent) {
 
-
+        communicationDaemon = CommunicationDaemon.getInstance();
         System.out.println("~~~~~~~~~~~~ Network changed ~~~~~~~~~~~~");
 
         ConnectivityManager connectivityManager = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -34,18 +35,27 @@ public class NetworkListener extends BroadcastReceiver {
         if (isWiFi) {
             if (isConnected) {
                 Log.i("APP_TAG", "Wi-Fi - CONNECTED");
+                synchronized (communicationDaemon){
+                    communicationDaemon.notify();
+                }
             } else {
                 Log.i("APP_TAG", "Wi-Fi - DISCONNECTED");
             }
         } else if (isMobile) {
             if (isConnected) {
                 Log.i("APP_TAG", "Mobile - CONNECTED");
+                synchronized (communicationDaemon){
+                    communicationDaemon.notify();
+                }
             } else {
                 Log.i("APP_TAG", "Mobile - DISCONNECTED");
             }
         } else {
             if (isConnected) {
                 Log.i("APP_TAG", networkInfo.getTypeName() + " - CONNECTED");
+                synchronized (communicationDaemon){
+                    communicationDaemon.notify();
+                }
             } else {
                 Log.i("APP_TAG", networkInfo.getTypeName() + " - DISCONNECTED");
             }

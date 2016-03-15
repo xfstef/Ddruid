@@ -157,6 +157,10 @@ public class AppLogic extends Thread{
                         break;
                     case 215:   // Got POST Step action finished successfully.
                         System.out.println("Post Step Action operation finished successfully !");
+                        if(finished_operation.requested_operation.new_post_set.modified_offline == true){
+                            finished_operation.requested_operation.new_post_set.modified_offline = false;
+                            iDataInflateListener.signalOnline("Scheduled Task completed successfully!");
+                        }
                         finished_operation.requested_operation.status = 6;
                         break;
                     // TODO: Implement the rest of possible post successful operation calls
@@ -182,6 +186,9 @@ public class AppLogic extends Thread{
                     case 212:
                         break;
                     case 215:
+                        finished_operation.requested_operation.new_post_set.modified_offline = true;
+                        iDataInflateListener.signalOffline("Currently Offline. Task Scheduled!");
+                        System.out.println("We are offlie, waiting for an internet connection!");
                         break;
                 }
                 break;
