@@ -202,7 +202,9 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
                 loadingScreen.setVisibility(View.GONE);
                 break;
             case 5: // send the first step for complex widget
-                Log.i(CLASS_NAME, "My Widget tables size: " + my_widget.myTables.size());
+                appLogic.iDataInflateListener = this;
+
+                //appLogic.setCurrentWidget(selected_widget);
                 for(int i = 0; i < my_widget.myTables.size(); i++) {
                     if (my_widget.myTables.get(i).dataSets.isEmpty()) {
                         loadTablesRegardingStepWidget();
@@ -541,7 +543,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
                     @Override
                     public void onClick(View v) {
 
-                        Intent intent = new Intent(getApplicationContext(),Scanner.class);
+                        Intent intent = new Intent(getApplicationContext(), Scanner.class);
                         intent.putExtra("scan_label", bScan.getText());
                         startActivityForResult(intent, SCAN_ACTIVITY_START);
                         /* OLD FRAGMENT SHIT
@@ -886,15 +888,24 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
             }
         }
         else{
+            // TODO: Handle Error state.
+
             for(int i = 0; i < uiBuilder.all_view_elements.size(); i++)
             {
-                //if(uiBuilder.)
+                //Log.i(CLASS_NAME, )
+                if(uiBuilder.all_view_elements.get(i).first == uiBuilder.IS_ERROR_TEXT &&
+                        uiBuilder.all_view_elements.get(i).second.toString().contains(appLogic.currentStep.name))
+                {
+                    TextView error_text = (TextView)uiBuilder.all_view_elements.get(i).second;
+                    error_text.setVisibility(View.VISIBLE);
+                    error_text.setText(appLogic.currentStep.error_message);
+                }
             }
+
             /*
-            // TODO: Handle Error state.
             for(int i = 0; i < 3; i++)
                 Toast.makeText(getApplicationContext(),"Sry, no match for: " + code, Toast.LENGTH_SHORT).show();
-                */
+            */
 
         }
 
