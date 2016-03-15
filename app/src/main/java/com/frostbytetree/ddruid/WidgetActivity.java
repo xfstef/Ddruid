@@ -973,15 +973,25 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
     }
 
     @Override
-    public void signalOffline(String could_not_send_now)
+    public void signalOffline(final String to_show)
     {
-
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getApplicationContext(), to_show, Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     @Override
-    public void signalOnline(String operation_finished)
+    public void signalOnline(final String to_show)
     {
-
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getApplicationContext(), to_show, Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     private int getReferenceOffsetForSpinner(com.frostbytetree.ddruid.Spinner spinner)
