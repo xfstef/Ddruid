@@ -189,7 +189,7 @@ public class AppLogic extends Thread{
                         System.out.println("The data set: " + finished_operation.requested_operation.new_post_set.set.toString());
                         finished_operation.requested_operation.new_post_set.modified_offline = true;
                         iDataInflateListener.signalOffline("Currently Offline. Task Scheduled!");
-                        System.out.println("We are offlie, waiting for an internet connection!");
+                        System.out.println("We are offline, waiting for an internet connection!");
                         break;
                 }
                 break;
