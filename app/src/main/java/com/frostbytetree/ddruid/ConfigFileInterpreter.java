@@ -138,14 +138,31 @@ class SclableInterpreter {
             }
         }
 
-        linkTablesToWidgets();
         linkReferencesToTable();
+        linkTablesToWidgets();
         linkActionsToWidgets();
         linkTablesToSteps();
         linkStepTablesToWidget();
         linkHiddenStepTablesToWidget();
         //linkActionsToSteps();
 
+    }
+
+    private void linkTablesToWidgets() {
+        synchronized (data.data_lock){
+            for(int x = 0; x < widgetViews.the_widgets.size(); x++) {
+                for (int y = 0; y < widgetViews.the_widgets.get(x).myTableActions.size(); y++) {
+                    widgetViews.the_widgets.get(x).myTables = new ArrayList<Table>(widgetViews.the_widgets.get(x).myTableActions.size());
+                    for (int z = 0; z < data.tables.size(); z++)
+                        if (widgetViews.the_widgets.get(x).myTableActions.get(y).first.matches(data.tables.get(z).table_name))
+                            widgetViews.the_widgets.get(x).myTables.add(data.tables.get(z));
+                }
+            }
+        }
+
+        /*for(int u = 0; u < widgetViews.the_widgets.size()-1; u++)
+            System.out.println("Table: " + widgetViews.the_widgets.get(u).myTables.get(0).table_name +
+            ", action: " + widgetViews.the_widgets.get(u).myActionNames.get(0));*/
     }
 
     private void linkActionsToSteps(){
@@ -286,23 +303,6 @@ class SclableInterpreter {
                 e.printStackTrace();
             }
         }
-    }
-
-    private void linkTablesToWidgets() {
-        synchronized (data.data_lock){
-            for(int x = 0; x < widgetViews.the_widgets.size(); x++) {
-                for (int y = 0; y < widgetViews.the_widgets.get(x).myTableActions.size(); y++) {
-                    widgetViews.the_widgets.get(x).myTables = new ArrayList<Table>(widgetViews.the_widgets.get(x).myTableActions.size());
-                    for (int z = 0; z < data.tables.size(); z++)
-                        if (widgetViews.the_widgets.get(x).myTableActions.get(y).first.matches(data.tables.get(z).table_name))
-                            widgetViews.the_widgets.get(x).myTables.add(data.tables.get(z));
-                }
-            }
-        }
-
-        /*for(int u = 0; u < widgetViews.the_widgets.size()-1; u++)
-            System.out.println("Table: " + widgetViews.the_widgets.get(u).myTables.get(0).table_name +
-            ", action: " + widgetViews.the_widgets.get(u).myActionNames.get(0));*/
     }
 
     private void addAttibutes(Table new_table, JSONArray attributes) {

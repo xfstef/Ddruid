@@ -158,13 +158,29 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
         getSupportActionBar().setTitle(myWidget.titleBar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        Table myTable = findTableWithinWidget(myWidget);
+        myTable = myWidget.myTables.get(0);
+
         if(myTable.dataSets.size() == 0) {
-            this.myTable = myTable;
-            appLogic.getTableData(myTable, this);
+            Log.d(CLASS_NAME, "Time to call the data!");
+            mainContent.setVisibility(View.GONE);
+            loadingScreen.setVisibility(View.VISIBLE);
         }
 
-
+        for(int d = 0; d < myWidget.myTables.size(); d++){
+            Table temp_table = myWidget.myTables.get(d);
+            if(temp_table.dataSets.size() == 0) {
+                appLogic.getTableData(temp_table, this);
+                requested_tables++;
+            }
+            for(int j = 0; j < temp_table.attributes.size(); j++){
+                Attribute temp_attr = temp_table.attributes.get(j);
+                if(temp_attr.attribute_type == 2)
+                    if(!myWidget.myTables.contains(temp_attr.items.referenced_table)){
+                        appLogic.getTableData(temp_attr.items.referenced_table, this);
+                        requested_tables++;
+                }
+            }
+        }
 
         recList = (RecyclerView) findViewById(R.id.tablewidgetitem_list);
         tableAdapter = new TableListItemRecyclerViewAdapter(myTable.dataSets);
@@ -193,7 +209,7 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
                 @Override
                 public void onClick(View v) {
 
-                    for(int i = 0; i < myWidget.myChildren.size(); i++) {
+                    for (int i = 0; i < myWidget.myChildren.size(); i++) {
                         for (int j = 0; j < myWidget.myChildren.get(i).myActions.size(); j++)
                             if (myWidget.myChildren.get(i).myActions.get(j) == defaultAction) {
 
@@ -212,12 +228,6 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
                     }
                 }
             });
-        }
-
-        if(myTable.dataSets.size() == 0) {
-            Log.d(CLASS_NAME, "Time to call the data!");
-            mainContent.setVisibility(View.GONE);
-            loadingScreen.setVisibility(View.VISIBLE);
         }
     }
 
@@ -272,24 +282,28 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
         // 4 - List with datasets
         // 31 - Code Scanner + GPS;
 
-        if(my_table != myWidget.myTables.get(0))
-            my_table = myWidget.myTables.get(0);
+        requested_tables--;
+        if (requested_tables == 0) {
+            System.out.println("All tables loaded !!!");
+            if (my_table != myWidget.myTables.get(0))
+                my_table = myWidget.myTables.get(0);
 
-        switch (myWidget.widgetType) {
-            case 4:
-                final Table finalMy_table = my_table;
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mainContent.setVisibility(View.VISIBLE);
-                        loadingScreen.setVisibility(View.GONE);
-                        tableAdapter.updateDataSetList(finalMy_table);
-                    }
-                });
-                break;
+            switch (myWidget.widgetType) {
+                case 4:
+                    final Table finalMy_table = my_table;
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mainContent.setVisibility(View.VISIBLE);
+                            loadingScreen.setVisibility(View.GONE);
+                            tableAdapter.updateDataSetList(finalMy_table);
+                        }
+                    });
+                    break;
+
+            }
 
         }
-
     }
 
     @Override
