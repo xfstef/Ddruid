@@ -48,7 +48,7 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
     FrameLayout mainContent, loadingScreen;
     Data data;
 
-
+    int requested_tables = 0;
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
@@ -218,6 +218,14 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
             Log.d(CLASS_NAME, "Time to call the data!");
             mainContent.setVisibility(View.GONE);
             loadingScreen.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void loadTablesRegardingStepWidget()
+    {
+        requested_tables = myWidget.myTables.size();
+        for(int i = 0; i < myWidget.myTables.size(); i++) {
+            appLogic.getTableData(myWidget.myTables.get(i), this);
         }
     }
 
