@@ -202,7 +202,9 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
                 loadingScreen.setVisibility(View.GONE);
                 break;
             case 5: // send the first step for complex widget
-                Log.i(CLASS_NAME, "My Widget tables size: " + my_widget.myTables.size());
+                appLogic.iDataInflateListener = this;
+
+                //appLogic.setCurrentWidget(selected_widget);
                 for(int i = 0; i < my_widget.myTables.size(); i++) {
                     if (my_widget.myTables.get(i).dataSets.isEmpty()) {
                         loadTablesRegardingStepWidget();
@@ -540,7 +542,7 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
                 bScan.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-
+                        displayStepErrorMessage(false);
                         Intent intent = new Intent(getApplicationContext(),Scanner.class);
                         intent.putExtra("scan_label", bScan.getText());
                         startActivityForResult(intent, SCAN_ACTIVITY_START);
@@ -886,12 +888,41 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
             }
         }
         else{
-            // TODO: Handle Error state.
-            for(int i = 0; i < 3; i++)
-                Toast.makeText(getApplicationContext(),"Sry, no match for: " + code, Toast.LENGTH_SHORT).show();
+            displayStepErrorMessage(true);
+        }
+    }
 
+    private void displayStepErrorMessage(boolean display)
+    {
+        Log.i(CLASS_NAME, "Error state should be displayed!");
+
+        for(int i = 0; i < uiBuilder.all_view_elements.size(); i++)
+        {
+            Log.i(CLASS_NAME, "View element: " + uiBuilder.all_view_elements.get(i).second.getTag().toString());
+            Log.i(CLASS_NAME, "View error: " + uiBuilder.all_view_elements.get(i).first);
+            if(uiBuilder.all_view_elements.get(i).first == uiBuilder.IS_ERROR_TEXT)
+            {
+                Log.i(CLASS_NAME, "Nur beim Error->View error: " + uiBuilder.all_view_elements.get(i).first);
+                if(uiBuilder.all_view_elements.get(i).second.getTag().toString().contains(appLogic.currentStep.name)) {
+                    TextView error_text = (TextView) uiBuilder.all_view_elements.get(i).second;
+                    if(display) {
+                        Log.i(CLASS_NAME, "TextView for error found!");
+                        error_text.setVisibility(View.VISIBLE);
+                        error_text.setText(appLogic.currentStep.error_message);
+                    }
+                    else
+                    {
+                        error_text.setVisibility(View.GONE);
+                    }
+                    break;
+                }
+            }
         }
 
+            /*
+            for(int i = 0; i < 3; i++)
+                Toast.makeText(getApplicationContext(),"Sry, no match for: " + code, Toast.LENGTH_SHORT).show();
+            */
     }
 
     @Override
@@ -939,6 +970,28 @@ public class WidgetActivity extends AppCompatActivity implements IDataInflateLis
                 break;
         }
 
+    }
+
+    @Override
+    public void signalOffline(final String to_show)
+    {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getApplicationContext(), to_show, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    @Override
+    public void signalOnline(final String to_show)
+    {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getApplicationContext(), to_show, Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     private int getReferenceOffsetForSpinner(com.frostbytetree.ddruid.Spinner spinner)

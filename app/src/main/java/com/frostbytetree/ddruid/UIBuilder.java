@@ -51,10 +51,11 @@ public class UIBuilder {
     public static final short IS_SPINNER = 2;
     public static final short IS_DATE_INPUT = 3;
     public static final short IS_ACTION_BUTTON = 4;
-    public static final short IS_SCAN_BUTTON = 8;
     public static final short IS_RECYCLER_HEADER = 5;
     public static final short IS_RECYCLER_VIEW = 6;
     public static final short IS_LAYOUT = 7;
+    public static final short IS_SCAN_BUTTON = 8;
+    public static final short IS_ERROR_TEXT = 9;
 
     private static UIBuilder ourInstance = new UIBuilder();
 
@@ -171,6 +172,9 @@ public class UIBuilder {
         Button bReset = (Button)content.findViewById(R.id.bReset);
         bReset.setTag(step.name + ".reset");
 
+        TextView errorText = (TextView)content.findViewById(R.id.txtError);
+        errorText.setTag(step.name + ".error");
+
         Button bScan = (Button)content.findViewById(R.id.bScan);
         bScan.setText(step.ui_label);
         bScan.setTag(step.name + ".scan");
@@ -179,6 +183,7 @@ public class UIBuilder {
         all_view_elements.add(new Pair<Short, View>(IS_LAYOUT, scan_input));
         all_view_elements.add(new Pair<Short, View>(IS_INPUT_LABEL, input_item));
         all_view_elements.add(new Pair<Short, View>(IS_INPUT_TEXT, input_text));
+        all_view_elements.add(new Pair<Short, View>(IS_ERROR_TEXT, errorText));
         all_view_elements.add(new Pair<Short, View>(IS_SCAN_BUTTON, bScan));
 
         return scan_input;

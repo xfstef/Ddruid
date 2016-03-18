@@ -111,6 +111,10 @@ public class CommunicationDaemon extends Thread{
                 message.requested_operation.status = 2;
                 typeMarshalling(message);
                 break;
+            case 4:
+                message.requested_operation.status = 2;
+                typeMarshalling(message);
+                break;
             // TODO: Define behaviour for the other operation statuses.
         }
     }

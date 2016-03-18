@@ -151,9 +151,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             uri.setText(sharedPreferences.getString("last_uri", ""));
 
             //TODO: remove this when done
-            username.setText("frostbyte");
-            password.setText("fr0st");
-            uri.setText("https://demo23.sclable.me/mobile3/mobile-api");
+            username.setText("field_mechanic");
+            password.setText("none");
+            uri.setText("https://demo23.sclable.me/hoerbiger2/mobile-api");
         } catch (Exception e) {
             e.printStackTrace();
         }
