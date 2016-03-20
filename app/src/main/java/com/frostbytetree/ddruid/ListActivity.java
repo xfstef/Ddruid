@@ -2,6 +2,7 @@ package com.frostbytetree.ddruid;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.MenuItemCompat;
@@ -115,7 +116,6 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         data = Data.getInstance();
         appLogic = AppLogic.getInstance();
@@ -124,7 +124,7 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
         uiBuilder.setContext(this);
         uiBuilder.setCallback(this);
         setContentView(R.layout.activity_list);
-
+        Log.i(CLASS_NAME, "Before init of list items");
         initListItems();
 
         if (findViewById(R.id.tablewidgetitem_detail_container) != null) {
@@ -135,7 +135,54 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
 
             mTwoPane = true;
         }
+        loadAllListsWithReferenceLookup(this);
+
     }
+
+    public void loadAllListsWithReferenceLookup(final AppCompatActivity context){
+        AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>(){
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                // TODO Auto-generated method stub
+                try
+                {
+                    for(int d = 0; d < myWidget.myTables.size(); d++){
+                        Table temp_table = myWidget.myTables.get(d);
+                        if(temp_table.dataSets.size() == 0) {
+                            requested_tables++;
+                            appLogic.getTableData(temp_table, context);
+                        }
+                        for(int j = 0; j < temp_table.attributes.size(); j++){
+                            Attribute temp_attr = temp_table.attributes.get(j);
+                            if(temp_attr.attribute_type == 2)
+                                if(!myWidget.myTables.contains(temp_attr.items.referenced_table)){
+                                    requested_tables++;
+                                    appLogic.getTableData(temp_attr.items.referenced_table, context);
+                                }
+                        }
+                    }
+
+                }catch(Exception e){
+                    System.out.println("Could not Process!++++++");
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPreExecute() {
+
+            }
+
+            @Override
+            protected void onPostExecute(Void result) {
+
+            }
+        };
+        task.execute((Void[]) null);
+    }
+
 
     private void initListItems()
     {
@@ -160,33 +207,24 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
 
         myTable = myWidget.myTables.get(0);
 
-        if(myTable.dataSets.size() == 0) {
-            Log.d(CLASS_NAME, "Time to call the data!");
-            mainContent.setVisibility(View.GONE);
-            loadingScreen.setVisibility(View.VISIBLE);
-        }
 
-        for(int d = 0; d < myWidget.myTables.size(); d++){
-            Table temp_table = myWidget.myTables.get(d);
-            if(temp_table.dataSets.size() == 0) {
-                appLogic.getTableData(temp_table, this);
-                requested_tables++;
-            }
-            for(int j = 0; j < temp_table.attributes.size(); j++){
-                Attribute temp_attr = temp_table.attributes.get(j);
-                if(temp_attr.attribute_type == 2)
-                    if(!myWidget.myTables.contains(temp_attr.items.referenced_table)){
-                        appLogic.getTableData(temp_attr.items.referenced_table, this);
-                        requested_tables++;
-                }
-            }
-        }
+        Log.i(CLASS_NAME,"Before getTable Data!");
 
         recList = (RecyclerView) findViewById(R.id.tablewidgetitem_list);
         tableAdapter = new TableListItemRecyclerViewAdapter(myTable.dataSets);
         tableAdapter.father = this;
         recList.setAdapter(tableAdapter);
 
+        if(myTable.dataSets.size() == 0) {
+            Log.d(CLASS_NAME, "Time to call the data!");
+            mainContent.setVisibility(View.GONE);
+            loadingScreen.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            final ArrayList<String> myList = buildListElements(myTable);
+            tableAdapter.updateDataSetList(myTable, myList);
+        }
         final SwipeRefreshLayout swipe_content = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
         SwipeDataRefreshListener swipe_listener = new SwipeDataRefreshListener(this,swipe_content,myTable);
 
@@ -231,6 +269,12 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
         }
     }
 
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+    }
+
     private void loadTablesRegardingStepWidget()
     {
         requested_tables = myWidget.myTables.size();
@@ -256,17 +300,6 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
         return null;
     }
 
-    //TODO: not only first table, in the future maybe more tables within one widget
-    Table findTableWithinWidget(Widget widget)
-    {
-        if(widget.myTables.size() != 0)
-        {
-            return widget.myTables.get(0);
-        }
-        else
-            return null;
-    }
-
     /*
     INTERFACE METHOD IMPLEMENTATIONS
      */
@@ -290,13 +323,15 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
 
             switch (myWidget.widgetType) {
                 case 4:
+                    final ArrayList<String> list_elements = buildListElements(my_table);
+                    Log.i(CLASS_NAME, "List Elements: " + list_elements);
                     final Table finalMy_table = my_table;
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             mainContent.setVisibility(View.VISIBLE);
                             loadingScreen.setVisibility(View.GONE);
-                            tableAdapter.updateDataSetList(finalMy_table);
+                            tableAdapter.updateDataSetList(finalMy_table, list_elements);
                         }
                     });
                     break;
@@ -304,6 +339,37 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
             }
 
         }
+    }
+
+
+    private ArrayList<String> buildListElements(Table table)
+    {
+        ArrayList<String> display_list = new ArrayList<>();
+        String tuple = new String();
+        for(int i = 0; i < table.dataSets.size(); i++) {
+
+            for (LinkedHashMap.Entry<Integer, ArrayList<Integer>> entry : myWidget.list_view_columns.entrySet()) {
+                String temp = new String();
+                // Atrritubte type 2 = spinner
+                // needed for referenced attribute names
+                if (entry.getValue().size() > 0 && myWidget.myTables.get(0).attributes.get(entry.getKey()).attribute_type == 2) {
+
+                    for (int l = 0; l < entry.getValue().size(); l++) {
+                        // this adds every referenced attribute for this element
+                        temp = temp + " " + getReferencedItem(Integer.valueOf(table.dataSets.get(i).set.get(entry.getKey())),
+                                entry.getValue().get(l), myWidget.myTables.get(0).attributes.get(entry.getKey()));
+                    }
+
+                } else {
+                    temp = table.dataSets.get(i).set.get(entry.getKey());
+                }
+                tuple = tuple + " " + temp;
+
+            }
+            display_list.add(tuple);
+            tuple = new String();
+        }
+        return display_list;
     }
 
     @Override
@@ -342,7 +408,7 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
 
 
         private List<DataSet> dataSets;
-        //private List<String> data;
+        private List<String> listElements;
         private List<String> filteredData;
         Table table;
         ListActivity father = null;
@@ -355,19 +421,19 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
 
         @Override
         public Filter getFilter() {
-            return new ListFilter(this, dataSets);
+            return new ListFilter(this, listElements);
         }
 
         private class ListFilter extends Filter {
 
             private final TableListItemRecyclerViewAdapter adapter;
-            private final List<DataSet> originalList;
+            private final List<String> originalList;
             private final List<String> filteredList;
-            private ListFilter(TableListItemRecyclerViewAdapter adapter, List<DataSet> dataSets)
+            private ListFilter(TableListItemRecyclerViewAdapter adapter, List<String> listElements)
             {
                 super();
                 this.adapter = adapter;
-                this.originalList = new LinkedList<>(dataSets);
+                this.originalList = new LinkedList<>(listElements);
 
                 Log.i(CLASS_NAME, "Original List size: " + originalList.size());
                 Log.i(CLASS_NAME, "Original List: " + originalList.toString());
@@ -381,20 +447,18 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
                 final FilterResults results = new FilterResults();
 
                 if (constraint.length() == 0) {
-                    Log.i(CLASS_NAME, "Constraint empty, adding all List ...");
-                    for(int i = 0; i < originalList.size(); i++)
-                        filteredData.add(originalList.get(i).set.toString());
+                    filteredList.addAll(originalList);
 
                 } else {
                     Log.i(CLASS_NAME, "Filter constraint: " + constraint);
                     final String filterPattern = constraint.toString().toLowerCase().trim();
 
-                    for(int i = 0; i < originalList.size(); i++)
+                    for(String s : originalList)
                     {
-                        if(originalList.get(i).set.toString().contains(filterPattern))
+                        if(s.contains(constraint))
                         {
-                            Log.i(CLASS_NAME, "Filtered Element: " + originalList.get(i).set.toString());
-                            filteredList.add(originalList.get(i).set.toString());
+                            Log.i(CLASS_NAME, "Filtered Element: " + s);
+                            filteredList.add(s);
                         }
                     }
                 }
@@ -421,34 +485,9 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
-            Log.i(CLASS_NAME, "OnBindViewHolder called!");
-
-            String tuple = new String();
-            for(LinkedHashMap.Entry<Integer, ArrayList<Integer>> entry : myWidget.list_view_columns.entrySet())
-            {
-                String temp = new String();
-                // Atrritubte type 2 = spinner
-                // needed for referenced attribute names
-                if(entry.getValue().size() > 0 && myWidget.myTables.get(0).attributes.get(entry.getKey()).attribute_type == 2) {
-                    if (!myWidget.myTables.get(0).attributes.get(entry.getKey()).items.referenced_table.dataSets.isEmpty()) {
-                        for (int l = 0; l < entry.getValue().size(); l++) {
-                            // this adds every referenced attribute for this element
-                            temp = temp + " " + getReferencedItem(Integer.valueOf(dataSets.get(position).set.get(entry.getKey())),
-                                    entry.getValue().get(l), myWidget.myTables.get(0).attributes.get(entry.getKey()));
-                        }
-                    } else {
-                        temp = dataSets.get(position).set.get(entry.getKey());
-                        appLogic.getTableData(myWidget.myTables.get(0).attributes.get(entry.getKey()).items.referenced_table, father);
-                    }
-                }else {
-                    temp = dataSets.get(position).set.get(entry.getKey());
-                }
-                tuple = tuple + " " + temp;
-
-            }
 
             holder.mItem = dataSets.get(position).set;
-            holder.mTextView.setText(tuple);
+            holder.mTextView.setText(listElements.get(position));
             holder.currentDataSet = dataSets.get(position);
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -474,9 +513,10 @@ public class ListActivity extends AppCompatActivity implements IDataInflateListe
             });
         }
 
-        public void updateDataSetList(Table data_sets)
+        public void updateDataSetList(Table data_sets, ArrayList<String> list_elements)
         {
             this.dataSets = data_sets.dataSets;
+            this.listElements = list_elements;
             this.notifyDataSetChanged();
             table = data_sets;
         }
